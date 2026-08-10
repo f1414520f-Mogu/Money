@@ -9,6 +9,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
+  /* ============================================================
+     配色設定區
+     想換整體配色，只要改這裡的色碼就好，其他地方都不用動。
+     下面附了兩組現成的替代配色，想換的話整段複製貼到 :root 裡取代即可。
+
+     【暖木質色系】
+     --paper:#f5efe4; --paper-line:#e3d8c4; --ink:#2b2118; --ink-soft:#8a7c68;
+     --ledger:#8a5a34; --ledger-dark:#5f3c1f; --ledger-soft:#f0e4d4; --accent:#3f6e5c;
+
+     【霧藍夜色系】
+     --paper:#eef1f5; --paper-line:#d8dee6; --ink:#1c2531; --ink-soft:#6b7686;
+     --ledger:#33506b; --ledger-dark:#1f3448; --ledger-soft:#e2ebf2; --accent:#c17a3d;
+  ============================================================ */
   :root{
     --paper: #f6f2e8;
     --paper-line: #e4dcc8;
@@ -22,6 +35,7 @@
     --card: #fffdf8;
     --radius: 16px;
     --shadow: 0 4px 18px rgba(38,32,25,0.08);
+    --shadow-lift: 0 10px 28px rgba(38,32,25,0.14);
   }
   *{ box-sizing: border-box; }
   html,body{ margin:0; padding:0; }
@@ -64,9 +78,14 @@
   #app{ display:none; }
   #app.unlocked{ display:block; }
 
+  /* ---------- Header (可放照片當底圖，見 CONFIG.HEADER_IMAGE_URL) ---------- */
   header{
     position: sticky; top:0; z-index:10;
-    background: linear-gradient(160deg, var(--ledger), var(--ledger-dark));
+    background:
+      linear-gradient(160deg, rgba(47,93,80,0.92), rgba(28,61,51,0.94)),
+      var(--header-photo, none);
+    background-size: cover;
+    background-position: center;
     color:#fff;
     padding: 20px 20px 16px;
     box-shadow: var(--shadow);
@@ -80,12 +99,20 @@
   }
   header .grand-total{ margin-top: 12px; font-size: 12.5px; opacity: 0.85; }
   header .grand-total b{ font-family:"Noto Serif TC",serif; font-size: 22px; font-variant-numeric: tabular-nums; margin-left:6px; display:block; margin-top:2px; }
+  .person-breakdown{ display:flex; gap:8px; margin-top: 10px; }
+  .person-breakdown .pill{
+    flex:1; background: rgba(255,255,255,0.14); border-radius: 12px;
+    padding: 8px 10px; backdrop-filter: blur(2px);
+  }
+  .person-breakdown .pill .name{ font-size: 10.5px; opacity: 0.8; margin-bottom: 2px; }
+  .person-breakdown .pill .amt{ font-family:"Noto Serif TC",serif; font-size: 14.5px; font-variant-numeric: tabular-nums; }
 
   main{ max-width: 480px; margin: 0 auto; padding: 18px 16px; }
 
   .card{
     background: var(--card); border-radius: var(--radius); padding: 18px;
     margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--paper-line);
+    transition: box-shadow 0.2s ease;
   }
   .card h2{
     margin: 0 0 14px; font-size: 16px; color: var(--ledger-dark);
@@ -96,6 +123,15 @@
     width:20px; height:20px; border-radius: 50%; font-weight:700;
     display:flex; align-items:center; justify-content:center;
   }
+
+  /* 本月摘要卡 */
+  .summary-strip{ display:flex; gap:10px; margin-bottom: 16px; }
+  .summary-pill{
+    flex:1; background: var(--card); border-radius: 14px; padding: 12px 14px;
+    box-shadow: var(--shadow); border: 1px solid var(--paper-line);
+  }
+  .summary-pill .label{ font-size: 11px; color: var(--ink-soft); margin-bottom:4px; }
+  .summary-pill .value{ font-family:"Noto Serif TC",serif; font-size: 17px; font-variant-numeric: tabular-nums; color: var(--ledger-dark); }
 
   label{ display:block; font-size: 12px; color: var(--ink-soft); margin: 12px 0 5px; font-weight:500; }
   label:first-of-type{ margin-top:0; }
@@ -113,9 +149,21 @@
     background: var(--ledger); color:#fff; font-size:15px; font-weight:700;
     border:none; border-radius: 11px; cursor:pointer; font-family:"Noto Sans TC",sans-serif;
     box-shadow: 0 6px 16px rgba(47,93,80,0.28);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
   }
-  button.primary:active{ background: var(--ledger-dark); transform: translateY(1px); box-shadow:none; }
+  button.primary:active{ background: var(--ledger-dark); transform: translateY(1px) scale(0.99); box-shadow:none; }
   button.primary:disabled{ opacity: 0.5; box-shadow:none; }
+  button.secondary{
+    width:100%; margin-top: 10px; padding: 13px;
+    background: none; color: var(--danger); font-size:14px; font-weight:600;
+    border: 1.5px solid #f0c3b3; border-radius: 11px; cursor:pointer;
+  }
+  button.secondary:active{ background: #fbe9e2; }
+  button.ghost{
+    width:100%; margin-top: 8px; padding: 12px;
+    background:none; color: var(--ink-soft); font-size:13px;
+    border:none; cursor:pointer;
+  }
 
   .status{ font-size: 12px; margin-top: 9px; min-height: 16px; font-weight:500; }
   .status.error{ color: var(--danger); }
@@ -134,11 +182,22 @@
   .items{ margin: 6px 0 8px 0; padding-left: 0; list-style:none; }
   .items li{
     display:flex; justify-content:space-between; font-size:12.5px;
-    padding: 4px 0 4px 11px; color: var(--ink-soft); border-left: 2px solid var(--paper-line);
+    padding: 7px 6px 7px 11px; color: var(--ink-soft); border-left: 2px solid var(--paper-line);
+    cursor:pointer; border-radius: 6px; transition: background 0.12s ease;
   }
+  .items li:active{ background: var(--ledger-soft); }
   .items li .date{ color: #a49c8a; margin-right: 6px; font-variant-numeric: tabular-nums; }
 
-  .empty{ font-size: 13px; color: var(--ink-soft); text-align:center; padding: 26px 0; }
+  .empty{ font-size: 13px; color: var(--ink-soft); text-align:center; padding: 30px 0; }
+  .empty .mark{ font-family:"Noto Serif TC",serif; font-size: 26px; color: var(--paper-line); display:block; margin-bottom:8px; }
+
+  .skeleton{ padding: 4px 0; }
+  .skeleton-line{
+    height: 14px; border-radius: 7px; margin-bottom: 10px;
+    background: linear-gradient(90deg, var(--paper-line) 25%, #f0ebdd 37%, var(--paper-line) 63%);
+    background-size: 400% 100%; animation: shimmer 1.4s ease infinite;
+  }
+  @keyframes shimmer{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
 
   .chart-controls{ margin-bottom: 14px; }
   canvas{ max-height: 280px; }
@@ -165,6 +224,22 @@
     background: #fbe9e2; color: var(--danger); border: 1px solid #f0c3b3;
     border-radius: 11px; padding: 11px 13px; font-size: 12.5px; margin-bottom: 14px;
   }
+
+  /* ---------- 編輯彈窗 ---------- */
+  #editOverlay{
+    position: fixed; inset:0; z-index: 90; background: rgba(28,20,14,0.42);
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  #editOverlay.show{ display:flex; }
+  .edit-sheet{
+    background: var(--card); width:100%; max-width: 480px;
+    border-radius: 20px 20px 0 0; padding: 20px 20px 28px;
+    box-shadow: var(--shadow-lift);
+    animation: slideUp 0.22s ease;
+  }
+  @keyframes slideUp{ from{ transform: translateY(24px); opacity:0.4; } to{ transform:none; opacity:1; } }
+  .edit-sheet h3{ margin:0 0 14px; font-size: 16px; color: var(--ledger-dark); }
+  .edit-status{ font-size:12px; min-height:16px; margin-top:6px; }
 </style>
 </head>
 <body>
@@ -191,7 +266,10 @@
     </div>
     <button class="logout-btn" id="logoutBtn">登出</button>
   </div>
-  <div class="grand-total">目前累積總額<b id="grandTotal">$0</b></div>
+  <div class="grand-total">
+    目前累積總額<b id="grandTotal">$0</b>
+    <div class="person-breakdown" id="personBreakdown"></div>
+  </div>
 </header>
 
 <main>
@@ -224,9 +302,26 @@
 
   <!-- 明細 / 月結 -->
   <section id="view-ledger" class="view">
+    <div class="summary-strip">
+      <div class="summary-pill">
+        <div class="label">本月合計</div>
+        <div class="value" id="thisMonthTotal">$0</div>
+      </div>
+      <div class="summary-pill">
+        <div class="label">累積總額</div>
+        <div class="value" id="grandTotal2">$0</div>
+      </div>
+    </div>
     <div class="card">
       <h2><span class="idx">2</span>月結明細</h2>
-      <div id="ledgerBody"><div class="empty">讀取中…</div></div>
+      <p style="font-size:11.5px;color:var(--ink-soft);margin:-8px 0 12px;">點任一筆紀錄可以修改或刪除</p>
+      <div id="ledgerBody">
+        <div class="skeleton">
+          <div class="skeleton-line" style="width:60%"></div>
+          <div class="skeleton-line" style="width:90%"></div>
+          <div class="skeleton-line" style="width:75%"></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -263,54 +358,72 @@
 </nav>
 </div>
 
+<!-- ============ 編輯 / 刪除彈窗 ============ -->
+<div id="editOverlay">
+  <div class="edit-sheet">
+    <h3>編輯這筆記帳</h3>
+    <label for="editPerson">記帳人員</label>
+    <select id="editPerson"></select>
+    <label for="editDate">日期</label>
+    <input type="date" id="editDate" />
+    <label for="editItem">項目名目</label>
+    <input id="editItem" />
+    <label for="editAmount">金額</label>
+    <input id="editAmount" type="number" inputmode="decimal" />
+    <div class="edit-status" id="editStatus"></div>
+    <button class="primary" id="editSaveBtn">儲存修改</button>
+    <button class="secondary" id="editDeleteBtn">刪除這筆</button>
+    <button class="ghost" id="editCancelBtn">取消</button>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // 設定區
 // ============================================================
 const CONFIG = {
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbw3Mbf_TIDVSalbn4X9Eun1-YoRnfp9WbL3-264QlaP37qpJaNyWQttxxrZZ2uDZTlMvA/exec",
-  // 這裡改成你們兩位的名字，會顯示在記帳人員下拉選單
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzb3gJkz2UxcBqRRYzJVBw09NWcuqpSF5YMAJllP4lvfnFBuuKp3NZ3asFcTwQL_UEPPA/exec",
   PERSONS: ["老公子", "老婆子"],
-  // 這裡改成你自己的密碼，要跟 Apps Script 裡的 APP_KEY 完全一樣
-  APP_PASSWORD: "20210318"
+  APP_PASSWORD: "20210318",
+
+  // 想放照片當 header 底圖，把圖片網址貼在這裡(留空就用預設漸層色)
+  // 建議把照片一起上傳到你的 GitHub repo，然後用它的網址，例如：
+  // "https://raw.githubusercontent.com/你的帳號/repo名/main/photo.jpg"
+  HEADER_IMAGE_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/S__19513362.jpg?raw=true"
 };
+
+if (CONFIG.HEADER_IMAGE_URL) {
+  document.documentElement.style.setProperty("--header-photo", `url("${CONFIG.HEADER_IMAGE_URL}")`);
+}
 
 let allRecords = [];
 let chartInstance = null;
-let sessionKey = null; // 登入成功後暫存密碼，用來附加在每次 API 請求
+let sessionKey = null;
+let editingId = null;
 
 // ---------- 登入 ----------
 function initLogin(){
   const saved = localStorage.getItem("ledger_key");
-  if (saved === CONFIG.APP_PASSWORD){
-    unlock(saved);
-    return;
-  }
+  if (saved === CONFIG.APP_PASSWORD){ unlock(saved); return; }
   document.getElementById("lockSubmit").addEventListener("click", tryLogin);
   document.getElementById("lockPassword").addEventListener("keydown", e => {
     if (e.key === "Enter") tryLogin();
   });
 }
-
 function tryLogin(){
   const val = document.getElementById("lockPassword").value;
   const statusEl = document.getElementById("lockStatus");
-  if (val !== CONFIG.APP_PASSWORD){
-    statusEl.textContent = "密碼錯誤，請再試一次";
-    return;
-  }
+  if (val !== CONFIG.APP_PASSWORD){ statusEl.textContent = "密碼錯誤，請再試一次"; return; }
   statusEl.textContent = "";
   localStorage.setItem("ledger_key", val);
   unlock(val);
 }
-
 function unlock(key){
   sessionKey = key;
   document.getElementById("lockScreen").style.display = "none";
   document.getElementById("app").classList.add("unlocked");
   boot();
 }
-
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("ledger_key");
   location.reload();
@@ -328,15 +441,13 @@ function dateLabel(date){
   const d = date.getDate().toString().padStart(2,"0");
   return `${m}/${d}`;
 }
+function toDateInputValue(date){ return date.toISOString().slice(0,10); }
 
-// ---------- 初始化畫面元件 ----------
-function populatePersonSelect(){
-  const sel = document.getElementById("inputPerson");
-  sel.innerHTML = CONFIG.PERSONS.map(p => `<option value="${p}">${p}</option>`).join("");
+function populatePersonSelect(el){
+  el.innerHTML = CONFIG.PERSONS.map(p => `<option value="${p}">${p}</option>`).join("");
 }
 function setDefaultDate(){
-  const today = new Date();
-  document.getElementById("inputDate").value = today.toISOString().slice(0,10);
+  document.getElementById("inputDate").value = toDateInputValue(new Date());
 }
 
 // ---------- 讀取資料 ----------
@@ -353,6 +464,7 @@ async function loadRecords(){
     if (json.status !== "success") throw new Error(json.message || "讀取失敗");
 
     allRecords = json.data.map(r => ({
+      id: r.id,
       timestamp: new Date(r.timestamp),
       person: r.person,
       item: r.item,
@@ -362,8 +474,7 @@ async function loadRecords(){
     renderLedger();
     renderChart();
   } catch(err){
-    document.getElementById("ledgerBody").innerHTML =
-      `<div class="empty">讀取失敗：${err.message}</div>`;
+    document.getElementById("ledgerBody").innerHTML = `<div class="empty">讀取失敗：${err.message}</div>`;
   }
 }
 
@@ -381,7 +492,6 @@ async function submitRecord(){
     statusEl.className = "status error";
     return;
   }
-
   btn.disabled = true;
   statusEl.textContent = "送出中…";
   statusEl.className = "status";
@@ -390,7 +500,7 @@ async function submitRecord(){
     const res = await fetch(CONFIG.WEB_APP_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ key: sessionKey, person, item, amount, date })
+      body: JSON.stringify({ key: sessionKey, action: "create", person, item, amount, date })
     });
     const json = await res.json();
     if (json.status !== "success") throw new Error(json.message || "寫入失敗");
@@ -400,14 +510,89 @@ async function submitRecord(){
     document.getElementById("inputItem").value = "";
     document.getElementById("inputAmount").value = "";
     setDefaultDate();
-
     await loadRecords();
   } catch(err){
     statusEl.textContent = "送出失敗：" + err.message;
     statusEl.className = "status error";
-  } finally {
-    btn.disabled = false;
+  } finally { btn.disabled = false; }
+}
+
+// ---------- 編輯 / 刪除 ----------
+function openEdit(id){
+  const record = allRecords.find(r => r.id === id);
+  if (!record) return;
+  editingId = id;
+  document.getElementById("editPerson").value = record.person;
+  document.getElementById("editDate").value = toDateInputValue(record.timestamp);
+  document.getElementById("editItem").value = record.item;
+  document.getElementById("editAmount").value = record.amount;
+  document.getElementById("editStatus").textContent = "";
+  document.getElementById("editOverlay").classList.add("show");
+}
+function closeEdit(){
+  document.getElementById("editOverlay").classList.remove("show");
+  editingId = null;
+}
+async function saveEdit(){
+  const person = document.getElementById("editPerson").value;
+  const date = document.getElementById("editDate").value;
+  const item = document.getElementById("editItem").value.trim();
+  const amount = parseFloat(document.getElementById("editAmount").value);
+  const statusEl = document.getElementById("editStatus");
+
+  if (!person || !date || !item || isNaN(amount)){
+    statusEl.textContent = "請完整填寫所有欄位";
+    statusEl.className = "edit-status error";
+    return;
   }
+  statusEl.textContent = "儲存中…";
+  statusEl.className = "edit-status";
+  try{
+    const res = await fetch(CONFIG.WEB_APP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ key: sessionKey, action: "update", id: editingId, person, item, amount, date })
+    });
+    const json = await res.json();
+    if (json.status !== "success") throw new Error(json.message || "修改失敗");
+    closeEdit();
+    await loadRecords();
+  } catch(err){
+    statusEl.textContent = "修改失敗：" + err.message;
+    statusEl.className = "edit-status error";
+  }
+}
+async function deleteEdit(){
+  if (!confirm("確定要刪除這筆記帳嗎？此動作無法復原。")) return;
+  const statusEl = document.getElementById("editStatus");
+  statusEl.textContent = "刪除中…";
+  statusEl.className = "edit-status";
+  try{
+    const res = await fetch(CONFIG.WEB_APP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ key: sessionKey, action: "delete", id: editingId })
+    });
+    const json = await res.json();
+    if (json.status !== "success") throw new Error(json.message || "刪除失敗");
+    closeEdit();
+    await loadRecords();
+  } catch(err){
+    statusEl.textContent = "刪除失敗：" + err.message;
+    statusEl.className = "edit-status error";
+  }
+}
+
+// ---------- Header 人員總額拆分 ----------
+function renderHeaderBreakdown(){
+  const totals = {};
+  CONFIG.PERSONS.forEach(p => totals[p] = 0); // 就算某人還沒記帳也先顯示 $0
+  allRecords.forEach(r => { totals[r.person] = (totals[r.person] || 0) + r.amount; });
+
+  const el = document.getElementById("personBreakdown");
+  el.innerHTML = Object.entries(totals)
+    .map(([name, amt]) => `<div class="pill"><div class="name">${name}</div><div class="amt">${fmt(amt)}</div></div>`)
+    .join("");
 }
 
 // ---------- 月結 & 總額 ----------
@@ -428,9 +613,15 @@ function renderLedger(){
   const keys = Object.keys(groups).sort().reverse();
   const body = document.getElementById("ledgerBody");
 
+  const currentKey = monthKeyOf(new Date());
+  const thisMonth = groups[currentKey] ? groups[currentKey].total : 0;
+  document.getElementById("thisMonthTotal").textContent = fmt(thisMonth);
+
   if (keys.length === 0){
-    body.innerHTML = '<div class="empty">還沒有任何記帳紀錄</div>';
+    body.innerHTML = '<div class="empty"><span class="mark">簿</span>還沒有任何記帳紀錄</div>';
     document.getElementById("grandTotal").textContent = fmt(0);
+    document.getElementById("grandTotal2").textContent = fmt(0);
+    renderHeaderBreakdown();
     return;
   }
 
@@ -442,7 +633,7 @@ function renderLedger(){
     const persons = Object.entries(g.byPerson).sort((a,b) => b[1]-a[1]);
     const itemsHtml = g.items
       .slice().reverse()
-      .map(r => `<li><span><span class="date">${dateLabel(r.timestamp)}</span>${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`)
+      .map(r => `<li data-id="${r.id}"><span><span class="date">${dateLabel(r.timestamp)}</span>${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`)
       .join("");
 
     html += `
@@ -455,6 +646,12 @@ function renderLedger(){
 
   body.innerHTML = html;
   document.getElementById("grandTotal").textContent = fmt(grandTotal);
+  document.getElementById("grandTotal2").textContent = fmt(grandTotal);
+  renderHeaderBreakdown();
+
+  body.querySelectorAll(".items li").forEach(li => {
+    li.addEventListener("click", () => openEdit(li.dataset.id));
+  });
 }
 
 // ---------- 圖表 ----------
@@ -467,17 +664,9 @@ function renderChart(){
   let data;
   if (type === "pie"){
     const totalsByPerson = {};
-    allRecords.forEach(r => {
-      totalsByPerson[r.person] = (totalsByPerson[r.person] || 0) + r.amount;
-    });
+    allRecords.forEach(r => { totalsByPerson[r.person] = (totalsByPerson[r.person] || 0) + r.amount; });
     const labels = Object.keys(totalsByPerson);
-    data = {
-      labels,
-      datasets: [{
-        data: labels.map(l => totalsByPerson[l]),
-        backgroundColor: ["#2f5d50","#c0602b","#7fa896","#e0a35c","#3d7264","#a4402e"]
-      }]
-    };
+    data = { labels, datasets: [{ data: labels.map(l => totalsByPerson[l]), backgroundColor: ["#2f5d50","#c0602b","#7fa896","#e0a35c","#3d7264","#a4402e"] }] };
   } else {
     data = {
       labels: monthKeys,
@@ -486,10 +675,7 @@ function renderChart(){
         data: monthKeys.map(k => groups[k].total),
         borderColor: "#2f5d50",
         backgroundColor: type === "bar" ? "#2f5d50" : "rgba(47,93,80,0.15)",
-        fill: type === "line",
-        tension: 0.3,
-        pointBackgroundColor: "#c0602b",
-        borderWidth: 2
+        fill: type === "line", tension: 0.3, pointBackgroundColor: "#c0602b", borderWidth: 2
       }]
     };
   }
@@ -517,9 +703,17 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   });
 });
 
+document.getElementById("editSaveBtn").addEventListener("click", saveEdit);
+document.getElementById("editDeleteBtn").addEventListener("click", deleteEdit);
+document.getElementById("editCancelBtn").addEventListener("click", closeEdit);
+document.getElementById("editOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "editOverlay") closeEdit();
+});
+
 // ---------- 啟動 ----------
 function boot(){
-  populatePersonSelect();
+  populatePersonSelect(document.getElementById("inputPerson"));
+  populatePersonSelect(document.getElementById("editPerson"));
   setDefaultDate();
   document.getElementById("submitBtn").addEventListener("click", submitRecord);
   document.getElementById("chartType").addEventListener("change", renderChart);
