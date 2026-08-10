@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+<title>共同記帳本</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --paper: #f6f3ec;
+    --paper-line: #e2ddcf;
+    --ink: #1f2b26;
+    --ink-soft: #5c675f;
+    --ledger: #2f5d50;
+    --ledger-dark: #1f4038;
+    --accent: #c9622a;
+    --danger: #a4402e;
+    --card: #ffffff;
+    --radius: 14px;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "PingFang TC","Noto Sans TC","Helvetica Neue",Arial,sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body{
+    background-image: repeating-linear-gradient(
+      to bottom, transparent, transparent 27px, var(--paper-line) 28px
+    );
+    background-attachment: local;
+    min-height:100vh;
+    padding-bottom: 84px;
+  }
+  header{
+    position: sticky; top:0; z-index:10;
+    background: var(--ledger);
+    color:#fff;
+    padding: 18px 20px 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  header .eyebrow{
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    opacity: 0.75; margin-bottom: 4px;
+  }
+  header h1{ margin:0; font-size: 21px; font-weight: 700; letter-spacing: 1px;}
+  header .grand-total{
+    margin-top: 10px; font-size: 13px; opacity: 0.9;
+  }
+  header .grand-total b{ font-size: 20px; font-variant-numeric: tabular-nums; margin-left:4px;}
+
+  main{ max-width: 480px; margin: 0 auto; padding: 16px; }
+
+  .card{
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid var(--paper-line);
+  }
+  .card h2{
+    margin: 0 0 12px; font-size: 15px; color: var(--ledger-dark);
+    display:flex; align-items:center; gap:8px;
+  }
+  .card h2 .idx{
+    font-size:11px; background: var(--ledger); color:#fff;
+    padding:2px 7px; border-radius: 20px; font-weight:600;
+  }
+
+  label{ display:block; font-size: 12px; color: var(--ink-soft); margin: 10px 0 4px; }
+  input, select{
+    width: 100%; padding: 11px 12px; font-size: 15px;
+    border: 1px solid var(--paper-line); border-radius: 10px;
+    background: #fdfcf9; color: var(--ink);
+  }
+  input:focus, select:focus{ outline: 2px solid var(--ledger); outline-offset: 1px; }
+
+  button.primary{
+    width:100%; margin-top: 14px; padding: 13px;
+    background: var(--ledger); color:#fff; font-size:15px; font-weight:600;
+    border:none; border-radius: 10px; cursor:pointer;
+  }
+  button.primary:active{ background: var(--ledger-dark); }
+  button.primary:disabled{ opacity: 0.5; }
+
+  .status{ font-size: 12px; margin-top: 8px; min-height: 16px; }
+  .status.error{ color: var(--danger); }
+  .status.ok{ color: var(--ledger); }
+
+  .month-block{ margin-bottom: 14px; }
+  .month-block:last-child{ margin-bottom: 0; }
+  .month-head{
+    display:flex; justify-content: space-between; align-items:baseline;
+    font-size: 13px; font-weight:700; color: var(--ledger-dark);
+    border-bottom: 1px dashed var(--paper-line); padding-bottom: 6px; margin-bottom: 6px;
+  }
+  .month-head .amt{ font-variant-numeric: tabular-nums; }
+  .person-row{
+    display:flex; justify-content: space-between; font-size: 13px;
+    padding: 4px 0; color: var(--ink-soft);
+  }
+  .person-row .amt{ font-variant-numeric: tabular-nums; color: var(--ink); }
+  .items{ margin: 4px 0 8px 0; padding-left: 0; list-style:none; }
+  .items li{
+    display:flex; justify-content:space-between; font-size:12.5px;
+    padding: 3px 0 3px 10px; color: var(--ink-soft); border-left: 2px solid var(--paper-line);
+  }
+
+  .empty{ font-size: 13px; color: var(--ink-soft); text-align:center; padding: 20px 0; }
+
+  .chart-controls{ display:flex; gap:10px; align-items:center; margin-bottom: 12px; }
+  .chart-controls select{ width: auto; flex: 1; }
+  canvas{ max-height: 280px; }
+
+  nav.tabs{
+    position: fixed; bottom:0; left:0; right:0; z-index: 10;
+    display:flex; background: var(--card);
+    border-top: 1px solid var(--paper-line);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+  }
+  nav.tabs button{
+    flex:1; padding: 11px 4px 9px; background: none; border:none;
+    font-size: 11.5px; color: var(--ink-soft); cursor:pointer;
+  }
+  nav.tabs button .icon{ display:block; font-size: 17px; margin-bottom: 2px; }
+  nav.tabs button.active{ color: var(--ledger); font-weight:700; }
+
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .setup-warning{
+    background: #fbe9e2; color: var(--danger); border: 1px solid #f0c3b3;
+    border-radius: 10px; padding: 10px 12px; font-size: 12.5px; margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">共同記帳本</div>
+  <h1>大家的帳，一起結</h1>
+  <div class="grand-total">目前累積總額<b id="grandTotal">$0</b></div>
+</header>
+
+<main>
+
+  <div id="setupWarning" class="setup-warning" style="display:none;">
+    ⚠️ 尚未設定 Apps Script 網址，請打開這個檔案的原始碼，把最上面 <code>CONFIG.WEB_APP_URL</code> 換成你部署後拿到的網址。
+  </div>
+
+  <!-- 新增記帳 -->
+  <section id="view-add" class="view active">
+    <div class="card">
+      <h2><span class="idx">1</span>新增一筆記帳</h2>
+      <label for="inputPerson">記帳人員</label>
+      <input list="personList" id="inputPerson" placeholder="輸入姓名，例如：小美" autocomplete="off" />
+      <datalist id="personList"></datalist>
+
+      <label for="inputItem">項目名目</label>
+      <input id="inputItem" placeholder="例如：晚餐、水電費" autocomplete="off" />
+
+      <label for="inputAmount">金額</label>
+      <input id="inputAmount" type="number" inputmode="decimal" placeholder="0" />
+
+      <button class="primary" id="submitBtn">送出記帳</button>
+      <div class="status" id="submitStatus"></div>
+    </div>
+  </section>
+
+  <!-- 明細 / 月結 -->
+  <section id="view-ledger" class="view">
+    <div class="card">
+      <h2><span class="idx">2</span>月結明細</h2>
+      <div id="ledgerBody"><div class="empty">讀取中…</div></div>
+    </div>
+  </section>
+
+  <!-- 圖表 -->
+  <section id="view-chart" class="view">
+    <div class="card">
+      <h2><span class="idx">3</span>金流圖表</h2>
+      <div class="chart-controls">
+        <select id="chartType">
+          <option value="line">折線圖(每月總額趨勢)</option>
+          <option value="bar">長條圖(每月總額趨勢)</option>
+          <option value="pie">圓餅圖(各人員佔比)</option>
+        </select>
+      </div>
+      <canvas id="mainChart"></canvas>
+    </div>
+  </section>
+
+</main>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-view="view-add"><span class="icon">✎</span>記帳</button>
+  <button class="tab-btn" data-view="view-ledger"><span class="icon">≡</span>月結明細</button>
+  <button class="tab-btn" data-view="view-chart"><span class="icon">📈</span>圖表</button>
+</nav>
+
+<script>
+// ============================================================
+// 設定區：把這裡換成你自己部署後的 Apps Script 網址
+// ============================================================
+const CONFIG = {
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbwyTyJLWbMaftG64eGt9a-S5RS4nNZ1W2_yL4G7K3xT0SyJFYYdNXYP9XZKBFprQK6aJQ/exec"
+};
+
+let allRecords = [];
+let chartInstance = null;
+
+// ---------- 工具函式 ----------
+function fmt(n){
+  return "$" + Math.round(n).toLocaleString("zh-TW");
+}
+function monthKeyOf(date){
+  const y = date.getFullYear();
+  const m = (date.getMonth()+1).toString().padStart(2,"0");
+  return `${y}-${m}`;
+}
+
+// ---------- 讀取資料 ----------
+async function loadRecords(){
+  if (!CONFIG.WEB_APP_URL || CONFIG.WEB_APP_URL.indexOf("PASTE_YOUR") === 0){
+    document.getElementById("setupWarning").style.display = "block";
+    document.getElementById("ledgerBody").innerHTML = '<div class="empty">尚未連接資料來源</div>';
+    return;
+  }
+  try{
+    const res = await fetch(CONFIG.WEB_APP_URL, { method: "GET" });
+    const json = await res.json();
+    if (json.status !== "success") throw new Error(json.message || "讀取失敗");
+
+    allRecords = json.data.map(r => ({
+      timestamp: new Date(r.timestamp),
+      person: r.person,
+      item: r.item,
+      amount: Number(r.amount)
+    })).sort((a,b) => a.timestamp - b.timestamp);
+
+    renderPersonList();
+    renderLedger();
+    renderChart();
+  } catch(err){
+    document.getElementById("ledgerBody").innerHTML =
+      `<div class="empty">讀取失敗：${err.message}</div>`;
+  }
+}
+
+// ---------- 新增記帳 ----------
+async function submitRecord(){
+  const person = document.getElementById("inputPerson").value.trim();
+  const item = document.getElementById("inputItem").value.trim();
+  const amount = parseFloat(document.getElementById("inputAmount").value);
+  const statusEl = document.getElementById("submitStatus");
+  const btn = document.getElementById("submitBtn");
+
+  if (!person || !item || isNaN(amount)){
+    statusEl.textContent = "請完整填寫人員、名目、金額";
+    statusEl.className = "status error";
+    return;
+  }
+  if (!CONFIG.WEB_APP_URL || CONFIG.WEB_APP_URL.indexOf("PASTE_YOUR") === 0){
+    statusEl.textContent = "尚未設定資料來源網址";
+    statusEl.className = "status error";
+    return;
+  }
+
+  btn.disabled = true;
+  statusEl.textContent = "送出中…";
+  statusEl.className = "status";
+
+  try{
+    // 用 text/plain 避免瀏覽器對 Apps Script 發送 CORS 預檢請求失敗
+    const res = await fetch(CONFIG.WEB_APP_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ person, item, amount })
+    });
+    const json = await res.json();
+    if (json.status !== "success") throw new Error(json.message || "寫入失敗");
+
+    statusEl.textContent = "已記錄！";
+    statusEl.className = "status ok";
+    document.getElementById("inputItem").value = "";
+    document.getElementById("inputAmount").value = "";
+
+    await loadRecords();
+  } catch(err){
+    statusEl.textContent = "送出失敗：" + err.message;
+    statusEl.className = "status error";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ---------- 人員自動完成 ----------
+function renderPersonList(){
+  const names = [...new Set(allRecords.map(r => r.person))];
+  const dl = document.getElementById("personList");
+  dl.innerHTML = names.map(n => `<option value="${n}"></option>`).join("");
+}
+
+// ---------- 月結 & 總額 ----------
+function groupByMonth(){
+  const groups = {};
+  allRecords.forEach(r => {
+    const key = monthKeyOf(r.timestamp);
+    if (!groups[key]) groups[key] = { total: 0, byPerson: {}, items: [] };
+    groups[key].total += r.amount;
+    groups[key].byPerson[r.person] = (groups[key].byPerson[r.person] || 0) + r.amount;
+    groups[key].items.push(r);
+  });
+  return groups;
+}
+
+function renderLedger(){
+  const groups = groupByMonth();
+  const keys = Object.keys(groups).sort().reverse();
+  const body = document.getElementById("ledgerBody");
+
+  if (keys.length === 0){
+    body.innerHTML = '<div class="empty">還沒有任何記帳紀錄</div>';
+    document.getElementById("grandTotal").textContent = fmt(0);
+    return;
+  }
+
+  let grandTotal = 0;
+  let html = "";
+  keys.forEach(key => {
+    const g = groups[key];
+    grandTotal += g.total; // 總額 = 每月月結加總
+    const persons = Object.entries(g.byPerson).sort((a,b) => b[1]-a[1]);
+    const itemsHtml = g.items
+      .slice().reverse()
+      .map(r => `<li><span>${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`)
+      .join("");
+
+    html += `
+      <div class="month-block">
+        <div class="month-head"><span>${key} 月結</span><span class="amt">${fmt(g.total)}</span></div>
+        ${persons.map(([p,amt]) => `<div class="person-row"><span>${p}</span><span class="amt">${fmt(amt)}</span></div>`).join("")}
+        <ul class="items">${itemsHtml}</ul>
+      </div>`;
+  });
+
+  body.innerHTML = html;
+  document.getElementById("grandTotal").textContent = fmt(grandTotal);
+}
+
+// ---------- 圖表 ----------
+function renderChart(){
+  const type = document.getElementById("chartType").value;
+  const ctx = document.getElementById("mainChart").getContext("2d");
+  const groups = groupByMonth();
+  const monthKeys = Object.keys(groups).sort();
+
+  let data;
+  if (type === "pie"){
+    const totalsByPerson = {};
+    allRecords.forEach(r => {
+      totalsByPerson[r.person] = (totalsByPerson[r.person] || 0) + r.amount;
+    });
+    const labels = Object.keys(totalsByPerson);
+    data = {
+      labels,
+      datasets: [{
+        data: labels.map(l => totalsByPerson[l]),
+        backgroundColor: ["#2f5d50","#c9622a","#5c675f","#7fa896","#e0a35c","#3d7264"]
+      }]
+    };
+  } else {
+    data = {
+      labels: monthKeys,
+      datasets: [{
+        label: "每月總額",
+        data: monthKeys.map(k => groups[k].total),
+        borderColor: "#2f5d50",
+        backgroundColor: type === "bar" ? "#2f5d50" : "rgba(47,93,80,0.15)",
+        fill: type === "line",
+        tension: 0.25,
+        pointBackgroundColor: "#c9622a"
+      }]
+    };
+  }
+
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type: type === "pie" ? "pie" : type,
+    data,
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true, position: type === "pie" ? "bottom" : "top" } },
+      scales: type === "pie" ? {} : { y: { beginAtZero: true } }
+    }
+  });
+}
+
+// ---------- Tab 切換 ----------
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.view).classList.add("active");
+    if (btn.dataset.view === "view-chart") renderChart();
+  });
+});
+
+document.getElementById("submitBtn").addEventListener("click", submitRecord);
+document.getElementById("chartType").addEventListener("change", renderChart);
+
+// ---------- 啟動 ----------
+loadRecords();
+</script>
+</body>
+</html>
