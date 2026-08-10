@@ -3,145 +3,194 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>M&C Sweet Home 記帳世界</title>
+<title>共同記帳本</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --paper: #f6f3ec;
-    --paper-line: #e2ddcf;
-    --ink: #1f2b26;
-    --ink-soft: #5c675f;
+    --paper: #f6f2e8;
+    --paper-line: #e4dcc8;
+    --ink: #262019;
+    --ink-soft: #7a7263;
     --ledger: #2f5d50;
-    --ledger-dark: #1f4038;
-    --accent: #c9622a;
+    --ledger-dark: #1c3d33;
+    --ledger-soft: #e4ece8;
+    --accent: #c0602b;
     --danger: #a4402e;
-    --card: #ffffff;
-    --radius: 14px;
+    --card: #fffdf8;
+    --radius: 16px;
+    --shadow: 0 4px 18px rgba(38,32,25,0.08);
   }
   *{ box-sizing: border-box; }
-  html,body{
-    margin:0; padding:0;
+  html,body{ margin:0; padding:0; }
+  body{
     background: var(--paper);
     color: var(--ink);
-    font-family: "PingFang TC","Noto Sans TC","Helvetica Neue",Arial,sans-serif;
+    font-family: "Noto Sans TC","PingFang TC","Helvetica Neue",Arial,sans-serif;
     -webkit-tap-highlight-color: transparent;
-  }
-  body{
-    background-image: repeating-linear-gradient(
-      to bottom, transparent, transparent 27px, var(--paper-line) 28px
-    );
-    background-attachment: local;
     min-height:100vh;
-    padding-bottom: 84px;
+    padding-bottom: 88px;
+    background-image:
+      radial-gradient(circle at 100% 0%, rgba(47,93,80,0.05), transparent 45%),
+      repeating-linear-gradient(to bottom, transparent, transparent 30px, var(--paper-line) 31px);
   }
+  h1,h2,h3{ font-family:"Noto Serif TC", serif; }
+
+  /* ---------- 登入畫面 ---------- */
+  #lockScreen{
+    position: fixed; inset:0; z-index: 100;
+    background: linear-gradient(160deg, var(--ledger-dark), var(--ledger));
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px;
+  }
+  .lock-card{
+    background: var(--card); border-radius: 20px; padding: 32px 26px;
+    width: 100%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    text-align:center;
+  }
+  .lock-mark{
+    width:52px; height:52px; margin:0 auto 14px; border-radius: 50%;
+    background: var(--ledger-soft); display:flex; align-items:center; justify-content:center;
+    color: var(--ledger); font-size: 22px; font-weight:700; font-family:"Noto Serif TC",serif;
+  }
+  .lock-card h2{ margin: 0 0 4px; font-size: 19px; color: var(--ledger-dark); }
+  .lock-card p{ margin: 0 0 18px; font-size: 12.5px; color: var(--ink-soft); }
+  .lock-card input{ text-align:center; letter-spacing: 2px; }
+  .lock-card button{ margin-top: 14px; }
+  #lockStatus{ min-height: 16px; font-size: 12px; margin-top: 8px; color: var(--danger); }
+
+  #app{ display:none; }
+  #app.unlocked{ display:block; }
+
   header{
     position: sticky; top:0; z-index:10;
-    background: var(--ledger);
+    background: linear-gradient(160deg, var(--ledger), var(--ledger-dark));
     color:#fff;
-    padding: 18px 20px 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    padding: 20px 20px 16px;
+    box-shadow: var(--shadow);
   }
-  header .eyebrow{
-    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
-    opacity: 0.75; margin-bottom: 4px;
+  .header-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+  header .eyebrow{ font-size: 10.5px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.72; margin-bottom: 4px; }
+  header h1{ margin:0; font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
+  .logout-btn{
+    background: rgba(255,255,255,0.14); color:#fff; border:none; border-radius: 20px;
+    font-size: 11px; padding: 6px 12px; cursor:pointer;
   }
-  header h1{ margin:0; font-size: 21px; font-weight: 700; letter-spacing: 1px;}
-  header .grand-total{
-    margin-top: 10px; font-size: 13px; opacity: 0.9;
-  }
-  header .grand-total b{ font-size: 20px; font-variant-numeric: tabular-nums; margin-left:4px;}
+  header .grand-total{ margin-top: 12px; font-size: 12.5px; opacity: 0.85; }
+  header .grand-total b{ font-family:"Noto Serif TC",serif; font-size: 22px; font-variant-numeric: tabular-nums; margin-left:6px; display:block; margin-top:2px; }
 
-  main{ max-width: 480px; margin: 0 auto; padding: 16px; }
+  main{ max-width: 480px; margin: 0 auto; padding: 18px 16px; }
 
   .card{
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    border: 1px solid var(--paper-line);
+    background: var(--card); border-radius: var(--radius); padding: 18px;
+    margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--paper-line);
   }
   .card h2{
-    margin: 0 0 12px; font-size: 15px; color: var(--ledger-dark);
-    display:flex; align-items:center; gap:8px;
+    margin: 0 0 14px; font-size: 16px; color: var(--ledger-dark);
+    display:flex; align-items:center; gap:9px;
   }
   .card h2 .idx{
-    font-size:11px; background: var(--ledger); color:#fff;
-    padding:2px 7px; border-radius: 20px; font-weight:600;
+    font-size:10.5px; background: var(--ledger); color:#fff; font-family:"Noto Sans TC",sans-serif;
+    width:20px; height:20px; border-radius: 50%; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
   }
 
-  label{ display:block; font-size: 12px; color: var(--ink-soft); margin: 10px 0 4px; }
+  label{ display:block; font-size: 12px; color: var(--ink-soft); margin: 12px 0 5px; font-weight:500; }
+  label:first-of-type{ margin-top:0; }
   input, select{
-    width: 100%; padding: 11px 12px; font-size: 15px;
-    border: 1px solid var(--paper-line); border-radius: 10px;
-    background: #fdfcf9; color: var(--ink);
+    width: 100%; padding: 12px 13px; font-size: 15px;
+    border: 1.5px solid var(--paper-line); border-radius: 11px;
+    background: #fffefb; color: var(--ink); font-family: inherit;
+    transition: border-color 0.15s ease;
   }
-  input:focus, select:focus{ outline: 2px solid var(--ledger); outline-offset: 1px; }
+  select{ appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%); background-position: calc(100% - 18px) center, calc(100% - 13px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+  input:focus, select:focus{ outline: none; border-color: var(--ledger); }
 
   button.primary{
-    width:100%; margin-top: 14px; padding: 13px;
-    background: var(--ledger); color:#fff; font-size:15px; font-weight:600;
-    border:none; border-radius: 10px; cursor:pointer;
+    width:100%; margin-top: 16px; padding: 14px;
+    background: var(--ledger); color:#fff; font-size:15px; font-weight:700;
+    border:none; border-radius: 11px; cursor:pointer; font-family:"Noto Sans TC",sans-serif;
+    box-shadow: 0 6px 16px rgba(47,93,80,0.28);
   }
-  button.primary:active{ background: var(--ledger-dark); }
-  button.primary:disabled{ opacity: 0.5; }
+  button.primary:active{ background: var(--ledger-dark); transform: translateY(1px); box-shadow:none; }
+  button.primary:disabled{ opacity: 0.5; box-shadow:none; }
 
-  .status{ font-size: 12px; margin-top: 8px; min-height: 16px; }
+  .status{ font-size: 12px; margin-top: 9px; min-height: 16px; font-weight:500; }
   .status.error{ color: var(--danger); }
   .status.ok{ color: var(--ledger); }
 
-  .month-block{ margin-bottom: 14px; }
+  .month-block{ margin-bottom: 16px; }
   .month-block:last-child{ margin-bottom: 0; }
   .month-head{
     display:flex; justify-content: space-between; align-items:baseline;
-    font-size: 13px; font-weight:700; color: var(--ledger-dark);
-    border-bottom: 1px dashed var(--paper-line); padding-bottom: 6px; margin-bottom: 6px;
+    font-size: 13.5px; font-weight:700; color: var(--ledger-dark);
+    border-bottom: 1px dashed var(--paper-line); padding-bottom: 7px; margin-bottom: 7px;
   }
-  .month-head .amt{ font-variant-numeric: tabular-nums; }
-  .person-row{
-    display:flex; justify-content: space-between; font-size: 13px;
-    padding: 4px 0; color: var(--ink-soft);
-  }
-  .person-row .amt{ font-variant-numeric: tabular-nums; color: var(--ink); }
-  .items{ margin: 4px 0 8px 0; padding-left: 0; list-style:none; }
+  .month-head .amt{ font-variant-numeric: tabular-nums; font-family:"Noto Serif TC",serif; }
+  .person-row{ display:flex; justify-content: space-between; font-size: 13px; padding: 4px 0; color: var(--ink-soft); }
+  .person-row .amt{ font-variant-numeric: tabular-nums; color: var(--ink); font-weight:600; }
+  .items{ margin: 6px 0 8px 0; padding-left: 0; list-style:none; }
   .items li{
     display:flex; justify-content:space-between; font-size:12.5px;
-    padding: 3px 0 3px 10px; color: var(--ink-soft); border-left: 2px solid var(--paper-line);
+    padding: 4px 0 4px 11px; color: var(--ink-soft); border-left: 2px solid var(--paper-line);
   }
+  .items li .date{ color: #a49c8a; margin-right: 6px; font-variant-numeric: tabular-nums; }
 
-  .empty{ font-size: 13px; color: var(--ink-soft); text-align:center; padding: 20px 0; }
+  .empty{ font-size: 13px; color: var(--ink-soft); text-align:center; padding: 26px 0; }
 
-  .chart-controls{ display:flex; gap:10px; align-items:center; margin-bottom: 12px; }
-  .chart-controls select{ width: auto; flex: 1; }
+  .chart-controls{ margin-bottom: 14px; }
   canvas{ max-height: 280px; }
 
   nav.tabs{
     position: fixed; bottom:0; left:0; right:0; z-index: 10;
     display:flex; background: var(--card);
     border-top: 1px solid var(--paper-line);
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.06);
   }
   nav.tabs button{
-    flex:1; padding: 11px 4px 9px; background: none; border:none;
-    font-size: 11.5px; color: var(--ink-soft); cursor:pointer;
+    flex:1; padding: 12px 4px 10px; background: none; border:none;
+    font-size: 11px; color: var(--ink-soft); cursor:pointer; font-family:"Noto Sans TC",sans-serif;
   }
-  nav.tabs button .icon{ display:block; font-size: 17px; margin-bottom: 2px; }
+  nav.tabs button svg{ display:block; margin: 0 auto 3px; width:19px; height:19px; }
   nav.tabs button.active{ color: var(--ledger); font-weight:700; }
+  nav.tabs button.active svg{ stroke: var(--ledger); }
 
   .view{ display:none; }
-  .view.active{ display:block; }
+  .view.active{ display:block; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
 
   .setup-warning{
     background: #fbe9e2; color: var(--danger); border: 1px solid #f0c3b3;
-    border-radius: 10px; padding: 10px 12px; font-size: 12.5px; margin-bottom: 14px;
+    border-radius: 11px; padding: 11px 13px; font-size: 12.5px; margin-bottom: 14px;
   }
 </style>
 </head>
 <body>
 
+<!-- ============ 登入畫面 ============ -->
+<div id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-mark">記</div>
+    <h2>共同記帳本</h2>
+    <p>請輸入共用密碼以繼續</p>
+    <input type="password" id="lockPassword" placeholder="密碼" inputmode="text" />
+    <button class="primary" id="lockSubmit">進入</button>
+    <div id="lockStatus"></div>
+  </div>
+</div>
+
+<!-- ============ 主畫面 ============ -->
+<div id="app">
 <header>
-  <div class="eyebrow">M&C Sweet Home 記帳世界</div>
-  <h1>老公老婆，帳來帳去</h1>
+  <div class="header-top">
+    <div>
+      <div class="eyebrow">共同記帳本</div>
+      <h1>大家的帳，一起結</h1>
+    </div>
+    <button class="logout-btn" id="logoutBtn">登出</button>
+  </div>
   <div class="grand-total">目前累積總額<b id="grandTotal">$0</b></div>
 </header>
 
@@ -155,9 +204,12 @@
   <section id="view-add" class="view active">
     <div class="card">
       <h2><span class="idx">1</span>新增一筆記帳</h2>
+
       <label for="inputPerson">記帳人員</label>
-      <input list="personList" id="inputPerson" placeholder="輸入姓名，例如：小美" autocomplete="off" />
-      <datalist id="personList"></datalist>
+      <select id="inputPerson"></select>
+
+      <label for="inputDate">日期</label>
+      <input type="date" id="inputDate" />
 
       <label for="inputItem">項目名目</label>
       <input id="inputItem" placeholder="例如：晚餐、水電費" autocomplete="off" />
@@ -196,32 +248,95 @@
 </main>
 
 <nav class="tabs">
-  <button class="tab-btn active" data-view="view-add"><span class="icon">✎</span>記帳</button>
-  <button class="tab-btn" data-view="view-ledger"><span class="icon">≡</span>月結明細</button>
-  <button class="tab-btn" data-view="view-chart"><span class="icon">📈</span>圖表</button>
+  <button class="tab-btn active" data-view="view-add">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    記帳
+  </button>
+  <button class="tab-btn" data-view="view-ledger">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+    月結明細
+  </button>
+  <button class="tab-btn" data-view="view-chart">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M11 19V5M18 19v-7"/></svg>
+    圖表
+  </button>
 </nav>
+</div>
 
 <script>
 // ============================================================
-// 設定區：把這裡換成你自己部署後的 Apps Script 網址
+// 設定區
 // ============================================================
 const CONFIG = {
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzd0NE_H4iDbtACr6zslbcoU1eV7FBCLhnX4C4W2jPnmBJ9timPSswnK96-ClCKzDOGUw/exec"
-  PERSONS: ["老公子", "老婆子"],       // ← 改成你們兩位真實的名字
-  APP_PASSWORD: "20210318"    // ← 自己設一組密碼
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbw3Mbf_TIDVSalbn4X9Eun1-YoRnfp9WbL3-264QlaP37qpJaNyWQttxxrZZ2uDZTlMvA/exec",
+  // 這裡改成你們兩位的名字，會顯示在記帳人員下拉選單
+  PERSONS: ["老公子", "老婆子"],
+  // 這裡改成你自己的密碼，要跟 Apps Script 裡的 APP_KEY 完全一樣
+  APP_PASSWORD: "20210318"
 };
 
 let allRecords = [];
 let chartInstance = null;
+let sessionKey = null; // 登入成功後暫存密碼，用來附加在每次 API 請求
+
+// ---------- 登入 ----------
+function initLogin(){
+  const saved = localStorage.getItem("ledger_key");
+  if (saved === CONFIG.APP_PASSWORD){
+    unlock(saved);
+    return;
+  }
+  document.getElementById("lockSubmit").addEventListener("click", tryLogin);
+  document.getElementById("lockPassword").addEventListener("keydown", e => {
+    if (e.key === "Enter") tryLogin();
+  });
+}
+
+function tryLogin(){
+  const val = document.getElementById("lockPassword").value;
+  const statusEl = document.getElementById("lockStatus");
+  if (val !== CONFIG.APP_PASSWORD){
+    statusEl.textContent = "密碼錯誤，請再試一次";
+    return;
+  }
+  statusEl.textContent = "";
+  localStorage.setItem("ledger_key", val);
+  unlock(val);
+}
+
+function unlock(key){
+  sessionKey = key;
+  document.getElementById("lockScreen").style.display = "none";
+  document.getElementById("app").classList.add("unlocked");
+  boot();
+}
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.removeItem("ledger_key");
+  location.reload();
+});
 
 // ---------- 工具函式 ----------
-function fmt(n){
-  return "$" + Math.round(n).toLocaleString("zh-TW");
-}
+function fmt(n){ return "$" + Math.round(n).toLocaleString("zh-TW"); }
 function monthKeyOf(date){
   const y = date.getFullYear();
   const m = (date.getMonth()+1).toString().padStart(2,"0");
   return `${y}-${m}`;
+}
+function dateLabel(date){
+  const m = (date.getMonth()+1).toString().padStart(2,"0");
+  const d = date.getDate().toString().padStart(2,"0");
+  return `${m}/${d}`;
+}
+
+// ---------- 初始化畫面元件 ----------
+function populatePersonSelect(){
+  const sel = document.getElementById("inputPerson");
+  sel.innerHTML = CONFIG.PERSONS.map(p => `<option value="${p}">${p}</option>`).join("");
+}
+function setDefaultDate(){
+  const today = new Date();
+  document.getElementById("inputDate").value = today.toISOString().slice(0,10);
 }
 
 // ---------- 讀取資料 ----------
@@ -232,7 +347,8 @@ async function loadRecords(){
     return;
   }
   try{
-    const res = await fetch(CONFIG.WEB_APP_URL, { method: "GET" });
+    const url = CONFIG.WEB_APP_URL + "?key=" + encodeURIComponent(sessionKey);
+    const res = await fetch(url, { method: "GET" });
     const json = await res.json();
     if (json.status !== "success") throw new Error(json.message || "讀取失敗");
 
@@ -243,7 +359,6 @@ async function loadRecords(){
       amount: Number(r.amount)
     })).sort((a,b) => a.timestamp - b.timestamp);
 
-    renderPersonList();
     renderLedger();
     renderChart();
   } catch(err){
@@ -254,19 +369,15 @@ async function loadRecords(){
 
 // ---------- 新增記帳 ----------
 async function submitRecord(){
-  const person = document.getElementById("inputPerson").value.trim();
+  const person = document.getElementById("inputPerson").value;
+  const date = document.getElementById("inputDate").value;
   const item = document.getElementById("inputItem").value.trim();
   const amount = parseFloat(document.getElementById("inputAmount").value);
   const statusEl = document.getElementById("submitStatus");
   const btn = document.getElementById("submitBtn");
 
-  if (!person || !item || isNaN(amount)){
-    statusEl.textContent = "請完整填寫人員、名目、金額";
-    statusEl.className = "status error";
-    return;
-  }
-  if (!CONFIG.WEB_APP_URL || CONFIG.WEB_APP_URL.indexOf("PASTE_YOUR") === 0){
-    statusEl.textContent = "尚未設定資料來源網址";
+  if (!person || !date || !item || isNaN(amount)){
+    statusEl.textContent = "請完整填寫人員、日期、名目、金額";
     statusEl.className = "status error";
     return;
   }
@@ -276,11 +387,10 @@ async function submitRecord(){
   statusEl.className = "status";
 
   try{
-    // 用 text/plain 避免瀏覽器對 Apps Script 發送 CORS 預檢請求失敗
     const res = await fetch(CONFIG.WEB_APP_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ person, item, amount })
+      body: JSON.stringify({ key: sessionKey, person, item, amount, date })
     });
     const json = await res.json();
     if (json.status !== "success") throw new Error(json.message || "寫入失敗");
@@ -289,6 +399,7 @@ async function submitRecord(){
     statusEl.className = "status ok";
     document.getElementById("inputItem").value = "";
     document.getElementById("inputAmount").value = "";
+    setDefaultDate();
 
     await loadRecords();
   } catch(err){
@@ -297,13 +408,6 @@ async function submitRecord(){
   } finally {
     btn.disabled = false;
   }
-}
-
-// ---------- 人員自動完成 ----------
-function renderPersonList(){
-  const names = [...new Set(allRecords.map(r => r.person))];
-  const dl = document.getElementById("personList");
-  dl.innerHTML = names.map(n => `<option value="${n}"></option>`).join("");
 }
 
 // ---------- 月結 & 總額 ----------
@@ -334,11 +438,11 @@ function renderLedger(){
   let html = "";
   keys.forEach(key => {
     const g = groups[key];
-    grandTotal += g.total; // 總額 = 每月月結加總
+    grandTotal += g.total;
     const persons = Object.entries(g.byPerson).sort((a,b) => b[1]-a[1]);
     const itemsHtml = g.items
       .slice().reverse()
-      .map(r => `<li><span>${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`)
+      .map(r => `<li><span><span class="date">${dateLabel(r.timestamp)}</span>${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`)
       .join("");
 
     html += `
@@ -371,7 +475,7 @@ function renderChart(){
       labels,
       datasets: [{
         data: labels.map(l => totalsByPerson[l]),
-        backgroundColor: ["#2f5d50","#c9622a","#5c675f","#7fa896","#e0a35c","#3d7264"]
+        backgroundColor: ["#2f5d50","#c0602b","#7fa896","#e0a35c","#3d7264","#a4402e"]
       }]
     };
   } else {
@@ -383,8 +487,9 @@ function renderChart(){
         borderColor: "#2f5d50",
         backgroundColor: type === "bar" ? "#2f5d50" : "rgba(47,93,80,0.15)",
         fill: type === "line",
-        tension: 0.25,
-        pointBackgroundColor: "#c9622a"
+        tension: 0.3,
+        pointBackgroundColor: "#c0602b",
+        borderWidth: 2
       }]
     };
   }
@@ -412,11 +517,16 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
   });
 });
 
-document.getElementById("submitBtn").addEventListener("click", submitRecord);
-document.getElementById("chartType").addEventListener("change", renderChart);
-
 // ---------- 啟動 ----------
-loadRecords();
+function boot(){
+  populatePersonSelect();
+  setDefaultDate();
+  document.getElementById("submitBtn").addEventListener("click", submitRecord);
+  document.getElementById("chartType").addEventListener("change", renderChart);
+  loadRecords();
+}
+
+initLogin();
 </script>
 </body>
 </html>
