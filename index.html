@@ -4,6 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>共同記帳本</title>
+<!-- 加到主畫面後的顯示樣式：讓它更像真的 App，不要顯示網址列 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#2f5d50">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -23,14 +27,14 @@
      --ledger:#33506b; --ledger-dark:#1f3448; --ledger-soft:#e2ebf2; --accent:#c17a3d;
   ============================================================ */
   :root{
-    --paper: #f6f2e8;
-    --paper-line: #e4dcc8;
-    --ink: #262019;
-    --ink-soft: #7a7263;
-    --ledger: #2f5d50;
-    --ledger-dark: #1c3d33;
-    --ledger-soft: #e4ece8;
-    --accent: #c0602b;
+    --paper: #f5efe4;
+    --paper-line: #e3d8c4;
+    --ink: #2b2118;
+    --ink-soft: #8a7c68;
+    --ledger: #8a5a34;
+    --ledger-dark: #5f3c1f;
+    --ledger-soft: #f0e4d4;
+    --accent: #3f6e5c;
     --danger: #a4402e;
     --card: #fffdf8;
     --radius: 16px;
@@ -248,7 +252,7 @@
 <div id="lockScreen">
   <div class="lock-card">
     <div class="lock-mark">記</div>
-    <h2>共同記帳本</h2>
+    <h2>E&C共同記帳本</h2>
     <p>請輸入共用密碼以繼續</p>
     <input type="password" id="lockPassword" placeholder="密碼" inputmode="text" />
     <button class="primary" id="lockSubmit">進入</button>
@@ -261,8 +265,8 @@
 <header>
   <div class="header-top">
     <div>
-      <div class="eyebrow">M&C Sweet Home 記帳世界</div>
-      <h1>我們一起來製帳</h1>
+      <div class="eyebrow">E & C記帳世界</div>
+      <h1>我們的錢一起守護</h1>
     </div>
     <button class="logout-btn" id="logoutBtn">掰哺</button>
   </div>
@@ -389,11 +393,30 @@ const CONFIG = {
   // 想放照片當 header 底圖，把圖片網址貼在這裡(留空就用預設漸層色)
   // 建議把照片一起上傳到你的 GitHub repo，然後用它的網址，例如：
   // "https://raw.githubusercontent.com/你的帳號/repo名/main/photo.jpg"
-  HEADER_IMAGE_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/S__19513362.jpg?raw=true"
+  HEADER_IMAGE_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/S__19513362.jpg?raw=true",
+
+  // 加到 iPhone 主畫面後的自訂圖示，用法跟 HEADER_IMAGE_URL 一樣，
+  // 上傳一張正方形圖片到 GitHub，把 raw 網址貼在這裡
+  APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.png?raw=true",
+
+  // 加到主畫面後，圖示底下顯示的名稱(建議 4-6 個字，太長 iOS 會截斷)
+  APP_NAME: "三個寶記帳本"
 };
 
 if (CONFIG.HEADER_IMAGE_URL) {
   document.documentElement.style.setProperty("--header-photo", `url("${CONFIG.HEADER_IMAGE_URL}")`);
+}
+if (CONFIG.APP_ICON_URL) {
+  const iconLink = document.createElement("link");
+  iconLink.rel = "apple-touch-icon";
+  iconLink.href = CONFIG.APP_ICON_URL;
+  document.head.appendChild(iconLink);
+}
+if (CONFIG.APP_NAME) {
+  const titleMeta = document.createElement("meta");
+  titleMeta.name = "apple-mobile-web-app-title";
+  titleMeta.content = CONFIG.APP_NAME;
+  document.head.appendChild(titleMeta);
 }
 
 let allRecords = [];
