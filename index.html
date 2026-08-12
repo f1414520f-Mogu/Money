@@ -4,258 +4,311 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 <title>共同記帳本</title>
-<!-- 加到主畫面後的顯示樣式：讓它更像真的 App，不要顯示網址列 -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#2f5d50">
+<meta name="theme-color" content="#3a7d34">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  /* ============================================================
-     配色設定區
-     想換整體配色，只要改這裡的色碼就好，其他地方都不用動。
-     下面附了兩組現成的替代配色，想換的話整段複製貼到 :root 裡取代即可。
-
-     【暖木質色系】
-     --paper:#f5efe4; --paper-line:#e3d8c4; --ink:#2b2118; --ink-soft:#8a7c68;
-     --ledger:#8a5a34; --ledger-dark:#5f3c1f; --ledger-soft:#f0e4d4; --accent:#3f6e5c;
-
-     【霧藍夜色系】
-     --paper:#eef1f5; --paper-line:#d8dee6; --ink:#1c2531; --ink-soft:#6b7686;
-     --ledger:#33506b; --ledger-dark:#1f3448; --ledger-soft:#e2ebf2; --accent:#c17a3d;
-  ============================================================ */
   :root{
-    --paper: #f5efe4;
-    --paper-line: #e3d8c4;
-    --ink: #2b2118;
-    --ink-soft: #8a7c68;
-    --ledger: #8a5a34;
-    --ledger-dark: #5f3c1f;
-    --ledger-soft: #f0e4d4;
-    --accent: #3f6e5c;
-    --danger: #a4402e;
-    --card: #fffdf8;
-    --radius: 16px;
-    --shadow: 0 4px 18px rgba(38,32,25,0.08);
-    --shadow-lift: 0 10px 28px rgba(38,32,25,0.14);
+    --sky: #7ec8e3;
+    --sky-deep: #4a9bc4;
+    --grass: #5b8c3a;
+    --grass-dark: #3d6427;
+    --dirt: #8b5a2b;
+    --dirt-dark: #5e3b1a;
+    --stone: #9a9a92;
+    --stone-dark: #6b6b64;
+    --panel: #c6c6be;
+    --panel-dark: #8b8b82;
+    --panel-light: #e8e8e0;
+    --ink: #2b2620;
+    --ink-soft: #5c5648;
+    --gold: #e8c04a;
+    --diamond: #5ecbe0;
+    --danger: #c0392b;
+    --danger-dark: #8b291d;
+    --card: #d8d8ce;
   }
   *{ box-sizing: border-box; }
   html,body{ margin:0; padding:0; }
   body{
-    background: var(--paper);
+    background: var(--sky);
+    background-image:
+      linear-gradient(180deg, var(--sky) 0%, var(--sky) 55%, var(--grass) 55%, var(--grass-dark) 100%);
     color: var(--ink);
     font-family: "Noto Sans TC","PingFang TC","Helvetica Neue",Arial,sans-serif;
     -webkit-tap-highlight-color: transparent;
     min-height:100vh;
-    padding-bottom: 88px;
-    background-image:
-      radial-gradient(circle at 100% 0%, rgba(47,93,80,0.05), transparent 45%),
-      repeating-linear-gradient(to bottom, transparent, transparent 30px, var(--paper-line) 31px);
+    padding-bottom: 90px;
+    image-rendering: pixelated;
   }
-  h1,h2,h3{ font-family:"Noto Serif TC", serif; }
+  .pixel-font{ font-family: "Press Start 2P", monospace; }
+  h1,h2,h3{ font-family: "Press Start 2P", monospace; letter-spacing: 0; }
+
+  /* ---------- 像素方塊 3D 邊框(仿遊戲 GUI 面板/按鈕的斜角光影) ---------- */
+  .bevel-out{
+    border-style: solid; border-width: 3px;
+    border-top-color: rgba(255,255,255,0.55);
+    border-left-color: rgba(255,255,255,0.55);
+    border-right-color: rgba(0,0,0,0.35);
+    border-bottom-color: rgba(0,0,0,0.35);
+    box-shadow: 0 3px 0 rgba(0,0,0,0.25);
+  }
+  .bevel-in{
+    border-style: solid; border-width: 3px;
+    border-top-color: rgba(0,0,0,0.3);
+    border-left-color: rgba(0,0,0,0.3);
+    border-right-color: rgba(255,255,255,0.4);
+    border-bottom-color: rgba(255,255,255,0.4);
+  }
 
   /* ---------- 登入畫面 ---------- */
   #lockScreen{
     position: fixed; inset:0; z-index: 100;
-    background: linear-gradient(160deg, var(--ledger-dark), var(--ledger));
-    display:flex; align-items:center; justify-content:center;
-    padding: 24px;
+    background:
+      linear-gradient(180deg, var(--sky) 0%, var(--sky) 50%, var(--grass) 50%, var(--grass-dark) 100%);
+    display:flex; align-items:center; justify-content:center; padding: 24px;
   }
   .lock-card{
-    background: var(--card); border-radius: 20px; padding: 32px 26px;
-    width: 100%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
-    text-align:center;
+    background: var(--panel); border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light);
+    border-radius: 4px; padding: 28px 22px; width: 100%; max-width: 320px; text-align:center;
   }
   .lock-mark{
-    width:52px; height:52px; margin:0 auto 14px; border-radius: 50%;
-    background: var(--ledger-soft); display:flex; align-items:center; justify-content:center;
-    color: var(--ledger); font-size: 22px; font-weight:700; font-family:"Noto Serif TC",serif;
+    width:56px; height:56px; margin:0 auto 14px; background: var(--dirt);
+    border: 3px solid var(--dirt-dark); display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size: 22px;
   }
-  .lock-card h2{ margin: 0 0 4px; font-size: 19px; color: var(--ledger-dark); }
-  .lock-card p{ margin: 0 0 18px; font-size: 12.5px; color: var(--ink-soft); }
-  .lock-card input{ text-align:center; letter-spacing: 2px; }
-  .lock-card button{ margin-top: 14px; }
-  #lockStatus{ min-height: 16px; font-size: 12px; margin-top: 8px; color: var(--danger); }
+  .lock-card h2{ margin: 0 0 14px; font-size: 13px; color: var(--ink); line-height:1.8; }
+  .lock-card input{ text-align:center; letter-spacing: 3px; }
+  #lockStatus{ min-height: 16px; font-size: 11px; margin-top: 10px; color: var(--danger); font-family:"Press Start 2P",monospace; }
 
   #app{ display:none; }
   #app.unlocked{ display:block; }
 
-  /* ---------- Header (可放照片當底圖，見 CONFIG.HEADER_IMAGE_URL) ---------- */
+  /* ---------- Header ---------- */
   header{
     position: sticky; top:0; z-index:10;
     background:
-      linear-gradient(160deg, rgba(47,93,80,0.92), rgba(28,61,51,0.94)),
+      linear-gradient(180deg, rgba(74,155,196,0.9), rgba(59,124,157,0.94)),
       var(--header-photo, none);
-    background-size: cover;
-    background-position: center;
-    color:#fff;
-    padding: 20px 20px 16px;
-    box-shadow: var(--shadow);
+    background-size: cover; background-position: center;
+    color:#fff; padding: 16px 14px 14px;
+    border-bottom: 4px solid var(--dirt-dark);
   }
-  .header-top{ display:flex; justify-content:space-between; align-items:flex-start; }
-  header .eyebrow{ font-size: 10.5px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.72; margin-bottom: 4px; }
-  header h1{ margin:0; font-size: 20px; font-weight: 700; letter-spacing: 0.5px; }
-  .logout-btn{
-    background: rgba(255,255,255,0.14); color:#fff; border:none; border-radius: 20px;
-    font-size: 11px; padding: 6px 12px; cursor:pointer;
+  .header-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px; }
+  header .eyebrow{ font-size: 8px; letter-spacing: 1px; opacity: 0.85; margin-bottom: 5px; }
+  header h1{ margin:0; font-size: 12px; line-height:1.6; }
+  .icon-btn{
+    width: 34px; height: 34px; background: var(--panel); color: var(--ink);
+    border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px;
   }
-  header .grand-total{ margin-top: 12px; font-size: 12.5px; opacity: 0.85; }
-  header .grand-total b{ font-family:"Noto Serif TC",serif; font-size: 22px; font-variant-numeric: tabular-nums; margin-left:6px; display:block; margin-top:2px; }
-  .person-breakdown{ display:flex; gap:8px; margin-top: 10px; }
-  .person-breakdown .pill{
-    flex:1; background: rgba(255,255,255,0.14); border-radius: 12px;
-    padding: 8px 10px; backdrop-filter: blur(2px);
-  }
-  .person-breakdown .pill .name{ font-size: 10.5px; opacity: 0.8; margin-bottom: 2px; }
-  .person-breakdown .pill .amt{ font-family:"Noto Serif TC",serif; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+  .header-btns{ display:flex; gap:8px; }
 
-  main{ max-width: 480px; margin: 0 auto; padding: 18px 16px; }
+  /* 人物欄：頭像 + 稱號 + 貢獻 */
+  .player-strip{ display:flex; gap:10px; }
+  .player-card{
+    flex:1; background: rgba(0,0,0,0.28); border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 4px; padding: 10px 8px; text-align:center; position:relative;
+  }
+  .player-title{
+    font-size: 7.5px; color: var(--gold); margin-bottom: 6px; min-height: 10px;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.6);
+  }
+  .avatar-wrap{ position:relative; width: 52px; height:52px; margin: 0 auto 6px; }
+  .avatar-face{
+    width:100%; height:100%; background: #e8b98a; border: 2px solid #7a5230;
+    display:grid; grid-template-columns: repeat(8,1fr); grid-template-rows: repeat(8,1fr);
+  }
+  .avatar-face div{ background: transparent; }
+  .equip-badges{ position:absolute; top:-6px; right:-8px; display:flex; flex-direction:column; gap:2px; }
+  .equip-dot{ width:9px; height:9px; border:1px solid rgba(0,0,0,0.4); }
+  .player-name{ font-size: 10px; font-weight:700; margin-bottom: 4px; }
+  .player-amt{ font-family:"Press Start 2P",monospace; font-size: 11px; color: var(--gold); text-shadow: 1px 1px 0 rgba(0,0,0,0.5); }
+  .player-amt-label{ font-size: 8px; opacity:0.8; margin-top:4px; }
+
+  main{ max-width: 480px; margin: 0 auto; padding: 16px 12px; }
 
   .card{
-    background: var(--card); border-radius: var(--radius); padding: 18px;
-    margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--paper-line);
-    transition: box-shadow 0.2s ease;
+    background: var(--card);
+    border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light);
+    padding: 16px; margin-bottom: 14px;
   }
   .card h2{
-    margin: 0 0 14px; font-size: 16px; color: var(--ledger-dark);
-    display:flex; align-items:center; gap:9px;
+    margin: 0 0 14px; font-size: 11px; color: var(--ink); line-height: 1.6;
+    display:flex; align-items:center; gap:8px;
   }
   .card h2 .idx{
-    font-size:10.5px; background: var(--ledger); color:#fff; font-family:"Noto Sans TC",sans-serif;
-    width:20px; height:20px; border-radius: 50%; font-weight:700;
-    display:flex; align-items:center; justify-content:center;
+    font-size:10px; background: var(--grass-dark); color:#fff;
+    width:20px; height:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
   }
 
-  /* 本月摘要卡 */
-  .summary-strip{ display:flex; gap:10px; margin-bottom: 16px; }
-  .summary-pill{
-    flex:1; background: var(--card); border-radius: 14px; padding: 12px 14px;
-    box-shadow: var(--shadow); border: 1px solid var(--paper-line);
+  /* 記帳模式切換 */
+  .mode-switch{ display:flex; gap:6px; margin-bottom: 16px; }
+  .mode-switch button{
+    flex:1; padding: 10px 4px; font-size: 11px; font-weight:700; cursor:pointer;
+    background: var(--panel); color: var(--ink-soft);
+    border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light);
+    font-family: "Noto Sans TC",sans-serif;
   }
-  .summary-pill .label{ font-size: 11px; color: var(--ink-soft); margin-bottom:4px; }
-  .summary-pill .value{ font-family:"Noto Serif TC",serif; font-size: 17px; font-variant-numeric: tabular-nums; color: var(--ledger-dark); }
+  .mode-switch button.active{ background: var(--grass); color:#fff; border-color: #8fc46a var(--grass-dark) var(--grass-dark) #8fc46a; }
 
-  label{ display:block; font-size: 12px; color: var(--ink-soft); margin: 12px 0 5px; font-weight:500; }
+  label{ display:block; font-size: 11px; color: var(--ink-soft); margin: 12px 0 5px; font-weight:700; }
   label:first-of-type{ margin-top:0; }
   input, select{
-    width: 100%; padding: 12px 13px; font-size: 15px;
-    border: 1.5px solid var(--paper-line); border-radius: 11px;
-    background: #fffefb; color: var(--ink); font-family: inherit;
-    transition: border-color 0.15s ease;
+    width: 100%; padding: 11px 12px; font-size: 15px;
+    border-color: var(--panel-dark) var(--panel-light) var(--panel-light) var(--panel-dark);
+    border-style: solid; border-width: 2px;
+    background: #fffef8; color: var(--ink); font-family: inherit;
   }
   select{ appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%); background-position: calc(100% - 18px) center, calc(100% - 13px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
-  input:focus, select:focus{ outline: none; border-color: var(--ledger); }
+  input:focus, select:focus{ outline: none; }
+  input:disabled{ opacity: 0.5; background: #eee; }
 
   button.primary{
-    width:100%; margin-top: 16px; padding: 14px;
-    background: var(--ledger); color:#fff; font-size:15px; font-weight:700;
-    border:none; border-radius: 11px; cursor:pointer; font-family:"Noto Sans TC",sans-serif;
-    box-shadow: 0 6px 16px rgba(47,93,80,0.28);
-    transition: transform 0.08s ease, box-shadow 0.08s ease;
+    width:100%; margin-top: 16px; padding: 14px; font-size:12px; font-weight:700;
+    background: var(--grass); color:#fff; cursor:pointer; font-family:"Noto Sans TC",sans-serif;
+    border-color: #8fc46a var(--grass-dark) var(--grass-dark) #8fc46a; border-style:solid; border-width:3px;
+    box-shadow: 0 3px 0 rgba(0,0,0,0.25);
   }
-  button.primary:active{ background: var(--ledger-dark); transform: translateY(1px) scale(0.99); box-shadow:none; }
-  button.primary:disabled{ opacity: 0.5; box-shadow:none; }
+  button.primary:active{ transform: translateY(2px); box-shadow:none; }
+  button.primary:disabled{ opacity: 0.45; }
+  button.primary.repay-mode{ background: var(--gold); border-color: #f7dc86 #a5822a #a5822a #f7dc86; color: var(--ink); }
   button.secondary{
-    width:100%; margin-top: 10px; padding: 13px;
-    background: none; color: var(--danger); font-size:14px; font-weight:600;
-    border: 1.5px solid #f0c3b3; border-radius: 11px; cursor:pointer;
+    width:100%; margin-top: 10px; padding: 12px; font-size:11px; font-weight:700;
+    background: var(--panel); color: var(--danger); cursor:pointer;
+    border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px;
   }
-  button.secondary:active{ background: #fbe9e2; }
-  button.ghost{
-    width:100%; margin-top: 8px; padding: 12px;
-    background:none; color: var(--ink-soft); font-size:13px;
-    border:none; cursor:pointer;
-  }
+  button.ghost{ width:100%; margin-top: 8px; padding: 10px; background:none; color: var(--ink-soft); font-size:11px; border:none; cursor:pointer; }
 
-  .status{ font-size: 12px; margin-top: 9px; min-height: 16px; font-weight:500; }
+  .status{ font-size: 11px; margin-top: 10px; min-height: 14px; font-weight:700; }
   .status.error{ color: var(--danger); }
-  .status.ok{ color: var(--ledger); }
+  .status.ok{ color: var(--grass-dark); }
 
   .month-block{ margin-bottom: 16px; }
-  .month-block:last-child{ margin-bottom: 0; }
   .month-head{
     display:flex; justify-content: space-between; align-items:baseline;
-    font-size: 13.5px; font-weight:700; color: var(--ledger-dark);
-    border-bottom: 1px dashed var(--paper-line); padding-bottom: 7px; margin-bottom: 7px;
+    font-size: 10.5px; font-weight:700; color: var(--ink);
+    border-bottom: 2px dashed var(--panel-dark); padding-bottom: 8px; margin-bottom: 8px;
   }
-  .month-head .amt{ font-variant-numeric: tabular-nums; font-family:"Noto Serif TC",serif; }
-  .person-row{ display:flex; justify-content: space-between; font-size: 13px; padding: 4px 0; color: var(--ink-soft); }
-  .person-row .amt{ font-variant-numeric: tabular-nums; color: var(--ink); font-weight:600; }
+  .person-row{ display:flex; justify-content: space-between; font-size: 12.5px; padding: 4px 0; color: var(--ink-soft); }
+  .person-row .amt{ font-variant-numeric: tabular-nums; color: var(--ink); font-weight:700; }
   .items{ margin: 6px 0 8px 0; padding-left: 0; list-style:none; }
   .items li{
-    display:flex; justify-content:space-between; font-size:12.5px;
-    padding: 7px 6px 7px 11px; color: var(--ink-soft); border-left: 2px solid var(--paper-line);
-    cursor:pointer; border-radius: 6px; transition: background 0.12s ease;
+    display:flex; justify-content:space-between; font-size:12px; align-items:center;
+    padding: 7px 6px 7px 10px; color: var(--ink-soft); border-left: 3px solid var(--panel-dark);
+    cursor:pointer; margin-bottom:3px; background: rgba(255,255,255,0.35);
   }
-  .items li:active{ background: var(--ledger-soft); }
-  .items li .date{ color: #a49c8a; margin-right: 6px; font-variant-numeric: tabular-nums; }
+  .items li:active{ background: rgba(255,255,255,0.7); }
+  .items li.repayment{ border-left-color: var(--gold); }
+  .items li .tag{
+    font-size:8.5px; padding:2px 5px; margin-right:5px; background: var(--gold); color:#5e4a10; font-weight:700;
+  }
+  .items li .date{ color: #8b8478; margin-right: 6px; font-variant-numeric: tabular-nums; }
 
-  .empty{ font-size: 13px; color: var(--ink-soft); text-align:center; padding: 30px 0; }
-  .empty .mark{ font-family:"Noto Serif TC",serif; font-size: 26px; color: var(--paper-line); display:block; margin-bottom:8px; }
+  .empty{ font-size: 12px; color: var(--ink-soft); text-align:center; padding: 30px 0; }
 
   .skeleton{ padding: 4px 0; }
-  .skeleton-line{
-    height: 14px; border-radius: 7px; margin-bottom: 10px;
-    background: linear-gradient(90deg, var(--paper-line) 25%, #f0ebdd 37%, var(--paper-line) 63%);
-    background-size: 400% 100%; animation: shimmer 1.4s ease infinite;
-  }
+  .skeleton-line{ height: 14px; margin-bottom: 10px; background: linear-gradient(90deg, var(--panel-dark) 25%, var(--panel-light) 37%, var(--panel-dark) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
   @keyframes shimmer{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
 
-  .chart-controls{ margin-bottom: 14px; }
   canvas{ max-height: 280px; }
 
+  /* ---------- 成就頁：內部分頁 ---------- */
+  .sub-tabs{ display:flex; gap:6px; margin-bottom: 16px; }
+  .sub-tabs button{
+    flex:1; padding: 9px 2px; font-size: 10px; font-weight:700; cursor:pointer;
+    background: var(--panel); color: var(--ink-soft);
+    border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px;
+    font-family:"Noto Sans TC",sans-serif;
+  }
+  .sub-tabs button.active{ background: var(--stone); color:#fff; }
+  .sub-view{ display:none; }
+  .sub-view.active{ display:block; }
+
+  .person-select-row{ display:flex; gap:6px; margin-bottom: 14px; }
+  .person-select-row button{
+    flex:1; padding: 8px 4px; font-size: 11px; font-weight:700; cursor:pointer;
+    background: var(--panel); color: var(--ink-soft);
+    border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px;
+  }
+  .person-select-row button.active{ background: var(--sky-deep); color:#fff; }
+
+  .title-list{ display:flex; flex-direction:column; gap:8px; }
+  .title-row{
+    display:flex; align-items:center; gap:10px; padding: 10px; background: rgba(255,255,255,0.4);
+    border: 2px solid var(--panel-dark);
+  }
+  .title-row.locked{ opacity: 0.45; }
+  .title-row.active-title{ border-color: var(--gold); background: rgba(232,192,74,0.25); }
+  .title-check{ width: 18px; height:18px; border:2px solid var(--ink-soft); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; background:#fff; }
+  .title-check.checked{ background: var(--gold); border-color:#a5822a; }
+  .title-info .name{ font-size: 12px; font-weight:700; }
+  .title-info .req{ font-size: 10.5px; color: var(--ink-soft); }
+
+  .level-box{ background: rgba(255,255,255,0.4); border:2px solid var(--panel-dark); padding: 16px; text-align:center; margin-bottom:14px; }
+  .level-num{ font-family:"Press Start 2P",monospace; font-size: 26px; color: var(--grass-dark); margin-bottom:8px; }
+  .xp-bar-outer{ height: 18px; background: var(--panel-dark); border: 2px solid var(--ink); overflow:hidden; }
+  .xp-bar-inner{ height:100%; background: linear-gradient(90deg, #8fe36a, #5b8c3a); }
+  .xp-label{ font-size: 10.5px; color: var(--ink-soft); margin-top: 8px; }
+
+  .equip-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .equip-slot{
+    aspect-ratio: 1; background: rgba(255,255,255,0.4); border: 2px solid var(--panel-dark);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; position:relative;
+  }
+  .equip-slot.locked{ opacity:0.35; cursor:default; }
+  .equip-slot.equipped{ border-color: var(--gold); background: rgba(232,192,74,0.3); }
+  .equip-icon{ width: 24px; height:24px; }
+  .equip-req{ font-size: 8px; color: var(--ink-soft); text-align:center; }
+  .equip-check{ position:absolute; top:2px; right:2px; font-size:9px; color: var(--grass-dark); }
+
+  /* ---------- Tab bar ---------- */
   nav.tabs{
     position: fixed; bottom:0; left:0; right:0; z-index: 10;
-    display:flex; background: var(--card);
-    border-top: 1px solid var(--paper-line);
-    box-shadow: 0 -4px 14px rgba(0,0,0,0.06);
+    display:flex; background: var(--panel);
+    border-top: 3px solid var(--panel-dark);
   }
   nav.tabs button{
-    flex:1; padding: 12px 4px 10px; background: none; border:none;
-    font-size: 11px; color: var(--ink-soft); cursor:pointer; font-family:"Noto Sans TC",sans-serif;
+    flex:1; padding: 10px 2px 9px; background: none; border:none;
+    font-size: 9px; color: var(--ink-soft); cursor:pointer; font-family:"Noto Sans TC",sans-serif; font-weight:700;
   }
-  nav.tabs button svg{ display:block; margin: 0 auto 3px; width:19px; height:19px; }
-  nav.tabs button.active{ color: var(--ledger); font-weight:700; }
-  nav.tabs button.active svg{ stroke: var(--ledger); }
+  nav.tabs button svg{ display:block; margin: 0 auto 3px; width:18px; height:18px; }
+  nav.tabs button.active{ color: var(--grass-dark); }
+  nav.tabs button.active svg{ stroke: var(--grass-dark); }
 
   .view{ display:none; }
-  .view.active{ display:block; animation: fadeIn 0.2s ease; }
-  @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+  .view.active{ display:block; }
 
-  .setup-warning{
-    background: #fbe9e2; color: var(--danger); border: 1px solid #f0c3b3;
-    border-radius: 11px; padding: 11px 13px; font-size: 12.5px; margin-bottom: 14px;
-  }
+  .setup-warning{ background: #fbe2de; color: var(--danger); border: 2px solid var(--danger); padding: 11px 13px; font-size: 12px; margin-bottom: 14px; }
 
-  /* ---------- 編輯彈窗 ---------- */
-  #editOverlay{
-    position: fixed; inset:0; z-index: 90; background: rgba(28,20,14,0.42);
-    display:none; align-items:flex-end; justify-content:center;
+  /* ---------- 彈窗共用 ---------- */
+  .overlay{ position: fixed; inset:0; z-index: 90; background: rgba(20,15,10,0.55); display:none; align-items:flex-end; justify-content:center; }
+  .overlay.show{ display:flex; }
+  .sheet{
+    background: var(--card); width:100%; max-width: 480px; padding: 20px 18px 26px;
+    border-top: 4px solid var(--panel-dark); max-height: 88vh; overflow-y:auto;
   }
-  #editOverlay.show{ display:flex; }
-  .edit-sheet{
-    background: var(--card); width:100%; max-width: 480px;
-    border-radius: 20px 20px 0 0; padding: 20px 20px 28px;
-    box-shadow: var(--shadow-lift);
-    animation: slideUp 0.22s ease;
-  }
-  @keyframes slideUp{ from{ transform: translateY(24px); opacity:0.4; } to{ transform:none; opacity:1; } }
-  .edit-sheet h3{ margin:0 0 14px; font-size: 16px; color: var(--ledger-dark); }
-  .edit-status{ font-size:12px; min-height:16px; margin-top:6px; }
+  .sheet h3{ margin:0 0 14px; font-size: 12px; color: var(--ink); }
+  .edit-status{ font-size:11px; min-height:14px; margin-top:8px; font-weight:700; }
+
+  .zodiac-badge{ display:inline-block; margin-top:6px; font-size: 11px; background: var(--diamond); color:#0a3a44; padding: 4px 10px; font-weight:700; }
+  .profile-block{ padding: 14px 0; border-bottom: 2px dashed var(--panel-dark); }
+  .profile-block:last-of-type{ border-bottom:none; }
 </style>
 </head>
 <body>
 
 <!-- ============ 登入畫面 ============ -->
 <div id="lockScreen">
-  <div class="lock-card">
-    <div class="lock-mark">記</div>
-    <h2>E&C共同記帳本</h2>
-    <p>請輸入共用密碼以繼續</p>
-    <input type="password" id="lockPassword" placeholder="密碼" inputmode="text" />
-    <button class="primary" id="lockSubmit">進入</button>
+  <div class="lock-card bevel-out">
+    <div class="lock-mark">▦</div>
+    <h2>共同記帳本<br>請輸入密碼</h2>
+    <input type="password" id="lockPassword" placeholder="密碼" />
+    <button class="primary" id="lockSubmit">進入世界</button>
     <div id="lockStatus"></div>
   </div>
 </div>
@@ -265,39 +318,58 @@
 <header>
   <div class="header-top">
     <div>
-      <div class="eyebrow">E & C記帳世界</div>
-      <h1>我們的錢一起守護</h1>
+      <div class="eyebrow">共同記帳本</div>
+      <h1>大家的帳<br>一起結</h1>
     </div>
-    <button class="logout-btn" id="logoutBtn">掰哺</button>
+    <div class="header-btns">
+      <button class="icon-btn bevel-out" id="settingsBtn" title="人員設定">⚙</button>
+      <button class="icon-btn bevel-out" id="logoutBtn" title="登出">⏻</button>
+    </div>
   </div>
-  <div class="grand-total">
-    目前累積總額<b id="grandTotal">$0</b>
-    <div class="person-breakdown" id="personBreakdown"></div>
-  </div>
+  <div class="player-strip" id="playerStrip"></div>
 </header>
 
 <main>
 
   <div id="setupWarning" class="setup-warning" style="display:none;">
-    ⚠️ 尚未設定 Apps Script 網址，請打開這個檔案的原始碼，把最上面 <code>CONFIG.WEB_APP_URL</code> 換成你部署後拿到的網址。
+    ⚠️ 尚未設定 Apps Script 網址，請打開這個檔案的原始碼，把最上面 CONFIG.WEB_APP_URL 換成你部署後拿到的網址。
   </div>
 
-  <!-- 新增記帳 -->
+  <!-- 記帳 -->
   <section id="view-add" class="view active">
-    <div class="card">
-      <h2><span class="idx">1</span>新增一筆記帳</h2>
+    <div class="card bevel-out">
+      <h2><span class="idx">1</span>新增紀錄</h2>
 
-      <label for="inputPerson">記帳人員</label>
-      <select id="inputPerson"></select>
+      <div class="mode-switch">
+        <button id="modeExpenseBtn" class="active">支出記帳(墊付)</button>
+        <button id="modeRepayBtn">現金入帳(還款)</button>
+      </div>
 
-      <label for="inputDate">日期</label>
-      <input type="date" id="inputDate" />
+      <!-- 支出模式欄位 -->
+      <div id="expenseFields">
+        <label for="inputPerson">記帳人員</label>
+        <select id="inputPerson"></select>
+        <label for="inputDate">日期</label>
+        <input type="date" id="inputDate" />
+        <label for="inputItem">項目名目</label>
+        <input id="inputItem" placeholder="例如：晚餐、水電費" autocomplete="off" />
+        <label for="inputAmount">金額</label>
+        <input id="inputAmount" type="number" inputmode="decimal" placeholder="0" />
+      </div>
 
-      <label for="inputItem">項目名目</label>
-      <input id="inputItem" placeholder="例如：晚餐、水電費" autocomplete="off" />
-
-      <label for="inputAmount">金額</label>
-      <input id="inputAmount" type="number" inputmode="decimal" placeholder="0" />
+      <!-- 還款模式欄位 -->
+      <div id="repayFields" style="display:none;">
+        <label for="repayPerson">要還給誰？</label>
+        <select id="repayPerson">
+          <option value="">請先選擇要還給誰</option>
+        </select>
+        <label for="repayDate">日期</label>
+        <input type="date" id="repayDate" />
+        <label for="repayAmount">還款金額</label>
+        <input id="repayAmount" type="number" inputmode="decimal" placeholder="請先選擇要還給誰" disabled />
+        <label for="repayNote">備註(選填)</label>
+        <input id="repayNote" placeholder="例如：發薪日撥入" autocomplete="off" />
+      </div>
 
       <button class="primary" id="submitBtn">送出記帳</button>
       <div class="status" id="submitStatus"></div>
@@ -306,19 +378,9 @@
 
   <!-- 明細 / 月結 -->
   <section id="view-ledger" class="view">
-    <div class="summary-strip">
-      <div class="summary-pill">
-        <div class="label">本月合計</div>
-        <div class="value" id="thisMonthTotal">$0</div>
-      </div>
-      <div class="summary-pill">
-        <div class="label">累積總額</div>
-        <div class="value" id="grandTotal2">$0</div>
-      </div>
-    </div>
-    <div class="card">
+    <div class="card bevel-out">
       <h2><span class="idx">2</span>月結明細</h2>
-      <p style="font-size:11.5px;color:var(--ink-soft);margin:-8px 0 12px;">點任一筆紀錄可以修改或刪除</p>
+      <p style="font-size:11px;color:var(--ink-soft);margin:-6px 0 12px;">點任一筆紀錄可以修改或刪除</p>
       <div id="ledgerBody">
         <div class="skeleton">
           <div class="skeleton-line" style="width:60%"></div>
@@ -331,16 +393,41 @@
 
   <!-- 圖表 -->
   <section id="view-chart" class="view">
-    <div class="card">
+    <div class="card bevel-out">
       <h2><span class="idx">3</span>金流圖表</h2>
-      <div class="chart-controls">
-        <select id="chartType">
-          <option value="line">折線圖(每月總額趨勢)</option>
-          <option value="bar">長條圖(每月總額趨勢)</option>
-          <option value="pie">圓餅圖(各人員佔比)</option>
-        </select>
-      </div>
+      <select id="chartType" style="margin-bottom:14px;">
+        <option value="line">折線圖(每月總額趨勢)</option>
+        <option value="bar">長條圖(每月總額趨勢)</option>
+        <option value="pie">圓餅圖(各人員佔比)</option>
+      </select>
       <canvas id="mainChart"></canvas>
+    </div>
+  </section>
+
+  <!-- 成就(獎盃/等級/裝備) -->
+  <section id="view-achieve" class="view">
+    <div class="sub-tabs">
+      <button class="sub-tab-btn active" data-sub="sub-trophy">🏆 獎盃</button>
+      <button class="sub-tab-btn" data-sub="sub-level">⭐ 等級</button>
+      <button class="sub-tab-btn" data-sub="sub-equip">🛡 裝備</button>
+    </div>
+
+    <div class="person-select-row" id="achievePersonRow"></div>
+
+    <div id="sub-trophy" class="sub-view active card bevel-out">
+      <h2><span class="idx">🏆</span>稱號收藏</h2>
+      <div class="title-list" id="titleList"></div>
+    </div>
+
+    <div id="sub-level" class="sub-view card bevel-out">
+      <h2><span class="idx">⭐</span>累積等級</h2>
+      <div class="level-box" id="levelBox"></div>
+    </div>
+
+    <div id="sub-equip" class="sub-view card bevel-out">
+      <h2><span class="idx">🛡</span>裝備收藏</h2>
+      <p style="font-size:11px;color:var(--ink-soft);margin:-6px 0 12px;">點解鎖的裝備可以切換是否穿戴</p>
+      <div class="equip-grid" id="equipGrid"></div>
     </div>
   </section>
 
@@ -359,18 +446,22 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M11 19V5M18 19v-7"/></svg>
     圖表
   </button>
+  <button class="tab-btn" data-view="view-achieve">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4ZM7 6H4a2 2 0 0 0 2 4M17 6h3a2 2 0 0 1-2 4"/></svg>
+    成就
+  </button>
 </nav>
 </div>
 
 <!-- ============ 編輯 / 刪除彈窗 ============ -->
-<div id="editOverlay">
-  <div class="edit-sheet">
-    <h3>編輯這筆記帳</h3>
-    <label for="editPerson">記帳人員</label>
+<div id="editOverlay" class="overlay">
+  <div class="sheet">
+    <h3 id="editTitle">編輯這筆紀錄</h3>
+    <label for="editPerson">人員</label>
     <select id="editPerson"></select>
     <label for="editDate">日期</label>
     <input type="date" id="editDate" />
-    <label for="editItem">項目名目</label>
+    <label for="editItem">名目</label>
     <input id="editItem" />
     <label for="editAmount">金額</label>
     <input id="editAmount" type="number" inputmode="decimal" />
@@ -381,62 +472,111 @@
   </div>
 </div>
 
+<!-- ============ 人員設定彈窗 ============ -->
+<div id="settingsOverlay" class="overlay">
+  <div class="sheet">
+    <h3>人員設定</h3>
+    <div id="profileForms"></div>
+    <div class="edit-status" id="settingsStatus"></div>
+    <button class="primary" id="settingsSaveBtn">儲存設定</button>
+    <button class="ghost" id="settingsCancelBtn">關閉</button>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // 設定區
 // ============================================================
 const CONFIG = {
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzb3gJkz2UxcBqRRYzJVBw09NWcuqpSF5YMAJllP4lvfnFBuuKp3NZ3asFcTwQL_UEPPA/exec",
-  PERSONS: ["老公子", "老婆子"],
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzqxGnu9XzleIGtyJAADn4qu8MZUJE3Q65k2CHKgvQoYfF7a0ulrLKlphiJQ9eW_Qh5kA/exec",
   APP_PASSWORD: "20210318",
-
-  // 想放照片當 header 底圖，把圖片網址貼在這裡(留空就用預設漸層色)
-  // 建議把照片一起上傳到你的 GitHub repo，然後用它的網址，例如：
-  // "https://raw.githubusercontent.com/你的帳號/repo名/main/photo.jpg"
-  HEADER_IMAGE_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/S__19513362.jpg?raw=true",
-
-  // 加到 iPhone 主畫面後的自訂圖示，用法跟 HEADER_IMAGE_URL 一樣，
-  // 上傳一張正方形圖片到 GitHub，把 raw 網址貼在這裡
-  APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.png?raw=true",
-
-  // 加到主畫面後，圖示底下顯示的名稱(建議 4-6 個字，太長 iOS 會截斷)
-  APP_NAME: "三個寶記帳本"
+  HEADER_IMAGE_URL: "",
+  APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.jpg?raw=true",
+  APP_NAME: "MoneyCraft"
 };
 
-if (CONFIG.HEADER_IMAGE_URL) {
-  document.documentElement.style.setProperty("--header-photo", `url("${CONFIG.HEADER_IMAGE_URL}")`);
-}
+if (CONFIG.HEADER_IMAGE_URL) document.documentElement.style.setProperty("--header-photo", `url("${CONFIG.HEADER_IMAGE_URL}")`);
 if (CONFIG.APP_ICON_URL) {
-  const iconLink = document.createElement("link");
-  iconLink.rel = "apple-touch-icon";
-  iconLink.href = CONFIG.APP_ICON_URL;
-  document.head.appendChild(iconLink);
+  const l = document.createElement("link"); l.rel = "apple-touch-icon"; l.href = CONFIG.APP_ICON_URL; document.head.appendChild(l);
 }
 if (CONFIG.APP_NAME) {
-  const titleMeta = document.createElement("meta");
-  titleMeta.name = "apple-mobile-web-app-title";
-  titleMeta.content = CONFIG.APP_NAME;
-  document.head.appendChild(titleMeta);
+  const m = document.createElement("meta"); m.name = "apple-mobile-web-app-title"; m.content = CONFIG.APP_NAME; document.head.appendChild(m);
 }
 
+// ---------- 遊戲化規則設定 ----------
+const TITLE_THRESHOLDS = [
+  { amount: 10000, name: "貢獻萌新" },
+  { amount: 50000, name: "貢獻勇者" },
+  { amount: 100000, name: "貢獻大師" },
+  { amount: 150000, name: "終點還是起點?" },
+  { amount: 200000, name: "活著真好" },
+  { amount: 250000, name: "撒錢尊者" }
+];
+const EQUIP_FIXED = [10000, 30000, 50000, 100000, 150000, 160000];
+
+function unlockedEquipmentThresholds(cumulative){
+  const result = [];
+  EQUIP_FIXED.forEach(t => { if (cumulative >= t) result.push(t); });
+  if (cumulative >= 160000){
+    let t = 170000;
+    while (t <= cumulative){ result.push(t); t += 10000; }
+  }
+  return result;
+}
+function nextEquipmentThreshold(cumulative){
+  for (const t of EQUIP_FIXED) if (cumulative < t) return t;
+  let t = 160000;
+  while (t <= cumulative) t += 10000;
+  return t;
+}
+function prevEquipmentThreshold(cumulative){
+  let prev = 0;
+  for (const t of EQUIP_FIXED) { if (cumulative >= t) prev = t; else break; }
+  if (cumulative >= 160000){
+    let t = 160000;
+    while (t + 10000 <= cumulative){ t += 10000; }
+    prev = t;
+  }
+  return prev;
+}
+function unlockedTitles(cumulative){ return TITLE_THRESHOLDS.filter(t => cumulative >= t.amount); }
+
+function zodiacOf(m, d){
+  const ranges = [
+    { sign:"摩羯座", start:[12,22], end:[1,19] }, { sign:"水瓶座", start:[1,20], end:[2,18] },
+    { sign:"雙魚座", start:[2,19], end:[3,20] }, { sign:"牡羊座", start:[3,21], end:[4,19] },
+    { sign:"金牛座", start:[4,20], end:[5,20] }, { sign:"雙子座", start:[5,21], end:[6,21] },
+    { sign:"巨蟹座", start:[6,22], end:[7,22] }, { sign:"獅子座", start:[7,23], end:[8,22] },
+    { sign:"處女座", start:[8,23], end:[9,22] }, { sign:"天秤座", start:[9,23], end:[10,23] },
+    { sign:"天蠍座", start:[10,24], end:[11,21] }, { sign:"射手座", start:[11,22], end:[12,21] }
+  ];
+  for (const r of ranges){
+    const [sm,sd] = r.start, [em,ed] = r.end;
+    if (sm <= em){ if ((m===sm && d>=sd) || (m===em && d<=ed) || (m>sm && m<em)) return r.sign; }
+    else { if ((m===sm && d>=sd) || (m===em && d<=ed)) return r.sign; }
+  }
+  return "摩羯座";
+}
+
+// ---------- 全域狀態 ----------
 let allRecords = [];
+let profiles = [];
 let chartInstance = null;
 let sessionKey = null;
 let editingId = null;
+let achievePersonName = null;
 
 // ---------- 登入 ----------
 function initLogin(){
   const saved = localStorage.getItem("ledger_key");
   if (saved === CONFIG.APP_PASSWORD){ unlock(saved); return; }
   document.getElementById("lockSubmit").addEventListener("click", tryLogin);
-  document.getElementById("lockPassword").addEventListener("keydown", e => {
-    if (e.key === "Enter") tryLogin();
-  });
+  document.getElementById("lockPassword").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
 }
 function tryLogin(){
   const val = document.getElementById("lockPassword").value;
   const statusEl = document.getElementById("lockStatus");
-  if (val !== CONFIG.APP_PASSWORD){ statusEl.textContent = "密碼錯誤，請再試一次"; return; }
+  if (val !== CONFIG.APP_PASSWORD){ statusEl.textContent = "密碼錯誤"; return; }
   statusEl.textContent = "";
   localStorage.setItem("ledger_key", val);
   unlock(val);
@@ -448,29 +588,24 @@ function unlock(key){
   boot();
 }
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.removeItem("ledger_key");
-  location.reload();
+  localStorage.removeItem("ledger_key"); location.reload();
 });
 
-// ---------- 工具函式 ----------
+// ---------- 工具 ----------
 function fmt(n){ return "$" + Math.round(n).toLocaleString("zh-TW"); }
-function monthKeyOf(date){
-  const y = date.getFullYear();
-  const m = (date.getMonth()+1).toString().padStart(2,"0");
-  return `${y}-${m}`;
-}
-function dateLabel(date){
-  const m = (date.getMonth()+1).toString().padStart(2,"0");
-  const d = date.getDate().toString().padStart(2,"0");
-  return `${m}/${d}`;
-}
+function monthKeyOf(date){ return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,"0")}`; }
+function dateLabel(date){ return `${(date.getMonth()+1).toString().padStart(2,"0")}/${date.getDate().toString().padStart(2,"0")}`; }
 function toDateInputValue(date){ return date.toISOString().slice(0,10); }
+function personNames(){ return profiles.map(p => p.name); }
 
-function populatePersonSelect(el){
-  el.innerHTML = CONFIG.PERSONS.map(p => `<option value="${p}">${p}</option>`).join("");
+function populateSelect(el, includeEmpty){
+  const opts = personNames().map(p => `<option value="${p}">${p}</option>`).join("");
+  el.innerHTML = (includeEmpty ? '<option value="">請先選擇要還給誰</option>' : "") + opts;
 }
-function setDefaultDate(){
-  document.getElementById("inputDate").value = toDateInputValue(new Date());
+function setDefaultDates(){
+  const today = toDateInputValue(new Date());
+  document.getElementById("inputDate").value = today;
+  document.getElementById("repayDate").value = today;
 }
 
 // ---------- 讀取資料 ----------
@@ -487,56 +622,144 @@ async function loadRecords(){
     if (json.status !== "success") throw new Error(json.message || "讀取失敗");
 
     allRecords = json.data.map(r => ({
-      id: r.id,
-      timestamp: new Date(r.timestamp),
-      person: r.person,
-      item: r.item,
-      amount: Number(r.amount)
+      id: r.id, timestamp: new Date(r.timestamp), person: r.person,
+      item: r.item, amount: Number(r.amount), type: r.type || "expense"
     })).sort((a,b) => a.timestamp - b.timestamp);
 
+    profiles = json.profiles || [];
+    if (!achievePersonName && profiles.length) achievePersonName = profiles[0].name;
+
+    renderPersonSelects();
+    renderPlayerStrip();
     renderLedger();
     renderChart();
+    renderAchievePersonRow();
+    renderAchieveContent();
   } catch(err){
     document.getElementById("ledgerBody").innerHTML = `<div class="empty">讀取失敗：${err.message}</div>`;
   }
 }
 
-// ---------- 新增記帳 ----------
+function renderPersonSelects(){
+  populateSelect(document.getElementById("inputPerson"), false);
+  populateSelect(document.getElementById("repayPerson"), true);
+  populateSelect(document.getElementById("editPerson"), false);
+}
+
+// ---------- 貢獻計算 ----------
+function cumulativeContribution(name){
+  return allRecords.filter(r => r.person === name && r.type === "expense").reduce((s,r) => s + r.amount, 0);
+}
+function repaidTotal(name){
+  return allRecords.filter(r => r.person === name && r.type === "repayment").reduce((s,r) => s + r.amount, 0);
+}
+function outstandingBalance(name){ return cumulativeContribution(name) - repaidTotal(name); }
+
+// ---------- Header 人物欄 ----------
+function renderPlayerStrip(){
+  const strip = document.getElementById("playerStrip");
+  strip.innerHTML = profiles.map(p => {
+    const cumulative = cumulativeContribution(p.name);
+    const outstanding = outstandingBalance(p.name);
+    const titleObj = TITLE_THRESHOLDS.find(t => t.name === p.activeTitle && cumulative >= t.amount);
+    const equipped = (p.equippedItems || []).filter(t => unlockedEquipmentThresholds(cumulative).includes(t));
+    const badgeColors = ["#e8c04a","#5ecbe0","#c0392b","#5b8c3a","#8b5a2b"];
+    const badges = equipped.slice(0,5).map((t,i) => `<div class="equip-dot" style="background:${badgeColors[i % badgeColors.length]}"></div>`).join("");
+
+    return `
+      <div class="player-card">
+        <div class="player-title">${titleObj ? "「" + titleObj.name + "」" : "尚無稱號"}</div>
+        <div class="avatar-wrap">
+          <div class="avatar-face">${pixelFaceCells()}</div>
+          <div class="equip-badges">${badges}</div>
+        </div>
+        <div class="player-name">${p.name}</div>
+        <div class="player-amt">${fmt(outstanding)}</div>
+        <div class="player-amt-label">貢獻總額(未歸還)</div>
+      </div>`;
+  }).join("");
+}
+function pixelFaceCells(){
+  // 簡單像素臉：眼睛+嘴巴，用 8x8 網格畫出通用像素角色臉孔(非特定角色設計)
+  const map = [
+    0,0,0,0,0,0,0,0,
+    0,0,1,0,0,1,0,0,
+    0,0,1,0,0,1,0,0,
+    0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,
+    0,1,0,0,0,0,1,0,
+    0,0,1,1,1,1,0,0,
+    0,0,0,0,0,0,0,0
+  ];
+  return map.map(v => `<div style="background:${v ? "#3a2a1a" : "transparent"}"></div>`).join("");
+}
+
+// ---------- 新增：模式切換 ----------
+let currentMode = "expense";
+document.getElementById("modeExpenseBtn").addEventListener("click", () => setMode("expense"));
+document.getElementById("modeRepayBtn").addEventListener("click", () => setMode("repay"));
+function setMode(mode){
+  currentMode = mode;
+  document.getElementById("modeExpenseBtn").classList.toggle("active", mode === "expense");
+  document.getElementById("modeRepayBtn").classList.toggle("active", mode === "repay");
+  document.getElementById("expenseFields").style.display = mode === "expense" ? "block" : "none";
+  document.getElementById("repayFields").style.display = mode === "repay" ? "block" : "none";
+  const btn = document.getElementById("submitBtn");
+  btn.textContent = mode === "expense" ? "送出記帳" : "送出還款";
+  btn.classList.toggle("repay-mode", mode === "repay");
+  document.getElementById("submitStatus").textContent = "";
+}
+document.getElementById("repayPerson").addEventListener("change", (e) => {
+  const amountEl = document.getElementById("repayAmount");
+  if (e.target.value){ amountEl.disabled = false; amountEl.placeholder = "0"; amountEl.focus(); }
+  else { amountEl.disabled = true; amountEl.placeholder = "請先選擇要還給誰"; amountEl.value = ""; }
+});
+
+// ---------- 送出(支出 or 還款) ----------
 async function submitRecord(){
+  if (currentMode === "expense") return submitExpense();
+  return submitRepay();
+}
+async function submitExpense(){
   const person = document.getElementById("inputPerson").value;
   const date = document.getElementById("inputDate").value;
   const item = document.getElementById("inputItem").value.trim();
   const amount = parseFloat(document.getElementById("inputAmount").value);
   const statusEl = document.getElementById("submitStatus");
+  if (!person || !date || !item || isNaN(amount)){ statusEl.textContent = "請完整填寫人員、日期、名目、金額"; statusEl.className = "status error"; return; }
+  await postAndReload({ action: "create", person, item, amount, date }, statusEl, () => {
+    document.getElementById("inputItem").value = ""; document.getElementById("inputAmount").value = ""; setDefaultDates();
+  });
+}
+async function submitRepay(){
+  const person = document.getElementById("repayPerson").value;
+  const date = document.getElementById("repayDate").value;
+  const amount = parseFloat(document.getElementById("repayAmount").value);
+  const note = document.getElementById("repayNote").value.trim();
+  const statusEl = document.getElementById("submitStatus");
+  if (!person){ statusEl.textContent = "請先選擇要還給誰"; statusEl.className = "status error"; return; }
+  if (!date || isNaN(amount)){ statusEl.textContent = "請填寫日期與金額"; statusEl.className = "status error"; return; }
+  await postAndReload({ action: "repay", person, amount, date, note }, statusEl, () => {
+    document.getElementById("repayPerson").value = ""; document.getElementById("repayAmount").value = "";
+    document.getElementById("repayAmount").disabled = true; document.getElementById("repayAmount").placeholder = "請先選擇要還給誰";
+    document.getElementById("repayNote").value = ""; setDefaultDates();
+  });
+}
+async function postAndReload(payload, statusEl, onSuccess){
   const btn = document.getElementById("submitBtn");
-
-  if (!person || !date || !item || isNaN(amount)){
-    statusEl.textContent = "請完整填寫人員、日期、名目、金額";
-    statusEl.className = "status error";
-    return;
-  }
-  btn.disabled = true;
-  statusEl.textContent = "送出中…";
-  statusEl.className = "status";
-
+  btn.disabled = true; statusEl.textContent = "送出中…"; statusEl.className = "status";
   try{
     const res = await fetch(CONFIG.WEB_APP_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ key: sessionKey, action: "create", person, item, amount, date })
+      method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ key: sessionKey, ...payload })
     });
     const json = await res.json();
     if (json.status !== "success") throw new Error(json.message || "寫入失敗");
-
-    statusEl.textContent = "已記錄！";
-    statusEl.className = "status ok";
-    document.getElementById("inputItem").value = "";
-    document.getElementById("inputAmount").value = "";
-    setDefaultDate();
+    statusEl.textContent = "已記錄！"; statusEl.className = "status ok";
+    onSuccess();
     await loadRecords();
   } catch(err){
-    statusEl.textContent = "送出失敗：" + err.message;
-    statusEl.className = "status error";
+    statusEl.textContent = "送出失敗：" + err.message; statusEl.className = "status error";
   } finally { btn.disabled = false; }
 }
 
@@ -545,6 +768,7 @@ function openEdit(id){
   const record = allRecords.find(r => r.id === id);
   if (!record) return;
   editingId = id;
+  document.getElementById("editTitle").textContent = record.type === "repayment" ? "編輯這筆還款" : "編輯這筆記帳";
   document.getElementById("editPerson").value = record.person;
   document.getElementById("editDate").value = toDateInputValue(record.timestamp);
   document.getElementById("editItem").value = record.item;
@@ -552,170 +776,266 @@ function openEdit(id){
   document.getElementById("editStatus").textContent = "";
   document.getElementById("editOverlay").classList.add("show");
 }
-function closeEdit(){
-  document.getElementById("editOverlay").classList.remove("show");
-  editingId = null;
-}
+function closeEdit(){ document.getElementById("editOverlay").classList.remove("show"); editingId = null; }
 async function saveEdit(){
   const person = document.getElementById("editPerson").value;
   const date = document.getElementById("editDate").value;
   const item = document.getElementById("editItem").value.trim();
   const amount = parseFloat(document.getElementById("editAmount").value);
   const statusEl = document.getElementById("editStatus");
-
-  if (!person || !date || !item || isNaN(amount)){
-    statusEl.textContent = "請完整填寫所有欄位";
-    statusEl.className = "edit-status error";
-    return;
-  }
-  statusEl.textContent = "儲存中…";
-  statusEl.className = "edit-status";
+  if (!person || !date || !item || isNaN(amount)){ statusEl.textContent = "請完整填寫所有欄位"; statusEl.className = "edit-status error"; return; }
+  statusEl.textContent = "儲存中…"; statusEl.className = "edit-status";
   try{
-    const res = await fetch(CONFIG.WEB_APP_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ key: sessionKey, action: "update", id: editingId, person, item, amount, date })
-    });
+    const res = await fetch(CONFIG.WEB_APP_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({ key: sessionKey, action:"update", id: editingId, person, item, amount, date }) });
     const json = await res.json();
     if (json.status !== "success") throw new Error(json.message || "修改失敗");
-    closeEdit();
-    await loadRecords();
-  } catch(err){
-    statusEl.textContent = "修改失敗：" + err.message;
-    statusEl.className = "edit-status error";
-  }
+    closeEdit(); await loadRecords();
+  } catch(err){ statusEl.textContent = "修改失敗：" + err.message; statusEl.className = "edit-status error"; }
 }
 async function deleteEdit(){
-  if (!confirm("確定要刪除這筆記帳嗎？此動作無法復原。")) return;
+  if (!confirm("確定要刪除這筆紀錄嗎？此動作無法復原。")) return;
   const statusEl = document.getElementById("editStatus");
-  statusEl.textContent = "刪除中…";
-  statusEl.className = "edit-status";
+  statusEl.textContent = "刪除中…"; statusEl.className = "edit-status";
   try{
-    const res = await fetch(CONFIG.WEB_APP_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ key: sessionKey, action: "delete", id: editingId })
-    });
+    const res = await fetch(CONFIG.WEB_APP_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({ key: sessionKey, action:"delete", id: editingId }) });
     const json = await res.json();
     if (json.status !== "success") throw new Error(json.message || "刪除失敗");
-    closeEdit();
-    await loadRecords();
-  } catch(err){
-    statusEl.textContent = "刪除失敗：" + err.message;
-    statusEl.className = "edit-status error";
-  }
+    closeEdit(); await loadRecords();
+  } catch(err){ statusEl.textContent = "刪除失敗：" + err.message; statusEl.className = "edit-status error"; }
 }
 
-// ---------- Header 人員總額拆分 ----------
-function renderHeaderBreakdown(){
-  const totals = {};
-  CONFIG.PERSONS.forEach(p => totals[p] = 0); // 就算某人還沒記帳也先顯示 $0
-  allRecords.forEach(r => { totals[r.person] = (totals[r.person] || 0) + r.amount; });
-
-  const el = document.getElementById("personBreakdown");
-  el.innerHTML = Object.entries(totals)
-    .map(([name, amt]) => `<div class="pill"><div class="name">${name}</div><div class="amt">${fmt(amt)}</div></div>`)
-    .join("");
-}
-
-// ---------- 月結 & 總額 ----------
+// ---------- 月結明細 ----------
 function groupByMonth(){
   const groups = {};
   allRecords.forEach(r => {
     const key = monthKeyOf(r.timestamp);
     if (!groups[key]) groups[key] = { total: 0, byPerson: {}, items: [] };
-    groups[key].total += r.amount;
-    groups[key].byPerson[r.person] = (groups[key].byPerson[r.person] || 0) + r.amount;
+    if (r.type === "expense"){
+      groups[key].total += r.amount;
+      groups[key].byPerson[r.person] = (groups[key].byPerson[r.person] || 0) + r.amount;
+    }
     groups[key].items.push(r);
   });
   return groups;
 }
-
 function renderLedger(){
   const groups = groupByMonth();
   const keys = Object.keys(groups).sort().reverse();
   const body = document.getElementById("ledgerBody");
+  if (keys.length === 0){ body.innerHTML = '<div class="empty">還沒有任何紀錄</div>'; return; }
 
-  const currentKey = monthKeyOf(new Date());
-  const thisMonth = groups[currentKey] ? groups[currentKey].total : 0;
-  document.getElementById("thisMonthTotal").textContent = fmt(thisMonth);
-
-  if (keys.length === 0){
-    body.innerHTML = '<div class="empty"><span class="mark">簿</span>還沒有任何記帳紀錄</div>';
-    document.getElementById("grandTotal").textContent = fmt(0);
-    document.getElementById("grandTotal2").textContent = fmt(0);
-    renderHeaderBreakdown();
-    return;
-  }
-
-  let grandTotal = 0;
   let html = "";
   keys.forEach(key => {
     const g = groups[key];
-    grandTotal += g.total;
     const persons = Object.entries(g.byPerson).sort((a,b) => b[1]-a[1]);
-    const itemsHtml = g.items
-      .slice().reverse()
-      .map(r => `<li data-id="${r.id}"><span><span class="date">${dateLabel(r.timestamp)}</span>${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`)
-      .join("");
+    const itemsHtml = g.items.slice().reverse().map(r => {
+      const tag = r.type === "repayment" ? '<span class="tag">還款</span>' : "";
+      return `<li class="${r.type === "repayment" ? "repayment" : ""}" data-id="${r.id}"><span><span class="date">${dateLabel(r.timestamp)}</span>${tag}${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`;
+    }).join("");
 
     html += `
       <div class="month-block">
-        <div class="month-head"><span>${key} 月結</span><span class="amt">${fmt(g.total)}</span></div>
+        <div class="month-head"><span>${key} 月結(支出)</span><span class="amt">${fmt(g.total)}</span></div>
         ${persons.map(([p,amt]) => `<div class="person-row"><span>${p}</span><span class="amt">${fmt(amt)}</span></div>`).join("")}
         <ul class="items">${itemsHtml}</ul>
       </div>`;
   });
-
   body.innerHTML = html;
-  document.getElementById("grandTotal").textContent = fmt(grandTotal);
-  document.getElementById("grandTotal2").textContent = fmt(grandTotal);
-  renderHeaderBreakdown();
-
-  body.querySelectorAll(".items li").forEach(li => {
-    li.addEventListener("click", () => openEdit(li.dataset.id));
-  });
+  body.querySelectorAll(".items li").forEach(li => li.addEventListener("click", () => openEdit(li.dataset.id)));
 }
 
 // ---------- 圖表 ----------
 function renderChart(){
   const type = document.getElementById("chartType").value;
   const ctx = document.getElementById("mainChart").getContext("2d");
-  const groups = groupByMonth();
+  const expenseRecords = allRecords.filter(r => r.type === "expense");
+  const groups = {};
+  expenseRecords.forEach(r => { const k = monthKeyOf(r.timestamp); groups[k] = (groups[k]||0) + r.amount; });
   const monthKeys = Object.keys(groups).sort();
 
   let data;
   if (type === "pie"){
-    const totalsByPerson = {};
-    allRecords.forEach(r => { totalsByPerson[r.person] = (totalsByPerson[r.person] || 0) + r.amount; });
-    const labels = Object.keys(totalsByPerson);
-    data = { labels, datasets: [{ data: labels.map(l => totalsByPerson[l]), backgroundColor: ["#2f5d50","#c0602b","#7fa896","#e0a35c","#3d7264","#a4402e"] }] };
+    const totals = {};
+    expenseRecords.forEach(r => { totals[r.person] = (totals[r.person]||0) + r.amount; });
+    const labels = Object.keys(totals);
+    data = { labels, datasets: [{ data: labels.map(l => totals[l]), backgroundColor: ["#5b8c3a","#e8c04a","#5ecbe0","#c0392b","#8b5a2b","#9a9a92"] }] };
   } else {
-    data = {
-      labels: monthKeys,
-      datasets: [{
-        label: "每月總額",
-        data: monthKeys.map(k => groups[k].total),
-        borderColor: "#2f5d50",
-        backgroundColor: type === "bar" ? "#2f5d50" : "rgba(47,93,80,0.15)",
-        fill: type === "line", tension: 0.3, pointBackgroundColor: "#c0602b", borderWidth: 2
-      }]
-    };
+    data = { labels: monthKeys, datasets: [{ label:"每月支出總額", data: monthKeys.map(k => groups[k]), borderColor:"#3d6427", backgroundColor: type==="bar" ? "#5b8c3a" : "rgba(91,140,58,0.2)", fill: type==="line", tension:0.3, pointBackgroundColor:"#e8c04a", borderWidth:2 }] };
   }
-
   if (chartInstance) chartInstance.destroy();
-  chartInstance = new Chart(ctx, {
-    type: type === "pie" ? "pie" : type,
-    data,
-    options: {
-      responsive: true,
-      plugins: { legend: { display: true, position: type === "pie" ? "bottom" : "top" } },
-      scales: type === "pie" ? {} : { y: { beginAtZero: true } }
-    }
-  });
+  chartInstance = new Chart(ctx, { type: type==="pie"?"pie":type, data, options:{ responsive:true, plugins:{legend:{display:true,position:type==="pie"?"bottom":"top"}}, scales: type==="pie"?{}:{y:{beginAtZero:true}} } });
 }
 
-// ---------- Tab 切換 ----------
+// ---------- 成就頁 ----------
+function renderAchievePersonRow(){
+  const row = document.getElementById("achievePersonRow");
+  row.innerHTML = personNames().map(name =>
+    `<button class="${name===achievePersonName?"active":""}" data-name="${name}">${name}</button>`
+  ).join("");
+  row.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", () => { achievePersonName = btn.dataset.name; renderAchievePersonRow(); renderAchieveContent(); });
+  });
+}
+function currentProfile(){ return profiles.find(p => p.name === achievePersonName); }
+
+function renderAchieveContent(){
+  if (!achievePersonName) return;
+  const cumulative = cumulativeContribution(achievePersonName);
+  renderTitleList(cumulative);
+  renderLevelBox(cumulative);
+  renderEquipGrid(cumulative);
+}
+
+function renderTitleList(cumulative){
+  const profile = currentProfile();
+  const list = document.getElementById("titleList");
+  list.innerHTML = TITLE_THRESHOLDS.map(t => {
+    const unlocked = cumulative >= t.amount;
+    const isActive = profile && profile.activeTitle === t.name && unlocked;
+    return `
+      <div class="title-row ${unlocked?"":"locked"} ${isActive?"active-title":""}">
+        <div class="title-check ${isActive?"checked":""}" data-title="${t.name}" ${unlocked?"":"style='pointer-events:none'"}>${isActive?"✓":""}</div>
+        <div class="title-info">
+          <div class="name">${t.name}</div>
+          <div class="req">${unlocked ? "已解鎖" : "累積貢獻滿 " + fmt(t.amount) + " 解鎖"}</div>
+        </div>
+      </div>`;
+  }).join("");
+  list.querySelectorAll(".title-check").forEach(el => {
+    el.addEventListener("click", () => toggleActiveTitle(el.dataset.title));
+  });
+}
+async function toggleActiveTitle(titleName){
+  const profile = currentProfile();
+  if (!profile) return;
+  const newTitle = profile.activeTitle === titleName ? "" : titleName;
+  await saveProfileField(profile, { activeTitle: newTitle });
+}
+
+function renderLevelBox(cumulative){
+  const level = unlockedEquipmentThresholds(cumulative).length + 1;
+  const prev = prevEquipmentThreshold(cumulative);
+  const next = nextEquipmentThreshold(cumulative);
+  const progress = Math.min(100, Math.round(((cumulative - prev) / (next - prev)) * 100));
+  document.getElementById("levelBox").innerHTML = `
+    <div class="level-num">Lv. ${level}</div>
+    <div class="xp-bar-outer"><div class="xp-bar-inner" style="width:${progress}%"></div></div>
+    <div class="xp-label">${fmt(cumulative)} / ${fmt(next)}(距離下一等級還差 ${fmt(next - cumulative)})</div>`;
+}
+
+function renderEquipGrid(cumulative){
+  const profile = currentProfile();
+  const unlocked = unlockedEquipmentThresholds(cumulative);
+  const equipped = (profile && profile.equippedItems) || [];
+  const nextLocked = nextEquipmentThreshold(cumulative);
+  const colors = ["#e8c04a","#5ecbe0","#c0392b","#5b8c3a","#8b5a2b","#9a9a92"];
+
+  let html = unlocked.map((t,i) => {
+    const isEquipped = equipped.includes(t);
+    return `
+      <div class="equip-slot ${isEquipped?"equipped":""}" data-threshold="${t}">
+        <svg class="equip-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="${colors[i % colors.length]}" stroke="#2b2620" stroke-width="2"/></svg>
+        <div class="equip-req">滿 ${fmt(t)}</div>
+        ${isEquipped ? '<div class="equip-check">✓</div>' : ""}
+      </div>`;
+  }).join("");
+
+  html += `
+    <div class="equip-slot locked">
+      <svg class="equip-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="#666" stroke="#2b2620" stroke-width="2"/></svg>
+      <div class="equip-req">滿 ${fmt(nextLocked)} 解鎖</div>
+    </div>`;
+
+  document.getElementById("equipGrid").innerHTML = html;
+  document.querySelectorAll(".equip-slot[data-threshold]").forEach(el => {
+    el.addEventListener("click", () => toggleEquip(Number(el.dataset.threshold)));
+  });
+}
+async function toggleEquip(threshold){
+  const profile = currentProfile();
+  if (!profile) return;
+  const current = profile.equippedItems || [];
+  const newList = current.includes(threshold) ? current.filter(t => t !== threshold) : [...current, threshold];
+  await saveProfileField(profile, { equippedItems: newList });
+}
+
+async function saveProfileField(profile, patch){
+  const updated = { ...profile, ...patch };
+  try{
+    const res = await fetch(CONFIG.WEB_APP_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({ key: sessionKey, action:"updateProfile", slot: profile.slot, name: updated.name,
+        birthdate: updated.birthdate, gender: updated.gender, equippedItems: updated.equippedItems, activeTitle: updated.activeTitle }) });
+    const json = await res.json();
+    if (json.status !== "success") throw new Error(json.message);
+    await loadRecords();
+  } catch(err){ alert("儲存失敗：" + err.message); }
+}
+
+// ---------- 人員設定彈窗 ----------
+function openSettings(){
+  const container = document.getElementById("profileForms");
+  container.innerHTML = profiles.map(p => `
+    <div class="profile-block" data-slot="${p.slot}">
+      <label>名字</label>
+      <input class="settings-name" value="${p.name}" />
+      <label>出生年月日</label>
+      <input class="settings-birthdate" type="date" value="${p.birthdate || ""}" />
+      <label>性別</label>
+      <select class="settings-gender">
+        <option value="">不指定</option>
+        <option value="male" ${p.gender==="male"?"selected":""}>男</option>
+        <option value="female" ${p.gender==="female"?"selected":""}>女</option>
+        <option value="other" ${p.gender==="other"?"selected":""}>其他</option>
+      </select>
+      <div class="zodiac-preview"></div>
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".profile-block").forEach(block => {
+    const dateInput = block.querySelector(".settings-birthdate");
+    const zodiacEl = block.querySelector(".zodiac-preview");
+    function updateZodiac(){
+      if (!dateInput.value){ zodiacEl.innerHTML = ""; return; }
+      const d = new Date(dateInput.value + "T12:00:00");
+      const sign = zodiacOf(d.getMonth()+1, d.getDate());
+      zodiacEl.innerHTML = `<span class="zodiac-badge">${sign}</span>`;
+    }
+    dateInput.addEventListener("change", updateZodiac);
+    updateZodiac();
+  });
+
+  document.getElementById("settingsStatus").textContent = "";
+  document.getElementById("settingsOverlay").classList.add("show");
+}
+function closeSettings(){ document.getElementById("settingsOverlay").classList.remove("show"); }
+async function saveSettings(){
+  const statusEl = document.getElementById("settingsStatus");
+  statusEl.textContent = "儲存中…"; statusEl.className = "edit-status";
+  const blocks = document.querySelectorAll("#profileForms .profile-block");
+  try{
+    for (const block of blocks){
+      const slot = block.dataset.slot;
+      const profile = profiles.find(p => p.slot.toString() === slot.toString());
+      const name = block.querySelector(".settings-name").value.trim();
+      const birthdate = block.querySelector(".settings-birthdate").value;
+      const gender = block.querySelector(".settings-gender").value;
+      if (!name) throw new Error("名字不能空白");
+
+      const res = await fetch(CONFIG.WEB_APP_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body: JSON.stringify({ key: sessionKey, action:"updateProfile", slot, name, birthdate, gender,
+          equippedItems: profile.equippedItems || [], activeTitle: profile.activeTitle || "" }) });
+      const json = await res.json();
+      if (json.status !== "success") throw new Error(json.message);
+    }
+    statusEl.textContent = "已儲存！"; statusEl.className = "edit-status ok";
+    await loadRecords();
+    setTimeout(closeSettings, 500);
+  } catch(err){ statusEl.textContent = "儲存失敗：" + err.message; statusEl.className = "edit-status error"; }
+}
+
+// ---------- Tab / Sub-tab 切換 ----------
 document.querySelectorAll(".tab-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
@@ -725,24 +1045,32 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
     if (btn.dataset.view === "view-chart") renderChart();
   });
 });
+document.querySelectorAll(".sub-tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".sub-view").forEach(v => v.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.sub).classList.add("active");
+  });
+});
 
 document.getElementById("editSaveBtn").addEventListener("click", saveEdit);
 document.getElementById("editDeleteBtn").addEventListener("click", deleteEdit);
 document.getElementById("editCancelBtn").addEventListener("click", closeEdit);
-document.getElementById("editOverlay").addEventListener("click", (e) => {
-  if (e.target.id === "editOverlay") closeEdit();
-});
+document.getElementById("editOverlay").addEventListener("click", e => { if (e.target.id === "editOverlay") closeEdit(); });
+
+document.getElementById("settingsBtn").addEventListener("click", openSettings);
+document.getElementById("settingsSaveBtn").addEventListener("click", saveSettings);
+document.getElementById("settingsCancelBtn").addEventListener("click", closeSettings);
+document.getElementById("settingsOverlay").addEventListener("click", e => { if (e.target.id === "settingsOverlay") closeSettings(); });
 
 // ---------- 啟動 ----------
 function boot(){
-  populatePersonSelect(document.getElementById("inputPerson"));
-  populatePersonSelect(document.getElementById("editPerson"));
-  setDefaultDate();
+  setDefaultDates();
   document.getElementById("submitBtn").addEventListener("click", submitRecord);
   document.getElementById("chartType").addEventListener("change", renderChart);
   loadRecords();
 }
-
 initLogin();
 </script>
 </body>
