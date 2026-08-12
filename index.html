@@ -6,94 +6,103 @@
 <title>錢莊</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#2d3561">
+<meta name="theme-color" content="#241a10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --indigo:#2d3561; --indigo-deep:#1a2038; --vermillion:#c85a3f; --vermillion-dark:#9c3f2a;
-    --gold:#c9a15a; --gold-dark:#96733a; --cream:#f0e6d2; --cream-dark:#d9c9a3;
-    --ink:#2b2620; --ink-soft:#6b5c44; --wave:#4d7c8a; --wave-dark:#315a66; --sakura:#e39aa0;
-    --card:#f5ecd8; --panel:#ece0c4; --panel-dark:#c9b587; --panel-light:#faf3e2;
-    --danger:#b33f32; --danger-dark:#7d2c22;
+    --vault-dark:#241a10; --vault-mid:#3b2a1a; --vault-line:#4a3620;
+    --gold:#e8c06a; --gold-dark:#a67c3d; --bronze:#8a6a3f;
+    --parchment:#f3e6c8; --parchment-dark:#dfc99a; --parchment-light:#faf1dc;
+    --ink:#2b2015; --ink-soft:#6b5738;
+    --teal:#5b8a72; --teal-dark:#3d6650;
+    --danger:#c0392b; --danger-dark:#8a281c;
+    --card:#f6ecd4; --panel:#e9d8ae; --panel-dark:#c2a565; --panel-light:#faf1dc;
   }
   *{ box-sizing:border-box; image-rendering:pixelated; }
   html,body{ margin:0; padding:0; }
-  body{ color:var(--ink); font-family:"DotGothic16","Noto Sans TC",sans-serif; font-size:16px; -webkit-tap-highlight-color:transparent; min-height:100vh; padding-bottom:92px; background:var(--cream); overflow-x:hidden; }
+  body{ color:var(--ink); font-family:"DotGothic16","Noto Sans TC",sans-serif; font-size:16px; -webkit-tap-highlight-color:transparent; min-height:100vh; padding-bottom:92px; background:var(--vault-dark); overflow-x:hidden; }
   h1,h2,h3{ font-family:"DotGothic16",sans-serif; letter-spacing:0.5px; }
 
-  #bgScene{ position:fixed; inset:0; z-index:-2; overflow:hidden; }
-  #bgScene .sky{ position:absolute; inset:0; background:linear-gradient(180deg,#f7e0b8 0%,#eab08a 35%,#d98a7e 55%,#2d3561 100%); }
-  #bgScene .sun{ position:absolute; top:10%; left:50%; width:70px; height:70px; margin-left:-35px; background:var(--vermillion); border-radius:50%; opacity:0.85; box-shadow:0 0 40px rgba(200,90,63,0.5); }
-  #bgScene .mountain{ position:absolute; left:0; right:0; bottom:14%; height:26%; background:var(--indigo); opacity:0.75; clip-path:polygon(0% 100%,0% 70%,8% 70%,8% 55%,16% 55%,16% 40%,26% 40%,26% 28%,36% 28%,36% 16%,46% 16%,50% 6%,54% 16%,64% 28%,64% 40%,74% 40%,74% 55%,84% 55%,84% 68%,92% 68%,92% 82%,100% 82%,100% 100%); }
-  #bgScene .waves{ position:absolute; left:0; right:0; bottom:0; height:16%; background-color:var(--indigo-deep); background-image:radial-gradient(circle at 50% 0%,transparent 60%,var(--wave-dark) 61%,var(--wave-dark) 64%,transparent 65%); background-size:34px 22px; }
-  #bgScene .waves::before{ content:""; position:absolute; inset:0; background-image:radial-gradient(circle at 50% 0%,transparent 60%,var(--wave) 61%,var(--wave) 63%,transparent 64%); background-size:34px 22px; background-position:17px -6px; opacity:0.6; }
+  #bgScene{ position:fixed; inset:0; z-index:-2; overflow:hidden; background:
+    repeating-linear-gradient(0deg, var(--vault-mid) 0 26px, var(--vault-dark) 26px 28px),
+    repeating-linear-gradient(90deg, transparent 0 54px, rgba(0,0,0,0.18) 54px 56px); }
+  #bgScene .door{ position:absolute; width:78vmin; height:78vmin; border-radius:50%; top:46%; left:50%; transform:translate(-50%,-50%);
+    background: repeating-conic-gradient(var(--bronze) 0deg 8deg, var(--gold-dark) 8deg 16deg);
+    border:10px solid var(--vault-line); box-shadow:0 0 0 5px var(--vault-dark), 0 0 40px rgba(0,0,0,0.5) inset; }
+  #bgScene .door::before{ content:""; position:absolute; inset:16%; border-radius:50%; background:var(--vault-dark); border:7px solid var(--gold); }
+  #bgScene .door::after{ content:""; position:absolute; inset:38%; border-radius:50%; background:var(--vault-line); border:5px solid var(--gold-dark); }
+  #bgScene .handle{ position:absolute; top:46%; left:50%; width:34%; height:34%; transform:translate(-50%,-50%); }
+  #bgScene .handle i{ position:absolute; background:var(--gold); border:2px solid var(--vault-line); }
+  #bgScene .handle .bar1{ top:46%; left:0; width:100%; height:8%; }
+  #bgScene .handle .bar2{ top:0; left:46%; width:8%; height:100%; }
+  #bgScene .handle .knob{ position:absolute; top:38%; left:38%; width:24%; height:24%; border-radius:50%; background:var(--gold); border:2px solid var(--vault-line); }
 
-  .bevel-out{ border-style:solid; border-width:3px; border-top-color:rgba(255,255,255,0.6); border-left-color:rgba(255,255,255,0.6); border-right-color:rgba(0,0,0,0.35); border-bottom-color:rgba(0,0,0,0.35); box-shadow:0 3px 0 rgba(0,0,0,0.22); }
+  .bevel-out{ border-style:solid; border-width:3px; border-top-color:rgba(255,255,255,0.55); border-left-color:rgba(255,255,255,0.55); border-right-color:rgba(0,0,0,0.4); border-bottom-color:rgba(0,0,0,0.4); box-shadow:0 3px 0 rgba(0,0,0,0.3); }
 
-  #lockScreen{ position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:linear-gradient(180deg,#f7e0b8,#2d3561); }
+  #lockScreen{ position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:radial-gradient(circle at 50% 40%, var(--vault-mid), var(--vault-dark)); }
   .lock-card{ background:var(--card); border-radius:4px; padding:30px 22px; width:100%; max-width:320px; text-align:center; }
-  .lock-mark{ width:60px; height:60px; margin:0 auto 16px; background:var(--vermillion); border:3px solid var(--vermillion-dark); display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px; }
+  .lock-mark{ width:60px; height:60px; margin:0 auto 16px; background:var(--gold); border:3px solid var(--gold-dark); display:flex; align-items:center; justify-content:center; color:var(--ink); font-size:26px; }
   .lock-card h2{ margin:0 0 16px; font-size:16px; line-height:1.9; }
   .lock-card input{ text-align:center; letter-spacing:3px; }
   #lockStatus{ min-height:18px; font-size:13px; margin-top:10px; color:var(--danger); font-weight:700; }
 
   #app{ display:none; } #app.unlocked{ display:block; }
 
-  header{ position:sticky; top:0; z-index:10; background:linear-gradient(180deg,rgba(45,53,97,0.94),rgba(26,32,56,0.96)),var(--header-photo,none); background-size:cover; background-position:center; color:#fff; padding:12px; border-bottom:4px solid var(--gold-dark); }
+  header{ position:sticky; top:0; z-index:10; background:linear-gradient(180deg,rgba(59,42,26,0.96),rgba(36,26,16,0.98)),var(--header-photo,none); background-size:cover; background-position:center; color:var(--parchment); padding:12px; border-bottom:4px solid var(--gold-dark); }
   .header-top{ display:flex; justify-content:space-between; align-items:center; }
   .brand{ display:flex; align-items:center; gap:8px; }
-  .coin-icon{ width:26px; height:26px; flex-shrink:0; }
-  header .eyebrow{ font-size:11px; letter-spacing:2px; opacity:0.85; margin-bottom:4px; font-family:"Press Start 2P",monospace; color:var(--gold); }
-  header h1{ margin:0; font-size:15px; line-height:1.6; }
-  .icon-btn{ width:42px; height:42px; background:var(--gold); color:var(--ink); border-color:#f5dca0 var(--gold-dark) var(--gold-dark) #f5dca0; border-style:solid; border-width:3px; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; }
+  .coin-icon{ width:30px; height:30px; flex-shrink:0; }
+  header .eyebrow{ font-size:22px; letter-spacing:2px; opacity:0.98; margin-bottom:4px; font-family:"Press Start 2P",monospace; color:var(--gold); text-shadow:2px 2px 0 rgba(0,0,0,0.4); }
+  header h1{ margin:0; font-size:14px; line-height:1.5; color:var(--parchment-dark); }
+  .icon-btn{ width:42px; height:42px; background:var(--gold); color:var(--ink); border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; border-style:solid; border-width:3px; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; }
 
   .player-strip{ display:flex; gap:8px; margin-top:10px; }
-  .player-card{ flex:1; background:rgba(0,0,0,0.3); border:2px solid rgba(255,255,255,0.3); border-radius:6px; padding:8px 6px; text-align:center; }
+  .player-card{ flex:1; border-radius:6px; padding:8px 6px; text-align:center; border:3px solid var(--frame-color, rgba(255,255,255,0.3)); background:var(--frame-bg, rgba(0,0,0,0.3)); }
   .player-title{ font-size:10px; margin-bottom:4px; min-height:13px; font-weight:700; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
-  .portrait-wrap{ width:54px; height:54px; margin:0 auto 4px; overflow:hidden; border-radius:6px; background:rgba(255,255,255,0.12); }
-  .portrait-wrap svg{ width:100%; height:100%; }
+  .portrait-wrap{ width:54px; height:54px; margin:0 auto 4px; overflow:hidden; border-radius:6px; background:rgba(255,255,255,0.1); }
+  .portrait-wrap svg{ width:100%; height:100%; overflow:visible; }
   .player-name{ font-size:13px; font-weight:700; margin-bottom:3px; }
   .player-amt{ font-family:"Press Start 2P",monospace; font-size:12px; color:var(--gold); text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
-  .player-amt-label{ font-size:10px; opacity:0.85; margin-top:4px; }
+  .player-amt-label{ font-size:10px; opacity:0.9; margin-top:4px; }
 
   main{ max-width:480px; margin:0 auto; padding:16px 12px; }
   .card{ background:var(--card); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:3px; border-radius:4px; padding:16px; margin-bottom:14px; }
   .card h2{ margin:0 0 14px; font-size:15px; display:flex; align-items:center; gap:9px; }
-  .card h2 .idx{ font-size:16px; background:var(--indigo); color:#fff; width:28px; height:28px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .card h2 .idx{ font-size:16px; background:var(--vault-mid); color:var(--gold); width:28px; height:28px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 
-  .character-stage{ display:flex; gap:10px; justify-content:center; padding:34px 0 6px; }
-  .character-slot{ flex:1; max-width:220px; display:flex; flex-direction:column; align-items:center; }
-  .character-slot .avatar-wrap{ width:100%; max-width:210px; }
-  .character-slot .avatar-wrap svg{ width:100%; height:auto; filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25)); overflow:visible; }
-  .character-slot .cname{ margin-top:8px; font-size:16px; font-weight:700; color:var(--ink); }
+  .character-stage{ display:flex; gap:10px; justify-content:center; padding:12px 0 6px; }
+  .character-slot{ flex:1; max-width:220px; display:flex; flex-direction:column; align-items:center; border-radius:10px; border:4px solid var(--frame-color, var(--gold)); background:var(--frame-bg, rgba(255,255,255,0.15)); padding:14px 6px 10px; }
+  .character-slot .avatar-wrap{ width:100%; max-width:200px; }
+  .character-slot .avatar-wrap svg{ width:100%; height:auto; overflow:visible; }
+  .character-slot .cname{ margin-top:6px; font-size:16px; font-weight:700; color:var(--ink); }
   .character-slot .ctitle{ margin-top:3px; font-size:19px; font-weight:700; text-align:center; line-height:1.3; }
-  .character-ground{ height:18px; margin:0 -12px; background:repeating-linear-gradient(90deg,var(--indigo) 0 10px,var(--indigo-deep) 10px 20px); border-top:3px solid var(--gold-dark); }
+  .character-ground{ height:18px; margin:10px -12px 0; background:repeating-linear-gradient(90deg,var(--vault-mid) 0 10px,var(--vault-dark) 10px 20px); border-top:3px solid var(--gold-dark); }
 
   .mode-switch{ display:flex; gap:6px; margin-bottom:16px; }
   .mode-switch button{ flex:1; padding:12px 4px; font-size:14px; font-weight:700; cursor:pointer; background:var(--panel); color:var(--ink-soft); border-radius:4px; border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; font-family:"DotGothic16",sans-serif; display:flex; align-items:center; justify-content:center; gap:6px; }
-  .mode-switch button.active{ background:var(--wave); color:#fff; border-color:#8fc9d6 var(--wave-dark) var(--wave-dark) #8fc9d6; }
+  .mode-switch button.active{ background:var(--teal); color:#fff; border-color:#8fc0ab var(--teal-dark) var(--teal-dark) #8fc0ab; }
 
   label{ display:flex; align-items:center; gap:6px; font-size:14px; color:var(--ink-soft); margin:14px 0 5px; font-weight:700; }
   label:first-of-type{ margin-top:0; }
-  input,select{ width:100%; padding:12px; font-size:16px; border-radius:4px; border-color:var(--panel-dark) var(--panel-light) var(--panel-light) var(--panel-dark); border-style:solid; border-width:2px; background:#fffef8; color:var(--ink); font-family:"DotGothic16",sans-serif; }
+  input,select{ width:100%; padding:12px; font-size:16px; border-radius:4px; border-color:var(--panel-dark) var(--panel-light) var(--panel-light) var(--panel-dark); border-style:solid; border-width:2px; background:#fffdf5; color:var(--ink); font-family:"DotGothic16",sans-serif; }
   select{ appearance:none; background-image:linear-gradient(45deg,transparent 50%,var(--ink-soft) 50%),linear-gradient(135deg,var(--ink-soft) 50%,transparent 50%); background-position:calc(100% - 18px) center,calc(100% - 13px) center; background-size:5px 5px,5px 5px; background-repeat:no-repeat; }
-  input:focus,select:focus{ outline:2px solid var(--wave); }
+  input:focus,select:focus{ outline:2px solid var(--teal); }
   input:disabled{ opacity:0.5; background:#eee; }
 
-  button.primary{ width:100%; margin-top:16px; padding:15px; font-size:15px; font-weight:700; border-radius:4px; background:var(--wave); color:#fff; cursor:pointer; font-family:"DotGothic16",sans-serif; border-color:#8fc9d6 var(--wave-dark) var(--wave-dark) #8fc9d6; border-style:solid; border-width:3px; box-shadow:0 3px 0 rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; gap:8px; }
+  button.primary{ width:100%; margin-top:16px; padding:15px; font-size:15px; font-weight:700; border-radius:4px; background:var(--teal); color:#fff; cursor:pointer; font-family:"DotGothic16",sans-serif; border-color:#8fc0ab var(--teal-dark) var(--teal-dark) #8fc0ab; border-style:solid; border-width:3px; box-shadow:0 3px 0 rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; gap:8px; }
   button.primary:active{ transform:translateY(2px); box-shadow:none; }
   button.primary:disabled{ opacity:0.45; }
-  button.primary.repay-mode{ background:var(--gold); border-color:#f5dca0 var(--gold-dark) var(--gold-dark) #f5dca0; color:var(--ink); }
+  button.primary.repay-mode{ background:var(--gold); border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; color:var(--ink); }
   button.secondary{ width:100%; margin-top:10px; padding:13px; font-size:14px; font-weight:700; border-radius:4px; background:var(--panel); color:var(--danger); cursor:pointer; border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
   button.ghost{ width:100%; margin-top:8px; padding:11px; background:none; color:var(--ink-soft); font-size:13px; font-weight:700; border:none; cursor:pointer; }
-  button.logout-in-menu{ width:100%; margin-top:18px; padding:13px; background:var(--danger); color:#fff; font-size:14px; font-weight:700; border-radius:4px; cursor:pointer; border-color:#e07a6d var(--danger-dark) var(--danger-dark) #e07a6d; border-style:solid; border-width:2px; display:flex; align-items:center; justify-content:center; gap:8px; }
+  button.logout-in-menu{ width:100%; margin-top:18px; padding:13px; background:var(--danger); color:#fff; font-size:14px; font-weight:700; border-radius:4px; cursor:pointer; border-color:#e2897c var(--danger-dark) var(--danger-dark) #e2897c; border-style:solid; border-width:2px; display:flex; align-items:center; justify-content:center; gap:8px; }
 
   .status{ font-size:13px; margin-top:10px; min-height:16px; font-weight:700; }
   .status.error{ color:var(--danger); }
-  .status.ok{ color:var(--wave-dark); }
+  .status.ok{ color:var(--teal-dark); }
 
   .month-block{ margin-bottom:16px; }
   .month-head{ display:flex; justify-content:space-between; align-items:baseline; font-size:13.5px; font-weight:700; border-bottom:2px dashed var(--panel-dark); padding-bottom:8px; margin-bottom:8px; }
@@ -103,7 +112,7 @@
   .items li{ display:flex; justify-content:space-between; font-size:13.5px; align-items:center; padding:8px 8px 8px 10px; color:var(--ink-soft); border-left:3px solid var(--panel-dark); cursor:pointer; margin-bottom:4px; background:rgba(255,255,255,0.5); border-radius:3px; }
   .items li:active{ background:rgba(255,255,255,0.85); }
   .items li.repayment{ border-left-color:var(--gold); }
-  .items li .tag{ font-size:10px; padding:2px 6px; margin-right:5px; background:var(--gold); color:#4a3714; font-weight:700; border-radius:3px; }
+  .items li .tag{ font-size:10px; padding:2px 6px; margin-right:5px; background:var(--gold); color:var(--ink); font-weight:700; border-radius:3px; }
   .items li .date{ color:#96876a; margin-right:6px; font-variant-numeric:tabular-nums; }
 
   .empty{ font-size:14px; color:var(--ink-soft); text-align:center; padding:30px 0; font-weight:700; }
@@ -114,12 +123,12 @@
 
   .sub-tabs{ display:flex; gap:6px; margin-bottom:16px; }
   .sub-tabs button{ flex:1; padding:11px 2px; font-size:13px; font-weight:700; cursor:pointer; border-radius:4px; background:var(--panel); color:var(--ink-soft); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; font-family:"DotGothic16",sans-serif; }
-  .sub-tabs button.active{ background:var(--indigo); color:#fff; }
+  .sub-tabs button.active{ background:var(--vault-mid); color:var(--gold); }
   .sub-view{ display:none; } .sub-view.active{ display:block; }
 
   .person-select-row{ display:flex; gap:6px; margin-bottom:14px; }
   .person-select-row button{ flex:1; padding:10px 4px; font-size:14px; font-weight:700; cursor:pointer; border-radius:4px; background:var(--panel); color:var(--ink-soft); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
-  .person-select-row button.active{ background:var(--vermillion); color:#fff; }
+  .person-select-row button.active{ background:var(--teal); color:#fff; }
 
   .title-list{ display:flex; flex-direction:column; gap:8px; }
   .title-row{ display:flex; align-items:center; gap:10px; padding:12px; background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; border-left-width:6px; }
@@ -130,13 +139,11 @@
   .title-info .req{ font-size:12px; color:var(--ink-soft); }
 
   .level-box{ background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; padding:18px; text-align:center; margin-bottom:14px; }
-  .level-num{ font-family:"Press Start 2P",monospace; font-size:26px; color:var(--vermillion); margin-bottom:4px; }
+  .level-num{ font-family:"Press Start 2P",monospace; font-size:26px; color:var(--gold-dark); margin-bottom:4px; }
   .level-stage{ font-size:13px; color:var(--ink-soft); margin-bottom:10px; font-weight:700; }
   .xp-bar-outer{ height:20px; background:var(--panel-dark); border:2px solid var(--ink); border-radius:4px; overflow:hidden; }
   .xp-bar-inner{ height:100%; background:repeating-linear-gradient(90deg,var(--gold) 0 8px,var(--gold-dark) 8px 16px); }
   .xp-label{ font-size:12.5px; color:var(--ink-soft); margin-top:8px; font-weight:700; }
-  .glow-hint{ font-size:12px; color:var(--ink-soft); margin-top:10px; }
-  .glow-dot{ display:inline-block; width:10px; height:10px; border-radius:50%; margin:0 2px; vertical-align:middle; }
 
   .equip-preview{ text-align:center; margin-bottom:16px; }
   .equip-preview .avatar-wrap{ width:150px; margin:0 auto; }
@@ -144,18 +151,25 @@
   .equip-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
   .equip-slot{ background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:10px 4px; cursor:pointer; position:relative; }
   .equip-slot.locked{ opacity:0.4; cursor:default; }
-  .equip-slot.equipped{ border-color:var(--gold); background:rgba(201,161,90,0.28); }
+  .equip-slot.equipped{ border-color:var(--gold); background:rgba(232,192,106,0.28); }
   .equip-icon{ width:32px; height:32px; }
   .equip-name{ font-size:12px; font-weight:700; }
   .equip-req{ font-size:10.5px; color:var(--ink-soft); text-align:center; }
-  .equip-check{ position:absolute; top:3px; right:5px; font-size:13px; color:var(--wave-dark); }
-  .equip-all-btn{ width:100%; margin-bottom:14px; padding:12px; font-size:13.5px; font-weight:700; background:var(--sakura); color:#5b1f28; border-radius:4px; border-color:#f6cdd2 #a5545f #a5545f #f6cdd2; border-style:solid; border-width:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .equip-check{ position:absolute; top:3px; right:5px; font-size:13px; color:var(--teal-dark); }
+  .equip-all-btn{ width:100%; margin-bottom:14px; padding:12px; font-size:13.5px; font-weight:700; background:var(--gold); color:var(--ink); border-radius:4px; border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; border-style:solid; border-width:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+
+  .glow-check-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
+  .glow-check{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 2px; border:2px solid var(--panel-dark); border-radius:4px; cursor:pointer; background:rgba(255,255,255,0.5); }
+  .glow-check.locked{ opacity:0.35; cursor:default; }
+  .glow-check.on{ border-color:var(--ink); }
+  .glow-check .dot{ width:16px; height:16px; border-radius:50%; border:2px solid var(--ink); }
+  .glow-check .lbl{ font-size:9.5px; font-weight:700; }
 
   nav.tabs{ position:fixed; bottom:0; left:0; right:0; z-index:10; display:flex; background:var(--panel); border-top:3px solid var(--panel-dark); }
   nav.tabs button{ flex:1; padding:10px 1px 9px; background:none; border:none; font-size:10.5px; color:var(--ink-soft); cursor:pointer; font-family:"DotGothic16",sans-serif; font-weight:700; }
   nav.tabs button svg{ display:block; margin:0 auto 3px; width:20px; height:20px; }
-  nav.tabs button.active{ color:var(--vermillion); }
-  nav.tabs button.active svg{ stroke:var(--vermillion); }
+  nav.tabs button.active{ color:var(--gold-dark); }
+  nav.tabs button.active svg{ stroke:var(--gold-dark); }
 
   .view{ display:none; } .view.active{ display:block; }
   .setup-warning{ background:#fbe2de; color:var(--danger); border:2px solid var(--danger); border-radius:4px; padding:12px 13px; font-size:13px; margin-bottom:14px; font-weight:700; }
@@ -166,7 +180,7 @@
   .sheet h3{ margin:0 0 14px; font-size:15px; }
   .edit-status{ font-size:13px; min-height:16px; margin-top:8px; font-weight:700; }
 
-  .zodiac-badge{ display:inline-block; margin-top:8px; font-size:13px; background:var(--wave); color:#fff; padding:5px 11px; font-weight:700; border-radius:4px; }
+  .zodiac-badge{ display:inline-block; margin-top:8px; font-size:13px; background:var(--teal); color:#fff; padding:5px 11px; font-weight:700; border-radius:4px; }
   .profile-block{ padding:16px 0; border-bottom:3px dashed var(--panel-dark); }
   .profile-block:last-of-type{ border-bottom:none; }
   .profile-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
@@ -174,11 +188,17 @@
   .profile-head .avatar-wrap svg{ width:100%; height:100%; overflow:visible; }
   .profile-head .ptitle{ font-size:15px; font-weight:700; }
   .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
+  .theme-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
+  .theme-swatch{ height:36px; border-radius:4px; border:3px solid transparent; cursor:pointer; }
+  .theme-swatch.selected{ border-color:var(--ink); }
 </style>
 </head>
 <body>
 
-<div id="bgScene"><div class="sky"></div><div class="sun"></div><div class="mountain"></div><div class="waves"></div></div>
+<div id="bgScene">
+  <div class="door"></div>
+  <div class="handle"><i class="bar1"></i><i class="bar2"></i><div class="knob"></div></div>
+</div>
 
 <div id="lockScreen">
   <div class="lock-card bevel-out">
@@ -194,7 +214,7 @@
 <header>
   <div class="header-top">
     <div class="brand">
-      <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#c9a15a" stroke="#7a5a25" stroke-width="1.5"/><circle cx="12" cy="12" r="7" fill="none" stroke="#7a5a25" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" fill="#7a5a25"/></svg>
+      <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#e8c06a" stroke="#7a5a25" stroke-width="1.5"/><circle cx="12" cy="12" r="7" fill="none" stroke="#7a5a25" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" fill="#7a5a25"/></svg>
       <div>
         <div class="eyebrow">錢莊</div>
         <h1>Money獵人2人組</h1>
@@ -311,7 +331,7 @@
 
 <script>
 const CONFIG = {
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbyY_ZHbUvCIJpPqz6ArqHmML_S-u_hZNUJ0NnBtZK6gbR2RZLb5NIcsyohmzWbqYi2NoA/exec",
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbykk4UT8vUKBDP1KSJdvakm9Rt1kKXrYPelafDMSNvAzrG0Szrmrp30qgExsmgOBhmgxA/exec",
   APP_PASSWORD: "20210318",
   HEADER_IMAGE_URL: "",
   APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.jpg?raw=true",
@@ -336,7 +356,11 @@ const EQUIPMENT_ITEMS = [
 ];
 function unlockedEquipmentThresholds(cumulative){ return EQUIPMENT_ITEMS.filter(i=>cumulative>=i.amount).map(i=>i.amount); }
 function nextEquipmentItem(cumulative){ return EQUIPMENT_ITEMS.find(i=>cumulative<i.amount) || null; }
-const RAINBOW = ["#ff4d4d","#ff9d3f","#ffe14d","#4dff7a","#4d9dff","#7a4dff","#d94dff"];
+const RAINBOW = [
+  {c:"#ff4d4d",n:"紅"},{c:"#ff9d3f",n:"橙"},{c:"#ffe14d",n:"黃"},{c:"#4dff7a",n:"綠"},
+  {c:"#4d9dff",n:"藍"},{c:"#7a4dff",n:"靛"},{c:"#d94dff",n:"紫"}
+];
+const THEME_COLORS = ["#2d3561","#c0392b","#4d7c8a","#6b4c7a","#16a085","#c9a15a","#8b5a2b","#5b8f5c"];
 
 function zodiacOf(m,d){
   const ranges=[{sign:"摩羯座",start:[12,22],end:[1,19]},{sign:"水瓶座",start:[1,20],end:[2,18]},{sign:"雙魚座",start:[2,19],end:[3,20]},{sign:"牡羊座",start:[3,21],end:[4,19]},{sign:"金牛座",start:[4,20],end:[5,20]},{sign:"雙子座",start:[5,21],end:[6,21]},{sign:"巨蟹座",start:[6,22],end:[7,22]},{sign:"獅子座",start:[7,23],end:[8,22]},{sign:"處女座",start:[8,23],end:[9,22]},{sign:"天秤座",start:[9,23],end:[10,23]},{sign:"天蠍座",start:[10,24],end:[11,21]},{sign:"射手座",start:[11,22],end:[12,21]}];
@@ -349,18 +373,18 @@ function ageFor(c){ return Math.round(levelFor(c)*1.5); }
 function stageFor(age){ if(age<=2) return "baby"; if(age<=11) return "child"; if(age<=17) return "teen"; if(age<=59) return "adult"; return "elder"; }
 const STAGE_LABEL = { baby:"寶寶", child:"孩童", teen:"青少年", adult:"成人", elder:"長者" };
 const STAGE_PROPORTIONS = {
-  baby:{ headW:44,headH:40,headY:14,torsoW:24,torsoH:16,torsoY:52,legW:10,legH:12,legY:66,armW:8,armH:14,armY:54 },
-  child:{ headW:40,headH:37,headY:10,torsoW:25,torsoH:22,torsoY:45,legW:10,legH:20,legY:65,armW:8,armH:20,armY:47 },
-  teen:{ headW:36,headH:34,headY:8,torsoW:26,torsoH:28,torsoY:40,legW:11,legH:28,legY:66,armW:8,armH:27,armY:42 },
-  adult:{ headW:34,headH:32,headY:7,torsoW:28,torsoH:32,torsoY:37,legW:12,legH:34,legY:67,armW:9,armH:32,armY:39 },
-  elder:{ headW:34,headH:32,headY:9,torsoW:26,torsoH:30,torsoY:39,legW:12,legH:31,legY:68,armW:9,armH:29,armY:41 }
+  baby:{ headW:50,headH:46,headY:12,torsoW:26,torsoH:16,torsoY:52,legW:11,legH:11,legY:66,armW:9,armH:13,armY:54 },
+  child:{ headW:46,headH:42,headY:9,torsoW:27,torsoH:21,torsoY:46,legW:11,legH:19,legY:65,armW:9,armH:19,armY:48 },
+  teen:{ headW:42,headH:38,headY:8,torsoW:28,torsoH:26,torsoY:41,legW:12,legH:26,legY:66,armW:9,armH:25,armY:43 },
+  adult:{ headW:40,headH:36,headY:7,torsoW:29,torsoH:29,torsoY:38,legW:12,legH:31,legY:67,armW:9,armH:29,armY:40 },
+  elder:{ headW:40,headH:36,headY:9,torsoW:27,torsoH:27,torsoY:40,legW:12,legH:28,legY:68,armW:9,armH:26,armY:42 }
 };
 const SKIN_TONES = { porcelain:"#fbe8d3", light:"#f6dcb8", ivory:"#f2d9b6", medium:"#f0c090", rosy:"#eebfa8", olive:"#c9a96b", tan:"#d99f6c", bronze:"#b97f4a", dark:"#a2714a", deep:"#7a5636" };
-const BODY_MULT = { slim:{w:0.82,h:1}, regular:{w:1,h:1}, broad:{w:1.28,h:1}, chubby:{w:1.18,h:1.08}, tall:{w:1,h:1.16}, short:{w:1,h:0.85}, athletic:{w:1.1,h:1.05}, petite:{w:0.85,h:0.85}, curvy:{w:1.08,h:1.02}, stocky:{w:1.22,h:0.9} };
-const FACE_SHAPE = { round:{rx:0.32,w:1,h:1}, square:{rx:0.05,w:1,h:1}, oval:{rx:0.22,w:0.92,h:1.08}, heart:{rx:0.28,w:1,h:0.96}, long:{rx:0.18,w:0.85,h:1.18}, diamond:{rx:0.12,w:0.86,h:1.05}, triangle:{rx:0.08,w:1.05,h:0.94}, pear:{rx:0.22,w:1.05,h:1}, chubby:{rx:0.36,w:1.12,h:0.94}, sharp:{rx:0.06,w:0.82,h:1.1} };
+const BODY_MULT = { slim:{w:0.85,h:1}, regular:{w:1,h:1}, broad:{w:1.22,h:1}, chubby:{w:1.15,h:1.06}, tall:{w:1,h:1.12}, short:{w:1,h:0.88}, athletic:{w:1.08,h:1.04}, petite:{w:0.88,h:0.88}, curvy:{w:1.06,h:1.02}, stocky:{w:1.18,h:0.92} };
+const FACE_SHAPE = { round:{rx:0.34,w:1,h:1}, square:{rx:0.1,w:1,h:1}, oval:{rx:0.24,w:0.94,h:1.06}, heart:{rx:0.3,w:1,h:0.97}, long:{rx:0.2,w:0.88,h:1.14}, diamond:{rx:0.14,w:0.88,h:1.03}, triangle:{rx:0.1,w:1.03,h:0.95}, pear:{rx:0.24,w:1.03,h:1}, chubby:{rx:0.38,w:1.1,h:0.96}, sharp:{rx:0.08,w:0.85,h:1.08} };
 
-function rectTag(x,y,w,h,fill,extra){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#3a2c1e" stroke-width="1" shape-rendering="crispEdges" ${extra||""}/>`; }
-function pxTag(x,y,s,fill){ return `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fill}" shape-rendering="crispEdges"/>`; }
+function rectTag(x,y,w,h,fill,extra){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#241a10" stroke-width="2.4" shape-rendering="crispEdges" rx="2" ${extra||""}/>`; }
+function pxTag(x,y,s,fill){ return `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fill}" stroke="#241a10" stroke-width="1.6" shape-rendering="crispEdges" rx="1"/>`; }
 
 function hairSVG(profile, hx, hy, hw, hh){
   let style = profile.hairstyle;
@@ -369,49 +393,49 @@ function hairSVG(profile, hx, hy, hw, hh){
   switch(style){
     case "bald": return "";
     case "long": return rectTag(hx-2, hy-2, hw+4, hh*0.98, c);
-    case "ponytail": return rectTag(hx-1, hy-2, hw+2, hh*0.3, c) + rectTag(hx+hw-2, hy+hh*0.1, 4, hh*0.75, c);
-    case "bob": return rectTag(hx-2, hy-2, hw+4, hh*0.62, c);
-    case "curly": return rectTag(hx-2, hy-4, hw+4, hh*0.34, c) + pxTag(hx-3,hy-2,5,c) + pxTag(hx+hw*0.2,hy-5,5,c) + pxTag(hx+hw*0.5,hy-5,5,c) + pxTag(hx+hw*0.8,hy-5,5,c) + pxTag(hx+hw-2,hy-2,5,c);
-    case "mohawk": return rectTag(hx+hw*0.4, hy-8, hw*0.2, hh*0.4, c);
-    case "bun": return rectTag(hx-1, hy-2, hw+2, hh*0.3, c) + pxTag(hx+hw*0.42, hy-8, hw*0.16, c);
-    case "twintails": return rectTag(hx-1, hy-2, hw+2, hh*0.3, c) + rectTag(hx-4, hy+hh*0.1, 4, hh*0.65, c) + rectTag(hx+hw, hy+hh*0.1, 4, hh*0.65, c);
-    case "afro": return `<circle cx="${hx+hw/2}" cy="${hy+hh*0.28}" r="${hw*0.62}" fill="${c}" stroke="${c2}" stroke-width="1"/>`;
-    case "sidepart": return rectTag(hx-1, hy-2, hw*0.55, hh*0.34, c) + rectTag(hx+hw*0.5, hy-2, hw*0.52, hh*0.24, c);
-    case "buzzcut": return rectTag(hx, hy-1, hw, hh*0.16, c);
-    case "pixie": return rectTag(hx-1, hy-3, hw+2, hh*0.28, c) + pxTag(hx-2,hy+hh*0.06,4,c) + pxTag(hx+hw-2,hy+hh*0.06,4,c);
-    default: return rectTag(hx-1, hy-2, hw+2, hh*0.34, c);
+    case "ponytail": return rectTag(hx-1, hy-2, hw+2, hh*0.3, c) + rectTag(hx+hw-2, hy+hh*0.1, 5, hh*0.75, c);
+    case "bob": return rectTag(hx-2, hy-2, hw+4, hh*0.6, c);
+    case "curly": return rectTag(hx-2, hy-4, hw+4, hh*0.3, c) + pxTag(hx-3,hy-2,6,c) + pxTag(hx+hw*0.2,hy-5,6,c) + pxTag(hx+hw*0.5,hy-5,6,c) + pxTag(hx+hw*0.8,hy-5,6,c) + pxTag(hx+hw-3,hy-2,6,c);
+    case "mohawk": return rectTag(hx+hw*0.4, hy-9, hw*0.2, hh*0.4, c);
+    case "bun": return rectTag(hx-1, hy-2, hw+2, hh*0.28, c) + pxTag(hx+hw*0.4, hy-9, hw*0.18, c);
+    case "twintails": return rectTag(hx-1, hy-2, hw+2, hh*0.28, c) + rectTag(hx-5, hy+hh*0.08, 5, hh*0.65, c) + rectTag(hx+hw, hy+hh*0.08, 5, hh*0.65, c);
+    case "afro": return `<ellipse cx="${hx+hw/2}" cy="${hy+hh*0.02}" rx="${hw*0.58}" ry="${hh*0.32}" fill="${c}" stroke="#241a10" stroke-width="2.4"/>`;
+    case "sidepart": return rectTag(hx-1, hy-2, hw*0.55, hh*0.32, c) + rectTag(hx+hw*0.5, hy-2, hw*0.52, hh*0.22, c);
+    case "buzzcut": return rectTag(hx, hy-1, hw, hh*0.14, c);
+    case "pixie": return rectTag(hx-1, hy-3, hw+2, hh*0.26, c) + pxTag(hx-3,hy+hh*0.05,5,c) + pxTag(hx+hw-2,hy+hh*0.05,5,c);
+    default: return rectTag(hx-1, hy-2, hw+2, hh*0.32, c);
   }
 }
 function eyesSVG(style, hx, hy, hw, hh){
-  const cy=hy+hh*0.46, r=Math.max(1.8,hw*0.06), cx1=hx+hw*0.3, cx2=hx+hw*0.7;
+  const cy=hy+hh*0.5, r=Math.max(2.2,hw*0.075), cx1=hx+hw*0.3, cx2=hx+hw*0.7;
   switch(style){
-    case "happy": return `<path d="M${cx1-2.5},${cy} q2.5,-3.5 5,0" stroke="#2b2620" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M${cx2-2.5},${cy} q2.5,-3.5 5,0" stroke="#2b2620" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
-    case "sleepy": return `<rect x="${cx1-2.5}" y="${cy}" width="5" height="1.6" fill="#2b2620"/><rect x="${cx2-2.5}" y="${cy}" width="5" height="1.6" fill="#2b2620"/>`;
-    case "wink": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><path d="M${cx2-2.5},${cy} q2.5,-3 5,0" stroke="#2b2620" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
-    case "star": return [cx1,cx2].map(cx=>`<polygon points="${cx},${cy-2.6} ${cx+0.8},${cy-0.5} ${cx+2.6},${cy-0.5} ${cx+1.1},${cy+0.8} ${cx+1.7},${cy+2.6} ${cx},${cy+1.4} ${cx-1.7},${cy+2.6} ${cx-1.1},${cy+0.8} ${cx-2.6},${cy-0.5} ${cx-0.8},${cy-0.5}" fill="#e8c04a"/>`).join("");
-    case "angry": return `<path d="M${cx1-3},${cy-2} l6,2" stroke="#2b2620" stroke-width="1.6"/><circle cx="${cx1}" cy="${cy+1}" r="${r*0.8}" fill="#2b2620"/><path d="M${cx2+3},${cy-2} l-6,2" stroke="#2b2620" stroke-width="1.6"/><circle cx="${cx2}" cy="${cy+1}" r="${r*0.8}" fill="#2b2620"/>`;
-    case "teary": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#2b2620"/><ellipse cx="${cx2+2}" cy="${cy+4}" rx="1.2" ry="1.8" fill="#7ec8e3"/>`;
-    case "heart": return [cx1,cx2].map(cx=>`<path d="M${cx},${cy+2} q-3,-4 -1.5,-5.5 q1.5,-1 1.5,1 q0,-2 1.5,-1 q1.5,1.5 -1.5,5.5 z" fill="#c85a3f"/>`).join("");
-    case "sharp": return `<rect x="${cx1-2.6}" y="${cy}" width="5.2" height="1.4" fill="#2b2620" transform="rotate(-6 ${cx1} ${cy})"/><rect x="${cx2-2.6}" y="${cy}" width="5.2" height="1.4" fill="#2b2620" transform="rotate(6 ${cx2} ${cy})"/>`;
-    case "closed": return `<rect x="${cx1-2.5}" y="${cy+1}" width="5" height="1.2" fill="#2b2620" rx="0.6"/><rect x="${cx2-2.5}" y="${cy+1}" width="5" height="1.2" fill="#2b2620" rx="0.6"/>`;
-    case "sparkle": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.35}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.35}" fill="#fff"/><circle cx="${cx2+r*0.5}" cy="${cy+r*0.5}" r="${r*0.2}" fill="#fff"/>`;
-    default: return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.3}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.3}" fill="#fff"/>`;
+    case "happy": return `<path d="M${cx1-3},${cy} q3,-4 6,0" stroke="#241a10" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M${cx2-3},${cy} q3,-4 6,0" stroke="#241a10" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    case "sleepy": return `<rect x="${cx1-3}" y="${cy}" width="6" height="2" fill="#241a10"/><rect x="${cx2-3}" y="${cy}" width="6" height="2" fill="#241a10"/>`;
+    case "wink": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#241a10"/><path d="M${cx2-3},${cy} q3,-3.5 6,0" stroke="#241a10" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    case "star": return [cx1,cx2].map(cx=>`<polygon points="${cx},${cy-3} ${cx+1},${cy-0.6} ${cx+3},${cy-0.6} ${cx+1.3},${cy+1} ${cx+2},${cy+3} ${cx},${cy+1.6} ${cx-2},${cy+3} ${cx-1.3},${cy+1} ${cx-3},${cy-0.6} ${cx-1},${cy-0.6}" fill="#e8c04a"/>`).join("");
+    case "angry": return `<path d="M${cx1-3.5},${cy-2} l7,2" stroke="#241a10" stroke-width="2"/><circle cx="${cx1}" cy="${cy+1}" r="${r*0.85}" fill="#241a10"/><path d="M${cx2+3.5},${cy-2} l-7,2" stroke="#241a10" stroke-width="2"/><circle cx="${cx2}" cy="${cy+1}" r="${r*0.85}" fill="#241a10"/>`;
+    case "teary": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#241a10"/><ellipse cx="${cx2+2.5}" cy="${cy+5}" rx="1.6" ry="2.2" fill="#7ec8e3"/>`;
+    case "heart": return [cx1,cx2].map(cx=>`<path d="M${cx},${cy+2.5} q-3.5,-4.5 -1.7,-6.2 q1.7,-1 1.7,1 q0,-2 1.7,-1 q1.8,1.7 -1.7,6.2 z" fill="#c85a3f"/>`).join("");
+    case "sharp": return `<rect x="${cx1-3}" y="${cy}" width="6" height="1.8" fill="#241a10" transform="rotate(-6 ${cx1} ${cy})"/><rect x="${cx2-3}" y="${cy}" width="6" height="1.8" fill="#241a10" transform="rotate(6 ${cx2} ${cy})"/>`;
+    case "closed": return `<rect x="${cx1-3}" y="${cy+1}" width="6" height="1.6" fill="#241a10" rx="0.8"/><rect x="${cx2-3}" y="${cy+1}" width="6" height="1.6" fill="#241a10" rx="0.8"/>`;
+    case "sparkle": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.35}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.35}" fill="#fff"/>`;
+    default: return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.32}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.32}" fill="#fff"/>`;
   }
 }
 function mouthSVG(style, hx, hy, hw, hh){
-  const cy=hy+hh*0.74, cx=hx+hw*0.5;
+  const cy=hy+hh*0.76, cx=hx+hw*0.5;
   switch(style){
-    case "open": return `<ellipse cx="${cx}" cy="${cy}" rx="3.2" ry="2.4" fill="#8b3a2b"/>`;
-    case "neutral": return `<rect x="${cx-3.2}" y="${cy}" width="6.4" height="1.5" fill="#8b3a2b"/>`;
-    case "smirk": return `<path d="M${cx-3.5},${cy} q3.5,2.5 6,-0.5" stroke="#8b3a2b" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
-    case "pout": return `<ellipse cx="${cx}" cy="${cy}" rx="1.6" ry="1.4" fill="#c96b5a"/>`;
-    case "grin": return `<path d="M${cx-4},${cy-1} q4,4 8,0 z" fill="#fff" stroke="#8b3a2b" stroke-width="1"/>`;
-    case "frown": return `<path d="M${cx-3.5},${cy+2} q3.5,-3.5 7,0" stroke="#8b3a2b" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
-    case "tongue": return `<ellipse cx="${cx}" cy="${cy}" rx="2.8" ry="2" fill="#8b3a2b"/><rect x="${cx-1.4}" y="${cy+0.5}" width="2.8" height="2.2" fill="#e0847a" rx="1"/>`;
-    case "kiss": return `<ellipse cx="${cx}" cy="${cy}" rx="1.8" ry="1.6" fill="#c96b5a"/>`;
-    case "whistle": return `<circle cx="${cx+1}" cy="${cy}" r="1.4" fill="#8b3a2b"/>`;
-    case "surprised": return `<ellipse cx="${cx}" cy="${cy}" rx="2.4" ry="3" fill="#8b3a2b"/>`;
-    default: return `<path d="M${cx-3.8},${cy} q3.8,3.8 7.6,0" stroke="#8b3a2b" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    case "open": return `<ellipse cx="${cx}" cy="${cy}" rx="3.6" ry="2.6" fill="#8b3a2b"/>`;
+    case "neutral": return `<rect x="${cx-3.6}" y="${cy}" width="7.2" height="1.7" fill="#8b3a2b"/>`;
+    case "smirk": return `<path d="M${cx-4},${cy} q4,2.8 6.8,-0.6" stroke="#8b3a2b" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+    case "pout": return `<ellipse cx="${cx}" cy="${cy}" rx="1.8" ry="1.6" fill="#c96b5a"/>`;
+    case "grin": return `<path d="M${cx-4.5},${cy-1} q4.5,4.5 9,0 z" fill="#fff" stroke="#8b3a2b" stroke-width="1.2"/>`;
+    case "frown": return `<path d="M${cx-4},${cy+2.2} q4,-4 8,0" stroke="#8b3a2b" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+    case "tongue": return `<ellipse cx="${cx}" cy="${cy}" rx="3.2" ry="2.2" fill="#8b3a2b"/><rect x="${cx-1.6}" y="${cy+0.6}" width="3.2" height="2.4" fill="#e0847a" rx="1.2"/>`;
+    case "kiss": return `<ellipse cx="${cx}" cy="${cy}" rx="2" ry="1.8" fill="#c96b5a"/>`;
+    case "whistle": return `<circle cx="${cx+1.2}" cy="${cy}" r="1.6" fill="#8b3a2b"/>`;
+    case "surprised": return `<ellipse cx="${cx}" cy="${cy}" rx="2.6" ry="3.3" fill="#8b3a2b"/>`;
+    default: return `<path d="M${cx-4.2},${cy} q4.2,4.2 8.4,0" stroke="#8b3a2b" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
   }
 }
 
@@ -419,39 +443,49 @@ function equipIconSVG(name, color){
   const s = `<svg class="equip-icon" viewBox="0 0 24 24">`;
   const e = `</svg>`;
   switch(name){
-    case "內褲": return s+`<path d="M4,7 h16 v4 q0,6 -6,7 q-2,1 -4,0 q-6,-1 -6,-7 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "襪子": return s+`<path d="M9,3 h6 v11 q0,3 4,3 v4 h-14 v-4 h4 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "內衣": return s+`<path d="M6,6 l3,-2 h6 l3,2 v3 l-2,1 v10 h-8 v-10 l-2,-1 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "手套": return s+`<path d="M8,10 v-4 q0,-2 2,-2 q2,0 2,2 v4 h1 v-3 q0,-2 2,-2 q2,0 2,2 v3 h1 v10 h-10 v-8 q0,-2 2,-2 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "長褲": return s+`<path d="M6,3 h12 v6 l1,12 h-5 l-1,-9 -1,9 h-5 l1,-12 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "T恤": return s+`<path d="M8,4 l4,-1 4,1 4,3 -2,3 -2,-1 v11 h-8 v-11 l-2,1 -2,-3 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "鞋子": return s+`<path d="M6,4 h6 v9 q4,0 8,3 v3 h-16 v-6 q0,-3 2,-5 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "外套": return s+`<path d="M7,4 l3,-1 2,2 2,-2 3,1 4,3 -2,3 -2,-1 v12 h-10 v-12 l-2,1 -2,-3 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/><path d="M11,5 v14 M13,5 v14" stroke="#2b2620" stroke-width="0.8"/>`+e;
-    case "帽子": return s+`<path d="M3,16 q1,-10 9,-10 q9,0 9,10 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/><rect x="2" y="15" width="20" height="3" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "兔耳帽": return s+`<path d="M8,10 q-2,-8 1,-9 q2,1 1,9 z" fill="${color}" stroke="#2b2620" stroke-width="1.2"/><path d="M15,10 q2,-8 -1,-9 q-2,1 -1,9 z" fill="${color}" stroke="#2b2620" stroke-width="1.2"/><ellipse cx="12" cy="15" rx="8" ry="6" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
-    case "魔法手杖": return s+`<rect x="11" y="7" width="2" height="15" fill="${color}" stroke="#2b2620" stroke-width="1"/><circle cx="12" cy="4" r="3.2" fill="#fdf3c8" stroke="#a5822a" stroke-width="1.2"/>`+e;
-    case "皇冠": return s+`<polygon points="4,18 4,10 8,13 12,7 16,13 20,10 20,18" fill="${color}" stroke="#2b2620" stroke-width="1.5"/><circle cx="12" cy="14" r="1.4" fill="#c85a3f"/>`+e;
-    default: return s+`<rect x="4" y="4" width="16" height="16" fill="${color}" stroke="#2b2620" stroke-width="2"/>`+e;
+    case "內褲": return s+`<path d="M4,7 h16 v4 q0,6 -6,7 q-2,1 -4,0 q-6,-1 -6,-7 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "襪子": return s+`<path d="M9,3 h6 v11 q0,3 4,3 v4 h-14 v-4 h4 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "內衣": return s+`<path d="M6,6 l3,-2 h6 l3,2 v3 l-2,1 v10 h-8 v-10 l-2,-1 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "手套": return s+`<path d="M8,10 v-4 q0,-2 2,-2 q2,0 2,2 v4 h1 v-3 q0,-2 2,-2 q2,0 2,2 v3 h1 v10 h-10 v-8 q0,-2 2,-2 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "長褲": return s+`<path d="M6,3 h12 v6 l1,12 h-5 l-1,-9 -1,9 h-5 l1,-12 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "T恤": return s+`<path d="M8,4 l4,-1 4,1 4,3 -2,3 -2,-1 v11 h-8 v-11 l-2,1 -2,-3 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "鞋子": return s+`<path d="M6,4 h6 v9 q4,0 8,3 v3 h-16 v-6 q0,-3 2,-5 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "外套": return s+`<path d="M7,4 l3,-1 2,2 2,-2 3,1 4,3 -2,3 -2,-1 v12 h-10 v-12 l-2,1 -2,-3 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/><path d="M11,5 v14 M13,5 v14" stroke="#241a10" stroke-width="0.8"/>`+e;
+    case "帽子": return s+`<path d="M3,16 q1,-10 9,-10 q9,0 9,10 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/><rect x="2" y="15" width="20" height="3" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "兔耳帽": return s+`<path d="M8,10 q-2,-8 1,-9 q2,1 1,9 z" fill="${color}" stroke="#241a10" stroke-width="1.2"/><path d="M15,10 q2,-8 -1,-9 q-2,1 -1,9 z" fill="${color}" stroke="#241a10" stroke-width="1.2"/><ellipse cx="12" cy="15" rx="8" ry="6" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
+    case "魔法手杖": return s+`<rect x="11" y="7" width="2" height="15" fill="${color}" stroke="#241a10" stroke-width="1"/><circle cx="12" cy="4" r="3.2" fill="#fdf3c8" stroke="#a5822a" stroke-width="1.2"/>`+e;
+    case "皇冠": return s+`<polygon points="4,18 4,10 8,13 12,7 16,13 20,10 20,18" fill="${color}" stroke="#241a10" stroke-width="1.5"/><circle cx="12" cy="14" r="1.4" fill="#c85a3f"/>`+e;
+    default: return s+`<rect x="4" y="4" width="16" height="16" fill="${color}" stroke="#241a10" stroke-width="2"/>`+e;
   }
 }
 function equipmentOnBodySVG(name, b){
   switch(name){
-    case "內褲": return rectTag(b.torsoX, b.torsoY+b.torsoH*0.64, b.torsoW, b.torsoH*0.3, "#f7f7f7", 'rx="2"');
+    case "內褲": return rectTag(b.torsoX, b.torsoY+b.torsoH*0.64, b.torsoW, b.torsoH*0.3, "#f7f7f7");
     case "襪子": return rectTag(b.leg1X, b.legY+b.legH*0.55, b.legW, b.legH*0.45, "#eeeeee") + rectTag(b.leg2X, b.legY+b.legH*0.55, b.legW, b.legH*0.45, "#eeeeee");
     case "內衣": return rectTag(b.torsoX, b.torsoY, b.torsoW, b.torsoH*0.48, "#fdf6d8");
-    case "手套": return rectTag(b.armLX, b.armY+b.armH*0.7, b.armW, b.armH*0.3, "#c0392b", 'rx="2"') + rectTag(b.armRX, b.armY+b.armH*0.7, b.armW, b.armH*0.3, "#c0392b", 'rx="2"');
+    case "手套": return rectTag(b.armLX, b.armY+b.armH*0.7, b.armW, b.armH*0.3, "#c0392b") + rectTag(b.armRX, b.armY+b.armH*0.7, b.armW, b.armH*0.3, "#c0392b");
     case "長褲": return rectTag(b.leg1X, b.legY, b.legW, b.legH*0.75, "#34495e") + rectTag(b.leg2X, b.legY, b.legW, b.legH*0.75, "#34495e") + rectTag(b.torsoX, b.torsoY+b.torsoH*0.78, b.torsoW, b.torsoH*0.22, "#34495e");
     case "T恤": return rectTag(b.torsoX-1, b.torsoY-1, b.torsoW+2, b.torsoH*0.75, "#2980b9") + rectTag(b.armLX-1, b.armY-1, b.armW+2, b.armH*0.22, "#2980b9") + rectTag(b.armRX-1, b.armY-1, b.armW+2, b.armH*0.22, "#2980b9");
-    case "鞋子": return rectTag(b.leg1X-1, b.legY+b.legH-6, b.legW+2, 7, "#5a3a22", 'rx="1.5"') + rectTag(b.leg2X-1, b.legY+b.legH-6, b.legW+2, 7, "#5a3a22", 'rx="1.5"');
-    case "外套": return rectTag(b.torsoX-3, b.torsoY-2, b.torsoW+6, b.torsoH*0.85, "#6b4c7a", 'fill-opacity="0.94"') + rectTag(b.armLX-2, b.armY-2, b.armW+3, b.armH*0.55, "#6b4c7a") + rectTag(b.armRX-1, b.armY-2, b.armW+3, b.armH*0.55, "#6b4c7a") + rectTag(b.torsoX+b.torsoW/2-0.5, b.torsoY+1, 1, b.torsoH*0.7, "#432f52");
-    case "帽子": return `<path d="M${b.headX-2},${b.headY-1} q${b.headW*0.5},-10 ${b.headW+4},0 z" fill="#16a085" stroke="#0e6655" stroke-width="1"/>` + rectTag(b.headX-4, b.headY-2, b.headW+8, 3, "#0e6655");
-    case "兔耳帽": return `<path d="M${b.headX+b.headW*0.18},${b.headY-2} q-2,-13 1.5,-16 q3.5,3 1.5,16 z" fill="#e39aa0" stroke="#a5545f" stroke-width="1"/><path d="M${b.headX+b.headW*0.62},${b.headY-2} q-2,-13 1.5,-16 q3.5,3 1.5,16 z" fill="#e39aa0" stroke="#a5545f" stroke-width="1"/>`;
-    case "魔法手杖": return `<rect x="${b.armRX+b.armW+1}" y="${b.armY-6}" width="2.2" height="${b.armH+10}" fill="#c9a15a" stroke="#7a5a25" stroke-width="1"/><circle cx="${b.armRX+b.armW+2.1}" cy="${b.armY-8}" r="2.8" fill="#fdf3c8" stroke="#a5822a" stroke-width="1"/>`;
-    case "皇冠": return `<polygon points="${b.headX-1},${b.headY-2} ${b.headX+b.headW*0.2},${b.headY-10} ${b.headX+b.headW*0.4},${b.headY-3} ${b.headX+b.headW*0.5},${b.headY-11} ${b.headX+b.headW*0.6},${b.headY-3} ${b.headX+b.headW*0.8},${b.headY-10} ${b.headX+b.headW+1},${b.headY-2}" fill="#f7d716" stroke="#a5822a" stroke-width="1"/><circle cx="${b.headX+b.headW*0.5}" cy="${b.headY-7}" r="1.6" fill="#c85a3f"/>`;
+    case "鞋子": return rectTag(b.leg1X-1, b.legY+b.legH-6, b.legW+2, 7, "#5a3a22") + rectTag(b.leg2X-1, b.legY+b.legH-6, b.legW+2, 7, "#5a3a22");
+    case "外套": return rectTag(b.torsoX-3, b.torsoY-2, b.torsoW+6, b.torsoH*0.85, "#6b4c7a", 'fill-opacity="0.94"') + rectTag(b.armLX-2, b.armY-2, b.armW+3, b.armH*0.55, "#6b4c7a") + rectTag(b.armRX-1, b.armY-2, b.armW+3, b.armH*0.55, "#6b4c7a");
+    case "帽子": return `<path d="M${b.headX-2},${b.headY-1} q${b.headW*0.5},-10 ${b.headW+4},0 z" fill="#16a085" stroke="#241a10" stroke-width="2"/>` + rectTag(b.headX-4, b.headY-2, b.headW+8, 3, "#0e6655");
+    case "兔耳帽": return `<path d="M${b.headX+b.headW*0.18},${b.headY-2} q-2,-13 1.5,-16 q3.5,3 1.5,16 z" fill="#e39aa0" stroke="#241a10" stroke-width="1.6"/><path d="M${b.headX+b.headW*0.62},${b.headY-2} q-2,-13 1.5,-16 q3.5,3 1.5,16 z" fill="#e39aa0" stroke="#241a10" stroke-width="1.6"/>`;
+    case "魔法手杖": return `<rect x="${b.armRX+b.armW+1}" y="${b.armY-6}" width="2.4" height="${b.armH+10}" fill="#c9a15a" stroke="#241a10" stroke-width="1.6"/><circle cx="${b.armRX+b.armW+2.2}" cy="${b.armY-8}" r="3" fill="#fdf3c8" stroke="#241a10" stroke-width="1.6"/>`;
+    case "皇冠": return `<polygon points="${b.headX-1},${b.headY-2} ${b.headX+b.headW*0.2},${b.headY-10} ${b.headX+b.headW*0.4},${b.headY-3} ${b.headX+b.headW*0.5},${b.headY-11} ${b.headX+b.headW*0.6},${b.headY-3} ${b.headX+b.headW*0.8},${b.headY-10} ${b.headX+b.headW+1},${b.headY-2}" fill="#f7d716" stroke="#241a10" stroke-width="1.6"/><circle cx="${b.headX+b.headW*0.5}" cy="${b.headY-7}" r="1.8" fill="#c85a3f"/>`;
     default: return "";
   }
 }
-let glowIdSeq = 0;
+let uidSeq = 0;
+function bodyShapes(b, headRadius){
+  return [
+    `<rect x="${b.leg1X}" y="${b.legY}" width="${b.legW}" height="${b.legH}" rx="3"/>`,
+    `<rect x="${b.leg2X}" y="${b.legY}" width="${b.legW}" height="${b.legH}" rx="3"/>`,
+    `<rect x="${b.armLX}" y="${b.armY}" width="${b.armW}" height="${b.armH}" rx="3"/>`,
+    `<rect x="${b.armRX}" y="${b.armY}" width="${b.armW}" height="${b.armH}" rx="3"/>`,
+    `<rect x="${b.torsoX}" y="${b.torsoY}" width="${b.torsoW}" height="${b.torsoH}" rx="4"/>`,
+    `<rect x="${b.headX}" y="${b.headY}" width="${b.headW}" height="${b.headH}" rx="${headRadius}"/>`
+  ].join("");
+}
 function renderAvatarSVG(profile, cumulative, mode){
   const stage = stageFor(ageFor(cumulative));
   const p = STAGE_PROPORTIONS[stage];
@@ -465,32 +499,38 @@ function renderAvatarSVG(profile, cumulative, mode){
   const headX=centerX-headW/2, headY=p.headY;
   const skin = SKIN_TONES[profile.skinTone] || SKIN_TONES.medium;
   const b = { torsoX,torsoY:p.torsoY,torsoW,torsoH, headX,headY,headW,headH, leg1X,leg2X,legY:p.legY,legW:p.legW,legH, armLX,armRX,armY:p.armY,armW,armH:p.armH };
+  const headRadius = headW*fs.rx;
 
   const level = levelFor(cumulative);
-  const glowCount = Math.min(RAINBOW.length, Math.floor(level/3));
-  const gid = "glow"+(glowIdSeq++);
-  let glow = "";
-  if (glowCount>0){
-    glow += `<defs><filter id="${gid}" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.2"/></filter></defs>`;
-    for (let i=0;i<glowCount;i++){
-      const r = 26+i*7;
-      glow += `<circle cx="50" cy="70" r="${r}" fill="none" stroke="${RAINBOW[i]}" stroke-width="3" opacity="0.4" filter="url(#${gid})"/>`;
-    }
-  }
+  const maxUnlocked = Math.min(RAINBOW.length, Math.floor(level/3));
+  const activeGlow = (profile.glowColors||[]).filter(i=>i<maxUnlocked);
+  const auraId = "aura"+(uidSeq++), stickerId = "sticker"+(uidSeq++);
 
-  let inner = glow;
-  inner += rectTag(leg1X, p.legY, p.legW, legH, skin) + rectTag(leg2X, p.legY, p.legW, legH, skin);
-  inner += rectTag(armLX, p.armY, armW, p.armH, skin) + rectTag(armRX, p.armY, armW, p.armH, skin);
-  inner += rectTag(torsoX, p.torsoY, torsoW, torsoH, skin);
-  const headRadius = headW*fs.rx;
-  inner += `<rect x="${headX}" y="${headY}" width="${headW}" height="${headH}" rx="${headRadius}" fill="${skin}" stroke="#7a5230" stroke-width="1.5" shape-rendering="crispEdges"/>`;
-  inner += hairSVG(profile, headX, headY, headW, headH);
-  inner += eyesSVG(profile.eyeStyle, headX, headY, headW, headH);
-  inner += mouthSVG(profile.mouthStyle, headX, headY, headW, headH);
+  let defs = `<defs>
+    <filter id="${auraId}" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.6"/></filter>
+    <filter id="${stickerId}" x="-30%" y="-30%" width="160%" height="160%">
+      <feMorphology operator="dilate" radius="2" in="SourceAlpha" result="dil"/>
+      <feFlood flood-color="#fffaf0" result="wcol"/>
+      <feComposite in="wcol" in2="dil" operator="in" result="outline"/>
+      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>`;
+
+  let aura = "";
+  activeGlow.forEach((idx,i)=>{
+    const w = 4+i*3.2;
+    aura += `<g fill="none" stroke="${RAINBOW[idx].c}" stroke-width="${w}" opacity="0.5" filter="url(#${auraId})">${bodyShapes(b, headRadius)}</g>`;
+  });
+
+  let body = `<g fill="${skin}" stroke="#241a10" stroke-width="2.4">${bodyShapes(b, headRadius)}</g>`;
+  body += hairSVG(profile, headX, headY, headW, headH);
+  body += eyesSVG(profile.eyeStyle, headX, headY, headW, headH);
+  body += mouthSVG(profile.mouthStyle, headX, headY, headW, headH);
   const equipped = profile.equippedItems || [];
-  EQUIPMENT_ITEMS.forEach(item => { if (equipped.includes(item.amount)) inner += equipmentOnBodySVG(item.name, b); });
+  EQUIPMENT_ITEMS.forEach(item => { if (equipped.includes(item.amount)) body += equipmentOnBodySVG(item.name, b); });
 
-  const viewBox = mode==="portrait" ? `${headX-8} ${headY-14} ${headW+16} ${headH+22}` : "-15 40 130 100";
+  const inner = defs + aura + `<g filter="url(#${stickerId})">${body}</g>`;
+  const viewBox = mode==="portrait" ? `${headX-8} ${headY-14} ${headW+16} ${headH+22}` : "-14 -6 128 112";
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
 }
 
@@ -555,13 +595,17 @@ function renderPersonSelects(){ populateSelect(document.getElementById("inputPer
 function cumulativeContribution(name){ return allRecords.filter(r=>r.person===name && r.type==="expense").reduce((s,r)=>s+r.amount,0); }
 function repaidTotal(name){ return allRecords.filter(r=>r.person===name && r.type==="repayment").reduce((s,r)=>s+r.amount,0); }
 function outstandingBalance(name){ return cumulativeContribution(name)-repaidTotal(name); }
+function themeStyle(profile){
+  const c = profile.themeColor || THEME_COLORS[0];
+  return `--frame-color:${c}; --frame-bg:${c}22;`;
+}
 
 function renderCharacterStage(){
   const stage=document.getElementById("characterStage");
   stage.innerHTML = profiles.map(p=>{
     const cumulative=cumulativeContribution(p.name);
     const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
-    return `<div class="character-slot">
+    return `<div class="character-slot" style="${themeStyle(p)}">
       <div class="avatar-wrap">${renderAvatarSVG(p, cumulative, "full")}</div>
       <div class="ctitle" style="color:${titleObj?titleObj.color:'var(--ink-soft)'}">${titleObj?"「"+titleObj.name+"」":""}</div>
       <div class="cname">${p.name}</div>
@@ -573,7 +617,7 @@ function renderPlayerStrip(){
   strip.innerHTML = profiles.map(p=>{
     const cumulative=cumulativeContribution(p.name), outstanding=outstandingBalance(p.name);
     const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
-    return `<div class="player-card">
+    return `<div class="player-card" style="${themeStyle(p)}">
       <div class="player-title" style="color:${titleObj?titleObj.color:'rgba(255,255,255,0.5)'}">${titleObj?"「"+titleObj.name+"」":"尚無稱號"}</div>
       <div class="portrait-wrap">${renderAvatarSVG(p, cumulative, "portrait")}</div>
       <div class="player-name">${p.name}</div>
@@ -746,14 +790,11 @@ function renderLevelBox(cumulative){
   const level=levelFor(cumulative), stage=stageFor(ageFor(cumulative));
   const cur=level*10000, next=(level+1)*10000;
   const progress=Math.min(100, Math.round(((cumulative-cur)/(next-cur))*100));
-  const glowCount=Math.min(RAINBOW.length, Math.floor(level/3));
-  const dots = RAINBOW.slice(0,glowCount).map(c=>`<span class="glow-dot" style="background:${c}"></span>`).join("");
   document.getElementById("levelBox").innerHTML = `
     <div class="level-num">Lv. ${level}</div>
     <div class="level-stage">${STAGE_LABEL[stage]}(約 ${ageFor(cumulative)} 歲)</div>
     <div class="xp-bar-outer"><div class="xp-bar-inner" style="width:${progress}%"></div></div>
-    <div class="xp-label">${fmt(cumulative)} / ${fmt(next)}(距離下一等級還差 ${fmt(next-cumulative)})</div>
-    <div class="glow-hint">身體光環：${glowCount>0?dots:"尚未點亮(每3級增加一色)"}</div>`;
+    <div class="xp-label">${fmt(cumulative)} / ${fmt(next)}(距離下一等級還差 ${fmt(next-cumulative)})</div>`;
 }
 function renderEquipGrid(cumulative){
   const profile=currentProfile();
@@ -793,7 +834,8 @@ function patchProfileLocalThenSync(profile, patch){
     body:JSON.stringify({key:sessionKey,action:"updateProfile",slot:profile.slot,name:updated.name,
       birthdate:updated.birthdate||"",gender:updated.gender||"",equippedItems:updated.equippedItems||[],
       activeTitle:updated.activeTitle||"",hairstyle:updated.hairstyle||"",eyeStyle:updated.eyeStyle||"",
-      faceShape:updated.faceShape||"",mouthStyle:updated.mouthStyle||"",bodyType:updated.bodyType||"",skinTone:updated.skinTone||""})})
+      faceShape:updated.faceShape||"",mouthStyle:updated.mouthStyle||"",bodyType:updated.bodyType||"",skinTone:updated.skinTone||"",
+      themeColor:updated.themeColor||"",glowColors:updated.glowColors||[]})})
     .then(json=>{ if (json.status!=="success") throw new Error(json.message); })
     .catch(err=>{ alert("同步失敗，正在重新整理："+err.message); loadRecords(); });
 }
@@ -802,6 +844,16 @@ function openSettings(){
   const container=document.getElementById("profileForms");
   container.innerHTML = profiles.map(p=>{
     const cumulative=cumulativeContribution(p.name);
+    const level=levelFor(cumulative);
+    const maxUnlocked=Math.min(RAINBOW.length, Math.floor(level/3));
+    const activeGlow=p.glowColors||[];
+    const glowGrid = RAINBOW.map((r,i)=>{
+      const unlocked=i<maxUnlocked, on=activeGlow.includes(i);
+      return `<div class="glow-check ${unlocked?"":"locked"} ${on?"on":""}" data-idx="${i}" ${unlocked?"":"style='pointer-events:none'"}>
+        <div class="dot" style="background:${r.c}"></div><div class="lbl">${on?"✓":""}${r.n}</div>
+      </div>`;
+    }).join("");
+    const themeSwatches = THEME_COLORS.map(c=>`<div class="theme-swatch ${p.themeColor===c?"selected":""}" data-color="${c}" style="background:${c}"></div>`).join("");
     return `
     <div class="profile-block" data-slot="${p.slot}">
       <div class="profile-head"><div class="avatar-wrap" id="settingsAvatar-${p.slot}">${renderAvatarSVG(p, cumulative, "full")}</div><div class="ptitle">${p.name}</div></div>
@@ -864,6 +916,10 @@ function openSettings(){
           <option value="dark" ${p.skinTone==="dark"?"selected":""}>深膚</option><option value="deep" ${p.skinTone==="deep"?"selected":""}>深邃</option>
         </select></div>
       </div>
+      <label>🖼 專屬主題色(邊框/底色)</label>
+      <div class="theme-grid">${themeSwatches}</div>
+      <label>🌈 身體光環(每 3 級解鎖一色，可複選)</label>
+      <div class="glow-check-grid">${glowGrid}</div>
     </div>`;
   }).join("");
 
@@ -880,19 +936,45 @@ function openSettings(){
     }
     dateInput.addEventListener("change", updateZodiac); updateZodiac();
 
+    let draftTheme = profile.themeColor;
+    let draftGlow = (profile.glowColors||[]).slice();
+
     function refreshPreview(){
       const draft={...profile,
         gender:block.querySelector(".f-gender").value, hairstyle:block.querySelector(".f-hairstyle").value,
         eyeStyle:block.querySelector(".f-eyeStyle").value, faceShape:block.querySelector(".f-faceShape").value,
         mouthStyle:block.querySelector(".f-mouthStyle").value, bodyType:block.querySelector(".f-bodyType").value,
-        skinTone:block.querySelector(".f-skinTone").value
+        skinTone:block.querySelector(".f-skinTone").value, glowColors:draftGlow
       };
       document.getElementById("settingsAvatar-"+slot).innerHTML = renderAvatarSVG(draft, cumulativeContribution(profile.name), "full");
     }
     block.querySelectorAll("select").forEach(sel=>sel.addEventListener("change", refreshPreview));
+
+    block.querySelectorAll(".theme-swatch").forEach(sw=>{
+      sw.addEventListener("click", ()=>{
+        draftTheme = sw.dataset.color;
+        block.querySelectorAll(".theme-swatch").forEach(s=>s.classList.remove("selected"));
+        sw.classList.add("selected");
+        block.dataset.theme = draftTheme;
+      });
+    });
+    block.dataset.theme = draftTheme || "";
+
+    block.querySelectorAll(".glow-check:not(.locked)").forEach(gc=>{
+      gc.addEventListener("click", ()=>{
+        const idx = Number(gc.dataset.idx);
+        if (draftGlow.includes(idx)) draftGlow = draftGlow.filter(i=>i!==idx);
+        else draftGlow.push(idx);
+        gc.classList.toggle("on", draftGlow.includes(idx));
+        gc.querySelector(".lbl").textContent = (draftGlow.includes(idx)?"✓":"") + RAINBOW[idx].n;
+        block.dataset.glow = draftGlow.join(",");
+        refreshPreview();
+      });
+    });
+    block.dataset.glow = draftGlow.join(",");
   });
 
-  document.getElementById("settingsStatus").textContent="";
+  document.getElementById("settingsStatus").textContent = "";
   document.getElementById("settingsOverlay").classList.add("show");
 }
 function closeSettings(){ document.getElementById("settingsOverlay").classList.remove("show"); }
@@ -904,6 +986,7 @@ async function saveSettings(){
     for (const block of blocks){
       const slot=block.dataset.slot;
       const profile=profiles.find(p=>p.slot.toString()===slot.toString());
+      const glowColors = (block.dataset.glow||"").split(",").filter(s=>s!=="").map(Number);
       const payload={
         key:sessionKey, action:"updateProfile", slot,
         name:block.querySelector(".f-name").value.trim(),
@@ -915,6 +998,8 @@ async function saveSettings(){
         mouthStyle:block.querySelector(".f-mouthStyle").value,
         bodyType:block.querySelector(".f-bodyType").value,
         skinTone:block.querySelector(".f-skinTone").value,
+        themeColor: block.dataset.theme || profile.themeColor || "",
+        glowColors: glowColors,
         equippedItems:profile.equippedItems||[],
         activeTitle:profile.activeTitle||""
       };
