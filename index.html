@@ -30,7 +30,7 @@
     repeating-linear-gradient(0deg, var(--vault-mid) 0 26px, var(--vault-dark) 26px 28px),
     repeating-linear-gradient(90deg, transparent 0 54px, rgba(0,0,0,0.18) 54px 56px); }
   #bgScene .door{ position:absolute; width:78vmin; height:78vmin; border-radius:50%; top:46%; left:50%; transform:translate(-50%,-50%);
-    background: repeating-conic-gradient(var(--bronze) 0deg 8deg, var(--gold-dark) 8deg 16deg);
+    background: repeating-conic-gradient(var(--bronze) 0deg 15deg, var(--gold-dark) 15deg 30deg);
     border:10px solid var(--vault-line); box-shadow:0 0 0 5px var(--vault-dark), 0 0 40px rgba(0,0,0,0.5) inset; }
   #bgScene .door::before{ content:""; position:absolute; inset:16%; border-radius:50%; background:var(--vault-dark); border:7px solid var(--gold); }
   #bgScene .door::after{ content:""; position:absolute; inset:38%; border-radius:50%; background:var(--vault-line); border:5px solid var(--gold-dark); }
@@ -39,6 +39,18 @@
   #bgScene .handle .bar1{ top:46%; left:0; width:100%; height:8%; }
   #bgScene .handle .bar2{ top:0; left:46%; width:8%; height:100%; }
   #bgScene .handle .knob{ position:absolute; top:38%; left:38%; width:24%; height:24%; border-radius:50%; background:var(--gold); border:2px solid var(--vault-line); }
+  #bgScene .bolt{ position:absolute; width:14px; height:14px; background:var(--gold-dark); border:2px solid var(--vault-line); box-shadow:0 0 0 2px var(--gold) inset; }
+  #bgScene .b1{ top:9%; left:50%; margin-left:-7px; }
+  #bgScene .b2{ top:23%; left:78%; }
+  #bgScene .b3{ top:50%; left:89%; margin-top:-7px; }
+  #bgScene .b4{ top:77%; left:78%; }
+  #bgScene .b5{ bottom:9%; left:50%; margin-left:-7px; }
+  #bgScene .b6{ top:77%; left:14%; }
+  #bgScene .b7{ top:50%; left:3%; margin-top:-7px; }
+  #bgScene .b8{ top:23%; left:14%; }
+  #bgScene .stack{ position:absolute; bottom:4%; width:44px; }
+  #bgScene .stack .bar{ height:9px; background:var(--gold); border:2px solid var(--gold-dark); margin-bottom:2px; }
+  #bgScene .stack.left{ left:6%; } #bgScene .stack.right{ right:6%; }
 
   .bevel-out{ border-style:solid; border-width:3px; border-top-color:rgba(255,255,255,0.55); border-left-color:rgba(255,255,255,0.55); border-right-color:rgba(0,0,0,0.4); border-bottom-color:rgba(0,0,0,0.4); box-shadow:0 3px 0 rgba(0,0,0,0.3); }
 
@@ -197,7 +209,11 @@
 
 <div id="bgScene">
   <div class="door"></div>
+  <div class="bolt b1"></div><div class="bolt b2"></div><div class="bolt b3"></div><div class="bolt b4"></div>
+  <div class="bolt b5"></div><div class="bolt b6"></div><div class="bolt b7"></div><div class="bolt b8"></div>
   <div class="handle"><i class="bar1"></i><i class="bar2"></i><div class="knob"></div></div>
+  <div class="stack left"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+  <div class="stack right"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
 </div>
 
 <div id="lockScreen">
@@ -373,15 +389,15 @@ function ageFor(c){ return Math.round(levelFor(c)*1.5); }
 function stageFor(age){ if(age<=2) return "baby"; if(age<=11) return "child"; if(age<=17) return "teen"; if(age<=59) return "adult"; return "elder"; }
 const STAGE_LABEL = { baby:"寶寶", child:"孩童", teen:"青少年", adult:"成人", elder:"長者" };
 const STAGE_PROPORTIONS = {
-  baby:{ headW:50,headH:46,headY:12,torsoW:26,torsoH:16,torsoY:52,legW:11,legH:11,legY:66,armW:9,armH:13,armY:54 },
-  child:{ headW:46,headH:42,headY:9,torsoW:27,torsoH:21,torsoY:46,legW:11,legH:19,legY:65,armW:9,armH:19,armY:48 },
-  teen:{ headW:42,headH:38,headY:8,torsoW:28,torsoH:26,torsoY:41,legW:12,legH:26,legY:66,armW:9,armH:25,armY:43 },
-  adult:{ headW:40,headH:36,headY:7,torsoW:29,torsoH:29,torsoY:38,legW:12,legH:31,legY:67,armW:9,armH:29,armY:40 },
-  elder:{ headW:40,headH:36,headY:9,torsoW:27,torsoH:27,torsoY:40,legW:12,legH:28,legY:68,armW:9,armH:26,armY:42 }
+  baby:{ headW:58,headH:54,headY:10,torsoW:24,torsoH:13,torsoY:54,legW:10,legH:9,legY:66,armW:9,armH:11,armY:55 },
+  child:{ headW:54,headH:50,headY:7,torsoW:25,torsoH:18,torsoY:48,legW:10,legH:16,legY:65,armW:9,armH:16,armY:49 },
+  teen:{ headW:50,headH:46,headY:6,torsoW:26,torsoH:22,torsoY:44,legW:11,legH:22,legY:66,armW:9,armH:21,armY:45 },
+  adult:{ headW:48,headH:44,headY:5,torsoW:27,torsoH:25,torsoY:41,legW:11,legH:26,legY:67,armW:9,armH:24,armY:42 },
+  elder:{ headW:48,headH:44,headY:7,torsoW:25,torsoH:23,torsoY:43,legW:11,legH:24,legY:68,armW:9,armH:22,armY:44 }
 };
 const SKIN_TONES = { porcelain:"#fbe8d3", light:"#f6dcb8", ivory:"#f2d9b6", medium:"#f0c090", rosy:"#eebfa8", olive:"#c9a96b", tan:"#d99f6c", bronze:"#b97f4a", dark:"#a2714a", deep:"#7a5636" };
 const BODY_MULT = { slim:{w:0.85,h:1}, regular:{w:1,h:1}, broad:{w:1.22,h:1}, chubby:{w:1.15,h:1.06}, tall:{w:1,h:1.12}, short:{w:1,h:0.88}, athletic:{w:1.08,h:1.04}, petite:{w:0.88,h:0.88}, curvy:{w:1.06,h:1.02}, stocky:{w:1.18,h:0.92} };
-const FACE_SHAPE = { round:{rx:0.34,w:1,h:1}, square:{rx:0.1,w:1,h:1}, oval:{rx:0.24,w:0.94,h:1.06}, heart:{rx:0.3,w:1,h:0.97}, long:{rx:0.2,w:0.88,h:1.14}, diamond:{rx:0.14,w:0.88,h:1.03}, triangle:{rx:0.1,w:1.03,h:0.95}, pear:{rx:0.24,w:1.03,h:1}, chubby:{rx:0.38,w:1.1,h:0.96}, sharp:{rx:0.08,w:0.85,h:1.08} };
+const FACE_SHAPE = { round:{rx:0.42,w:1,h:1}, square:{rx:0.14,w:1,h:1}, oval:{rx:0.32,w:0.94,h:1.06}, heart:{rx:0.38,w:1,h:0.97}, long:{rx:0.28,w:0.88,h:1.14}, diamond:{rx:0.2,w:0.88,h:1.03}, triangle:{rx:0.16,w:1.03,h:0.95}, pear:{rx:0.32,w:1.03,h:1}, chubby:{rx:0.46,w:1.1,h:0.96}, sharp:{rx:0.12,w:0.85,h:1.08} };
 
 function rectTag(x,y,w,h,fill,extra){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#241a10" stroke-width="2.4" shape-rendering="crispEdges" rx="2" ${extra||""}/>`; }
 function pxTag(x,y,s,fill){ return `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fill}" stroke="#241a10" stroke-width="1.6" shape-rendering="crispEdges" rx="1"/>`; }
@@ -476,14 +492,15 @@ function equipmentOnBodySVG(name, b){
   }
 }
 let uidSeq = 0;
-function bodyShapes(b, headRadius){
+function bodyShapes(b, headRadius, pad){
+  pad = pad || 0;
   return [
-    `<rect x="${b.leg1X}" y="${b.legY}" width="${b.legW}" height="${b.legH}" rx="3"/>`,
-    `<rect x="${b.leg2X}" y="${b.legY}" width="${b.legW}" height="${b.legH}" rx="3"/>`,
-    `<rect x="${b.armLX}" y="${b.armY}" width="${b.armW}" height="${b.armH}" rx="3"/>`,
-    `<rect x="${b.armRX}" y="${b.armY}" width="${b.armW}" height="${b.armH}" rx="3"/>`,
-    `<rect x="${b.torsoX}" y="${b.torsoY}" width="${b.torsoW}" height="${b.torsoH}" rx="4"/>`,
-    `<rect x="${b.headX}" y="${b.headY}" width="${b.headW}" height="${b.headH}" rx="${headRadius}"/>`
+    `<rect x="${b.leg1X-pad}" y="${b.legY-pad}" width="${b.legW+pad*2}" height="${b.legH+pad*2}" rx="${5+pad}"/>`,
+    `<rect x="${b.leg2X-pad}" y="${b.legY-pad}" width="${b.legW+pad*2}" height="${b.legH+pad*2}" rx="${5+pad}"/>`,
+    `<rect x="${b.armLX-pad}" y="${b.armY-pad}" width="${b.armW+pad*2}" height="${b.armH+pad*2}" rx="${5+pad}"/>`,
+    `<rect x="${b.armRX-pad}" y="${b.armY-pad}" width="${b.armW+pad*2}" height="${b.armH+pad*2}" rx="${5+pad}"/>`,
+    `<rect x="${b.torsoX-pad}" y="${b.torsoY-pad}" width="${b.torsoW+pad*2}" height="${b.torsoH+pad*2}" rx="${8+pad}"/>`,
+    `<rect x="${b.headX-pad}" y="${b.headY-pad}" width="${b.headW+pad*2}" height="${b.headH+pad*2}" rx="${headRadius+pad}"/>`
   ].join("");
 }
 function renderAvatarSVG(profile, cumulative, mode){
@@ -504,33 +521,26 @@ function renderAvatarSVG(profile, cumulative, mode){
   const level = levelFor(cumulative);
   const maxUnlocked = Math.min(RAINBOW.length, Math.floor(level/3));
   const activeGlow = (profile.glowColors||[]).filter(i=>i<maxUnlocked);
-  const auraId = "aura"+(uidSeq++), stickerId = "sticker"+(uidSeq++);
 
-  let defs = `<defs>
-    <filter id="${auraId}" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.6"/></filter>
-    <filter id="${stickerId}" x="-30%" y="-30%" width="160%" height="160%">
-      <feMorphology operator="dilate" radius="2" in="SourceAlpha" result="dil"/>
-      <feFlood flood-color="#fffaf0" result="wcol"/>
-      <feComposite in="wcol" in2="dil" operator="in" result="outline"/>
-      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>`;
-
+  // 光環：貼合身形外緣、往外一層一層擴散(不靠濾鏡，直接畫放大輪廓)
   let aura = "";
   activeGlow.forEach((idx,i)=>{
-    const w = 4+i*3.2;
-    aura += `<g fill="none" stroke="${RAINBOW[idx].c}" stroke-width="${w}" opacity="0.5" filter="url(#${auraId})">${bodyShapes(b, headRadius)}</g>`;
+    const pad = 3 + i*3.4;
+    aura += `<g fill="none" stroke="${RAINBOW[idx].c}" stroke-width="2.6" opacity="${0.55 - i*0.06}">${bodyShapes(b, headRadius, pad)}</g>`;
   });
 
-  let body = `<g fill="${skin}" stroke="#241a10" stroke-width="2.4">${bodyShapes(b, headRadius)}</g>`;
+  // 貼紙感：先畫一層深色外緣、再畫一層放大的白色描邊，最後疊上實際角色(不依賴瀏覽器濾鏡，任何裝置都會顯示)
+  const sticker = `<g fill="#241a10">${bodyShapes(b, headRadius, 4.5)}</g><g fill="#fffaf0">${bodyShapes(b, headRadius, 2.6)}</g>`;
+
+  let body = `<g fill="${skin}" stroke="#241a10" stroke-width="2.6">${bodyShapes(b, headRadius)}</g>`;
   body += hairSVG(profile, headX, headY, headW, headH);
   body += eyesSVG(profile.eyeStyle, headX, headY, headW, headH);
   body += mouthSVG(profile.mouthStyle, headX, headY, headW, headH);
   const equipped = profile.equippedItems || [];
   EQUIPMENT_ITEMS.forEach(item => { if (equipped.includes(item.amount)) body += equipmentOnBodySVG(item.name, b); });
 
-  const inner = defs + aura + `<g filter="url(#${stickerId})">${body}</g>`;
-  const viewBox = mode==="portrait" ? `${headX-8} ${headY-14} ${headW+16} ${headH+22}` : "-14 -6 128 112";
+  const inner = aura + sticker + body;
+  const viewBox = mode==="portrait" ? `${headX-12} ${headY-18} ${headW+24} ${headH+30}` : "-20 -12 140 122";
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
 }
 
@@ -564,11 +574,18 @@ async function fetchJson(url, opts){
   let lastErr;
   for (let attempt=0; attempt<2; attempt++){
     try{
-      const res = await fetch(url, opts);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(()=>controller.abort(), 10000);
+      const res = await fetch(url, {...opts, signal: controller.signal});
+      clearTimeout(timeoutId);
       const text = await res.text();
       try { return JSON.parse(text); }
       catch(e){ throw new Error("伺服器回應非 JSON，請確認 Apps Script 已重新部署為最新版本"); }
-    } catch(err){ lastErr=err; if (attempt===0) await new Promise(r=>setTimeout(r,800)); }
+    } catch(err){
+      if (err.name === "AbortError") lastErr = new Error("連線逾時(10秒無回應)，請確認網路連線或稍後再試");
+      else lastErr = err;
+      if (attempt===0) await new Promise(r=>setTimeout(r,800));
+    }
   }
   throw lastErr;
 }
@@ -597,7 +614,7 @@ function repaidTotal(name){ return allRecords.filter(r=>r.person===name && r.typ
 function outstandingBalance(name){ return cumulativeContribution(name)-repaidTotal(name); }
 function themeStyle(profile){
   const c = profile.themeColor || THEME_COLORS[0];
-  return `--frame-color:${c}; --frame-bg:${c}22;`;
+  return `--frame-color:${c}; --frame-bg:${c}cc;`;
 }
 
 function renderCharacterStage(){
@@ -919,6 +936,7 @@ function openSettings(){
       <label>🖼 專屬主題色(邊框/底色)</label>
       <div class="theme-grid">${themeSwatches}</div>
       <label>🌈 身體光環(每 3 級解鎖一色，可複選)</label>
+      ${maxUnlocked===0 ? '<p style="font-size:12px;color:var(--ink-soft);margin:4px 0;">尚未解鎖任何顏色，累積貢獻滿 30000 解鎖第一色</p>' : ''}
       <div class="glow-check-grid">${glowGrid}</div>
     </div>`;
   }).join("");
