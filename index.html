@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-<title>MONEYCRAFT</title>
+<title>錢莊</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#2d3561">
@@ -13,195 +13,167 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --indigo: #2d3561; --indigo-deep: #1a2038;
-    --vermillion: #c85a3f; --vermillion-dark: #9c3f2a;
-    --gold: #c9a15a; --gold-dark: #96733a;
-    --cream: #f0e6d2; --cream-dark: #d9c9a3;
-    --ink: #2b2620; --ink-soft: #6b5c44;
-    --wave: #4d7c8a; --wave-dark: #315a66;
-    --sakura: #e39aa0;
-    --card: #f5ecd8; --panel: #ece0c4; --panel-dark: #c9b587; --panel-light: #faf3e2;
-    --danger: #b33f32; --danger-dark: #7d2c22;
+    --indigo:#2d3561; --indigo-deep:#1a2038; --vermillion:#c85a3f; --vermillion-dark:#9c3f2a;
+    --gold:#c9a15a; --gold-dark:#96733a; --cream:#f0e6d2; --cream-dark:#d9c9a3;
+    --ink:#2b2620; --ink-soft:#6b5c44; --wave:#4d7c8a; --wave-dark:#315a66; --sakura:#e39aa0;
+    --card:#f5ecd8; --panel:#ece0c4; --panel-dark:#c9b587; --panel-light:#faf3e2;
+    --danger:#b33f32; --danger-dark:#7d2c22;
   }
-  *{ box-sizing: border-box; }
+  *{ box-sizing:border-box; image-rendering:pixelated; }
   html,body{ margin:0; padding:0; }
-  body{
-    color: var(--ink);
-    font-family: "DotGothic16", "Noto Sans TC", sans-serif;
-    font-size: 16px;
-    -webkit-tap-highlight-color: transparent;
-    min-height:100vh;
-    padding-bottom: 92px;
-    background: var(--cream);
-    overflow-x: hidden;
-  }
-  h1,h2,h3{ font-family: "DotGothic16", sans-serif; letter-spacing: 0.5px; }
-  .pixel-en{ font-family: "Press Start 2P", monospace; }
+  body{ color:var(--ink); font-family:"DotGothic16","Noto Sans TC",sans-serif; font-size:16px; -webkit-tap-highlight-color:transparent; min-height:100vh; padding-bottom:92px; background:var(--cream); overflow-x:hidden; }
+  h1,h2,h3{ font-family:"DotGothic16",sans-serif; letter-spacing:0.5px; }
 
-  #bgScene{ position: fixed; inset:0; z-index:-2; overflow:hidden; }
-  #bgScene .sky{ position:absolute; inset:0; background: linear-gradient(180deg, #f7e0b8 0%, #eab08a 35%, #d98a7e 55%, #2d3561 100%); }
-  #bgScene .sun{ position:absolute; top:10%; left:50%; width:70px; height:70px; margin-left:-35px; background: var(--vermillion); border-radius:50%; opacity:0.85; box-shadow: 0 0 40px rgba(200,90,63,0.5); }
-  #bgScene .mountain{
-    position:absolute; left:0; right:0; bottom:14%; height:26%;
-    background: var(--indigo); opacity:0.75;
-    clip-path: polygon(0% 100%,0% 70%,8% 70%,8% 55%,16% 55%,16% 40%,26% 40%,26% 28%,36% 28%,36% 16%,46% 16%,50% 6%,54% 16%,64% 28%,64% 40%,74% 40%,74% 55%,84% 55%,84% 68%,92% 68%,92% 82%,100% 82%,100% 100%);
-  }
-  #bgScene .waves{
-    position:absolute; left:0; right:0; bottom:0; height:16%;
-    background-color: var(--indigo-deep);
-    background-image: radial-gradient(circle at 50% 0%, transparent 60%, var(--wave-dark) 61%, var(--wave-dark) 64%, transparent 65%);
-    background-size: 34px 22px; background-position: 0 0, 17px 11px;
-  }
-  #bgScene .waves::before{
-    content:""; position:absolute; inset:0;
-    background-image: radial-gradient(circle at 50% 0%, transparent 60%, var(--wave) 61%, var(--wave) 63%, transparent 64%);
-    background-size: 34px 22px; background-position: 17px -6px;
-    opacity:0.6;
-  }
+  #bgScene{ position:fixed; inset:0; z-index:-2; overflow:hidden; }
+  #bgScene .sky{ position:absolute; inset:0; background:linear-gradient(180deg,#f7e0b8 0%,#eab08a 35%,#d98a7e 55%,#2d3561 100%); }
+  #bgScene .sun{ position:absolute; top:10%; left:50%; width:70px; height:70px; margin-left:-35px; background:var(--vermillion); border-radius:50%; opacity:0.85; box-shadow:0 0 40px rgba(200,90,63,0.5); }
+  #bgScene .mountain{ position:absolute; left:0; right:0; bottom:14%; height:26%; background:var(--indigo); opacity:0.75; clip-path:polygon(0% 100%,0% 70%,8% 70%,8% 55%,16% 55%,16% 40%,26% 40%,26% 28%,36% 28%,36% 16%,46% 16%,50% 6%,54% 16%,64% 28%,64% 40%,74% 40%,74% 55%,84% 55%,84% 68%,92% 68%,92% 82%,100% 82%,100% 100%); }
+  #bgScene .waves{ position:absolute; left:0; right:0; bottom:0; height:16%; background-color:var(--indigo-deep); background-image:radial-gradient(circle at 50% 0%,transparent 60%,var(--wave-dark) 61%,var(--wave-dark) 64%,transparent 65%); background-size:34px 22px; }
+  #bgScene .waves::before{ content:""; position:absolute; inset:0; background-image:radial-gradient(circle at 50% 0%,transparent 60%,var(--wave) 61%,var(--wave) 63%,transparent 64%); background-size:34px 22px; background-position:17px -6px; opacity:0.6; }
 
-  .bevel-out{ border-style: solid; border-width: 3px; border-top-color: rgba(255,255,255,0.6); border-left-color: rgba(255,255,255,0.6); border-right-color: rgba(0,0,0,0.35); border-bottom-color: rgba(0,0,0,0.35); box-shadow: 0 3px 0 rgba(0,0,0,0.22); }
+  .bevel-out{ border-style:solid; border-width:3px; border-top-color:rgba(255,255,255,0.6); border-left-color:rgba(255,255,255,0.6); border-right-color:rgba(0,0,0,0.35); border-bottom-color:rgba(0,0,0,0.35); box-shadow:0 3px 0 rgba(0,0,0,0.22); }
 
-  #lockScreen{ position: fixed; inset:0; z-index: 100; display:flex; align-items:center; justify-content:center; padding: 24px; background: linear-gradient(180deg, #f7e0b8, #2d3561); }
-  .lock-card{ background: var(--card); border-radius: 4px; padding: 30px 22px; width: 100%; max-width: 320px; text-align:center; }
-  .lock-mark{ width:60px; height:60px; margin:0 auto 16px; background: var(--vermillion); border: 3px solid var(--vermillion-dark); display:flex; align-items:center; justify-content:center; color:#fff; font-size: 26px; }
-  .lock-card h2{ margin: 0 0 16px; font-size: 16px; color: var(--ink); line-height:1.9; }
-  .lock-card input{ text-align:center; letter-spacing: 3px; }
-  #lockStatus{ min-height: 18px; font-size: 13px; margin-top: 10px; color: var(--danger); font-weight:700; }
+  #lockScreen{ position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:linear-gradient(180deg,#f7e0b8,#2d3561); }
+  .lock-card{ background:var(--card); border-radius:4px; padding:30px 22px; width:100%; max-width:320px; text-align:center; }
+  .lock-mark{ width:60px; height:60px; margin:0 auto 16px; background:var(--vermillion); border:3px solid var(--vermillion-dark); display:flex; align-items:center; justify-content:center; color:#fff; font-size:26px; }
+  .lock-card h2{ margin:0 0 16px; font-size:16px; line-height:1.9; }
+  .lock-card input{ text-align:center; letter-spacing:3px; }
+  #lockStatus{ min-height:18px; font-size:13px; margin-top:10px; color:var(--danger); font-weight:700; }
 
-  #app{ display:none; }
-  #app.unlocked{ display:block; }
+  #app{ display:none; } #app.unlocked{ display:block; }
 
-  header{ position: sticky; top:0; z-index:10; background: linear-gradient(180deg, rgba(45,53,97,0.94), rgba(26,32,56,0.96)), var(--header-photo, none); background-size: cover; background-position: center; color:#fff; padding: 12px 12px 12px; border-bottom: 4px solid var(--gold-dark); }
+  header{ position:sticky; top:0; z-index:10; background:linear-gradient(180deg,rgba(45,53,97,0.94),rgba(26,32,56,0.96)),var(--header-photo,none); background-size:cover; background-position:center; color:#fff; padding:12px; border-bottom:4px solid var(--gold-dark); }
   .header-top{ display:flex; justify-content:space-between; align-items:center; }
-  header .eyebrow{ font-size: 11px; letter-spacing: 2px; opacity: 0.85; margin-bottom: 4px; font-family:"Press Start 2P",monospace; color: var(--gold); }
-  header h1{ margin:0; font-size: 15px; line-height:1.6; }
-  .icon-btn{ width: 42px; height: 42px; background: var(--gold); color: var(--ink); border-color: #f5dca0 var(--gold-dark) var(--gold-dark) #f5dca0; border-style:solid; border-width:3px; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; }
+  .brand{ display:flex; align-items:center; gap:8px; }
+  .coin-icon{ width:26px; height:26px; flex-shrink:0; }
+  header .eyebrow{ font-size:11px; letter-spacing:2px; opacity:0.85; margin-bottom:4px; font-family:"Press Start 2P",monospace; color:var(--gold); }
+  header h1{ margin:0; font-size:15px; line-height:1.6; }
+  .icon-btn{ width:42px; height:42px; background:var(--gold); color:var(--ink); border-color:#f5dca0 var(--gold-dark) var(--gold-dark) #f5dca0; border-style:solid; border-width:3px; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; }
 
   .player-strip{ display:flex; gap:8px; margin-top:10px; }
-  .player-card{ flex:1; background: rgba(0,0,0,0.3); border: 2px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 8px 6px 8px; text-align:center; }
-  .player-title{ font-size: 10px; margin-bottom: 4px; min-height: 13px; font-weight:700; text-shadow: 1px 1px 0 rgba(0,0,0,0.6); }
-  .portrait-wrap{ width: 54px; height: 54px; margin: 0 auto 4px; overflow:hidden; border-radius:6px; background: rgba(255,255,255,0.12); }
+  .player-card{ flex:1; background:rgba(0,0,0,0.3); border:2px solid rgba(255,255,255,0.3); border-radius:6px; padding:8px 6px; text-align:center; }
+  .player-title{ font-size:10px; margin-bottom:4px; min-height:13px; font-weight:700; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
+  .portrait-wrap{ width:54px; height:54px; margin:0 auto 4px; overflow:hidden; border-radius:6px; background:rgba(255,255,255,0.12); }
   .portrait-wrap svg{ width:100%; height:100%; }
-  .player-name{ font-size: 13px; font-weight:700; margin-bottom: 3px; }
-  .player-amt{ font-family:"Press Start 2P",monospace; font-size: 12px; color: var(--gold); text-shadow: 1px 1px 0 rgba(0,0,0,0.6); }
-  .player-amt-label{ font-size: 10px; opacity:0.85; margin-top:4px; }
+  .player-name{ font-size:13px; font-weight:700; margin-bottom:3px; }
+  .player-amt{ font-family:"Press Start 2P",monospace; font-size:12px; color:var(--gold); text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
+  .player-amt-label{ font-size:10px; opacity:0.85; margin-top:4px; }
 
-  main{ max-width: 480px; margin: 0 auto; padding: 16px 12px; }
+  main{ max-width:480px; margin:0 auto; padding:16px 12px; }
+  .card{ background:var(--card); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:3px; border-radius:4px; padding:16px; margin-bottom:14px; }
+  .card h2{ margin:0 0 14px; font-size:15px; display:flex; align-items:center; gap:9px; }
+  .card h2 .idx{ font-size:16px; background:var(--indigo); color:#fff; width:28px; height:28px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 
-  .card{ background: var(--card); border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:3px; border-radius:4px; padding: 16px; margin-bottom: 14px; }
-  .card h2{ margin: 0 0 14px; font-size: 15px; color: var(--ink); line-height: 1.6; display:flex; align-items:center; gap:9px; }
-  .card h2 .idx{ font-size:16px; background: var(--indigo); color:#fff; width:28px; height:28px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .character-stage{ display:flex; gap:10px; justify-content:center; padding:34px 0 6px; }
+  .character-slot{ flex:1; max-width:220px; display:flex; flex-direction:column; align-items:center; }
+  .character-slot .avatar-wrap{ width:100%; max-width:210px; }
+  .character-slot .avatar-wrap svg{ width:100%; height:auto; filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25)); overflow:visible; }
+  .character-slot .cname{ margin-top:8px; font-size:16px; font-weight:700; color:var(--ink); }
+  .character-slot .ctitle{ margin-top:3px; font-size:19px; font-weight:700; text-align:center; line-height:1.3; }
+  .character-ground{ height:18px; margin:0 -12px; background:repeating-linear-gradient(90deg,var(--indigo) 0 10px,var(--indigo-deep) 10px 20px); border-top:3px solid var(--gold-dark); }
 
-  .character-stage{ display:flex; gap:14px; justify-content:center; padding: 12px 0 6px; }
-  .character-slot{ flex:1; max-width: 200px; display:flex; align-items:flex-end; justify-content:center; }
-  .character-slot .avatar-wrap{ width:100%; max-width:180px; }
-  .character-slot .avatar-wrap svg{ width:100%; height:auto; filter: drop-shadow(0 6px 4px rgba(0,0,0,0.25)); }
-  .character-ground{ height: 18px; margin: 0 -12px; background: repeating-linear-gradient(90deg, var(--indigo) 0 10px, var(--indigo-deep) 10px 20px); border-top: 3px solid var(--gold-dark); }
+  .mode-switch{ display:flex; gap:6px; margin-bottom:16px; }
+  .mode-switch button{ flex:1; padding:12px 4px; font-size:14px; font-weight:700; cursor:pointer; background:var(--panel); color:var(--ink-soft); border-radius:4px; border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; font-family:"DotGothic16",sans-serif; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .mode-switch button.active{ background:var(--wave); color:#fff; border-color:#8fc9d6 var(--wave-dark) var(--wave-dark) #8fc9d6; }
 
-  .mode-switch{ display:flex; gap:6px; margin-bottom: 16px; }
-  .mode-switch button{ flex:1; padding: 12px 4px; font-size: 14px; font-weight:700; cursor:pointer; background: var(--panel); color: var(--ink-soft); border-radius:4px; border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; font-family:"DotGothic16",sans-serif; display:flex; align-items:center; justify-content:center; gap:6px; }
-  .mode-switch button.active{ background: var(--wave); color:#fff; border-color: #8fc9d6 var(--wave-dark) var(--wave-dark) #8fc9d6; }
-
-  label{ display:flex; align-items:center; gap:6px; font-size: 14px; color: var(--ink-soft); margin: 14px 0 5px; font-weight:700; }
+  label{ display:flex; align-items:center; gap:6px; font-size:14px; color:var(--ink-soft); margin:14px 0 5px; font-weight:700; }
   label:first-of-type{ margin-top:0; }
-  input, select{ width: 100%; padding: 12px 12px; font-size: 16px; border-radius:4px; border-color: var(--panel-dark) var(--panel-light) var(--panel-light) var(--panel-dark); border-style: solid; border-width: 2px; background: #fffef8; color: var(--ink); font-family: "DotGothic16",sans-serif; }
-  select{ appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ink-soft) 50%), linear-gradient(135deg, var(--ink-soft) 50%, transparent 50%); background-position: calc(100% - 18px) center, calc(100% - 13px) center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
-  input:focus, select:focus{ outline: 2px solid var(--wave); }
-  input:disabled{ opacity: 0.5; background: #eee; }
+  input,select{ width:100%; padding:12px; font-size:16px; border-radius:4px; border-color:var(--panel-dark) var(--panel-light) var(--panel-light) var(--panel-dark); border-style:solid; border-width:2px; background:#fffef8; color:var(--ink); font-family:"DotGothic16",sans-serif; }
+  select{ appearance:none; background-image:linear-gradient(45deg,transparent 50%,var(--ink-soft) 50%),linear-gradient(135deg,var(--ink-soft) 50%,transparent 50%); background-position:calc(100% - 18px) center,calc(100% - 13px) center; background-size:5px 5px,5px 5px; background-repeat:no-repeat; }
+  input:focus,select:focus{ outline:2px solid var(--wave); }
+  input:disabled{ opacity:0.5; background:#eee; }
 
-  button.primary{ width:100%; margin-top: 16px; padding: 15px; font-size:15px; font-weight:700; border-radius:4px; background: var(--wave); color:#fff; cursor:pointer; font-family:"DotGothic16",sans-serif; border-color: #8fc9d6 var(--wave-dark) var(--wave-dark) #8fc9d6; border-style:solid; border-width:3px; box-shadow: 0 3px 0 rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; gap:8px; }
-  button.primary:active{ transform: translateY(2px); box-shadow:none; }
-  button.primary:disabled{ opacity: 0.45; }
-  button.primary.repay-mode{ background: var(--gold); border-color: #f5dca0 var(--gold-dark) var(--gold-dark) #f5dca0; color: var(--ink); }
-  button.secondary{ width:100%; margin-top: 10px; padding: 13px; font-size:14px; font-weight:700; border-radius:4px; background: var(--panel); color: var(--danger); cursor:pointer; border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
-  button.ghost{ width:100%; margin-top: 8px; padding: 11px; background:none; color: var(--ink-soft); font-size:13px; font-weight:700; border:none; cursor:pointer; }
-  button.logout-in-menu{ width:100%; margin-top: 18px; padding: 13px; background: var(--danger); color:#fff; font-size:14px; font-weight:700; border-radius:4px; cursor:pointer; border-color: #e07a6d var(--danger-dark) var(--danger-dark) #e07a6d; border-style:solid; border-width:2px; display:flex; align-items:center; justify-content:center; gap:8px; }
+  button.primary{ width:100%; margin-top:16px; padding:15px; font-size:15px; font-weight:700; border-radius:4px; background:var(--wave); color:#fff; cursor:pointer; font-family:"DotGothic16",sans-serif; border-color:#8fc9d6 var(--wave-dark) var(--wave-dark) #8fc9d6; border-style:solid; border-width:3px; box-shadow:0 3px 0 rgba(0,0,0,0.25); display:flex; align-items:center; justify-content:center; gap:8px; }
+  button.primary:active{ transform:translateY(2px); box-shadow:none; }
+  button.primary:disabled{ opacity:0.45; }
+  button.primary.repay-mode{ background:var(--gold); border-color:#f5dca0 var(--gold-dark) var(--gold-dark) #f5dca0; color:var(--ink); }
+  button.secondary{ width:100%; margin-top:10px; padding:13px; font-size:14px; font-weight:700; border-radius:4px; background:var(--panel); color:var(--danger); cursor:pointer; border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
+  button.ghost{ width:100%; margin-top:8px; padding:11px; background:none; color:var(--ink-soft); font-size:13px; font-weight:700; border:none; cursor:pointer; }
+  button.logout-in-menu{ width:100%; margin-top:18px; padding:13px; background:var(--danger); color:#fff; font-size:14px; font-weight:700; border-radius:4px; cursor:pointer; border-color:#e07a6d var(--danger-dark) var(--danger-dark) #e07a6d; border-style:solid; border-width:2px; display:flex; align-items:center; justify-content:center; gap:8px; }
 
-  .status{ font-size: 13px; margin-top: 10px; min-height: 16px; font-weight:700; }
-  .status.error{ color: var(--danger); }
-  .status.ok{ color: var(--wave-dark); }
+  .status{ font-size:13px; margin-top:10px; min-height:16px; font-weight:700; }
+  .status.error{ color:var(--danger); }
+  .status.ok{ color:var(--wave-dark); }
 
-  .month-block{ margin-bottom: 16px; }
-  .month-head{ display:flex; justify-content: space-between; align-items:baseline; font-size: 13.5px; font-weight:700; color: var(--ink); border-bottom: 2px dashed var(--panel-dark); padding-bottom: 8px; margin-bottom: 8px; }
-  .person-row{ display:flex; justify-content: space-between; font-size: 14px; padding: 4px 0; color: var(--ink-soft); }
-  .person-row .amt{ font-variant-numeric: tabular-nums; color: var(--ink); font-weight:700; }
-  .items{ margin: 6px 0 8px 0; padding-left: 0; list-style:none; }
-  .items li{ display:flex; justify-content:space-between; font-size:13.5px; align-items:center; padding: 8px 8px 8px 10px; color: var(--ink-soft); border-left: 3px solid var(--panel-dark); cursor:pointer; margin-bottom:4px; background: rgba(255,255,255,0.5); border-radius:3px; }
-  .items li:active{ background: rgba(255,255,255,0.85); }
-  .items li.repayment{ border-left-color: var(--gold); }
-  .items li .tag{ font-size:10px; padding:2px 6px; margin-right:5px; background: var(--gold); color:#4a3714; font-weight:700; border-radius:3px; }
-  .items li .date{ color: #96876a; margin-right: 6px; font-variant-numeric: tabular-nums; }
+  .month-block{ margin-bottom:16px; }
+  .month-head{ display:flex; justify-content:space-between; align-items:baseline; font-size:13.5px; font-weight:700; border-bottom:2px dashed var(--panel-dark); padding-bottom:8px; margin-bottom:8px; }
+  .person-row{ display:flex; justify-content:space-between; font-size:14px; padding:4px 0; color:var(--ink-soft); }
+  .person-row .amt{ font-variant-numeric:tabular-nums; color:var(--ink); font-weight:700; }
+  .items{ margin:6px 0 8px; padding-left:0; list-style:none; }
+  .items li{ display:flex; justify-content:space-between; font-size:13.5px; align-items:center; padding:8px 8px 8px 10px; color:var(--ink-soft); border-left:3px solid var(--panel-dark); cursor:pointer; margin-bottom:4px; background:rgba(255,255,255,0.5); border-radius:3px; }
+  .items li:active{ background:rgba(255,255,255,0.85); }
+  .items li.repayment{ border-left-color:var(--gold); }
+  .items li .tag{ font-size:10px; padding:2px 6px; margin-right:5px; background:var(--gold); color:#4a3714; font-weight:700; border-radius:3px; }
+  .items li .date{ color:#96876a; margin-right:6px; font-variant-numeric:tabular-nums; }
 
-  .empty{ font-size: 14px; color: var(--ink-soft); text-align:center; padding: 30px 0; font-weight:700; }
-  .skeleton{ padding: 4px 0; }
-  .skeleton-line{ height: 14px; margin-bottom: 10px; border-radius:3px; background: linear-gradient(90deg, var(--panel-dark) 25%, var(--panel-light) 37%, var(--panel-dark) 63%); background-size: 400% 100%; animation: shimmer 1.4s ease infinite; }
+  .empty{ font-size:14px; color:var(--ink-soft); text-align:center; padding:30px 0; font-weight:700; }
+  .skeleton-line{ height:14px; margin-bottom:10px; border-radius:3px; background:linear-gradient(90deg,var(--panel-dark) 25%,var(--panel-light) 37%,var(--panel-dark) 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
   @keyframes shimmer{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
 
-  canvas{ max-height: 280px; }
+  canvas{ max-height:280px; }
 
-  .sub-tabs{ display:flex; gap:6px; margin-bottom: 16px; }
-  .sub-tabs button{ flex:1; padding: 11px 2px; font-size: 13px; font-weight:700; cursor:pointer; border-radius:4px; background: var(--panel); color: var(--ink-soft); border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; font-family:"DotGothic16",sans-serif; }
-  .sub-tabs button.active{ background: var(--indigo); color:#fff; }
-  .sub-view{ display:none; }
-  .sub-view.active{ display:block; }
+  .sub-tabs{ display:flex; gap:6px; margin-bottom:16px; }
+  .sub-tabs button{ flex:1; padding:11px 2px; font-size:13px; font-weight:700; cursor:pointer; border-radius:4px; background:var(--panel); color:var(--ink-soft); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; font-family:"DotGothic16",sans-serif; }
+  .sub-tabs button.active{ background:var(--indigo); color:#fff; }
+  .sub-view{ display:none; } .sub-view.active{ display:block; }
 
-  .person-select-row{ display:flex; gap:6px; margin-bottom: 14px; }
-  .person-select-row button{ flex:1; padding: 10px 4px; font-size: 14px; font-weight:700; cursor:pointer; border-radius:4px; background: var(--panel); color: var(--ink-soft); border-color: var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
-  .person-select-row button.active{ background: var(--vermillion); color:#fff; }
+  .person-select-row{ display:flex; gap:6px; margin-bottom:14px; }
+  .person-select-row button{ flex:1; padding:10px 4px; font-size:14px; font-weight:700; cursor:pointer; border-radius:4px; background:var(--panel); color:var(--ink-soft); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
+  .person-select-row button.active{ background:var(--vermillion); color:#fff; }
 
   .title-list{ display:flex; flex-direction:column; gap:8px; }
-  .title-row{ display:flex; align-items:center; gap:10px; padding: 12px; background: rgba(255,255,255,0.55); border: 2px solid var(--panel-dark); border-radius:4px; border-left-width: 6px; }
-  .title-row.locked{ opacity: 0.4; }
-  .title-check{ width: 22px; height:22px; border:2px solid var(--ink-soft); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; background:#fff; }
-  .title-check.checked{ background: var(--gold); border-color:var(--gold-dark); }
-  .title-info .name{ font-size: 14.5px; font-weight:700; }
-  .title-info .req{ font-size: 12px; color: var(--ink-soft); }
+  .title-row{ display:flex; align-items:center; gap:10px; padding:12px; background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; border-left-width:6px; }
+  .title-row.locked{ opacity:0.4; }
+  .title-check{ width:22px; height:22px; border:2px solid var(--ink-soft); border-radius:4px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; background:#fff; }
+  .title-check.checked{ background:var(--gold); border-color:var(--gold-dark); }
+  .title-info .name{ font-size:14.5px; font-weight:700; }
+  .title-info .req{ font-size:12px; color:var(--ink-soft); }
 
-  .level-box{ background: rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; padding: 18px; text-align:center; margin-bottom:14px; }
-  .level-num{ font-family:"Press Start 2P",monospace; font-size: 26px; color: var(--vermillion); margin-bottom:4px; }
-  .level-stage{ font-size: 13px; color: var(--ink-soft); margin-bottom: 10px; font-weight:700; }
-  .xp-bar-outer{ height: 20px; background: var(--panel-dark); border: 2px solid var(--ink); border-radius:4px; overflow:hidden; }
-  .xp-bar-inner{ height:100%; background: repeating-linear-gradient(90deg, var(--gold) 0 8px, var(--gold-dark) 8px 16px); }
-  .xp-label{ font-size: 12.5px; color: var(--ink-soft); margin-top: 8px; font-weight:700; }
+  .level-box{ background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; padding:18px; text-align:center; margin-bottom:14px; }
+  .level-num{ font-family:"Press Start 2P",monospace; font-size:26px; color:var(--vermillion); margin-bottom:4px; }
+  .level-stage{ font-size:13px; color:var(--ink-soft); margin-bottom:10px; font-weight:700; }
+  .xp-bar-outer{ height:20px; background:var(--panel-dark); border:2px solid var(--ink); border-radius:4px; overflow:hidden; }
+  .xp-bar-inner{ height:100%; background:repeating-linear-gradient(90deg,var(--gold) 0 8px,var(--gold-dark) 8px 16px); }
+  .xp-label{ font-size:12.5px; color:var(--ink-soft); margin-top:8px; font-weight:700; }
+  .glow-hint{ font-size:12px; color:var(--ink-soft); margin-top:10px; }
+  .glow-dot{ display:inline-block; width:10px; height:10px; border-radius:50%; margin:0 2px; vertical-align:middle; }
 
-  .equip-preview{ text-align:center; margin-bottom: 16px; }
-  .equip-preview .avatar-wrap{ width: 130px; margin:0 auto; }
-  .equip-preview .avatar-wrap svg{ width:100%; height:auto; }
-  .equip-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .equip-slot{ background: rgba(255,255,255,0.55); border: 2px solid var(--panel-dark); border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding: 10px 4px; cursor:pointer; position:relative; }
+  .equip-preview{ text-align:center; margin-bottom:16px; }
+  .equip-preview .avatar-wrap{ width:150px; margin:0 auto; }
+  .equip-preview .avatar-wrap svg{ width:100%; height:auto; overflow:visible; }
+  .equip-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .equip-slot{ background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:10px 4px; cursor:pointer; position:relative; }
   .equip-slot.locked{ opacity:0.4; cursor:default; }
-  .equip-slot.equipped{ border-color: var(--gold); background: rgba(201,161,90,0.28); }
-  .equip-icon{ width: 30px; height:30px; }
-  .equip-name{ font-size: 12px; font-weight:700; }
-  .equip-req{ font-size: 10.5px; color: var(--ink-soft); text-align:center; }
-  .equip-check{ position:absolute; top:3px; right:5px; font-size:13px; color: var(--wave-dark); }
-  .equip-all-btn{ width:100%; margin-bottom: 14px; padding: 12px; font-size:13.5px; font-weight:700; background: var(--sakura); color:#5b1f28; border-radius:4px; border-color:#f6cdd2 #a5545f #a5545f #f6cdd2; border-style:solid; border-width:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .equip-slot.equipped{ border-color:var(--gold); background:rgba(201,161,90,0.28); }
+  .equip-icon{ width:32px; height:32px; }
+  .equip-name{ font-size:12px; font-weight:700; }
+  .equip-req{ font-size:10.5px; color:var(--ink-soft); text-align:center; }
+  .equip-check{ position:absolute; top:3px; right:5px; font-size:13px; color:var(--wave-dark); }
+  .equip-all-btn{ width:100%; margin-bottom:14px; padding:12px; font-size:13.5px; font-weight:700; background:var(--sakura); color:#5b1f28; border-radius:4px; border-color:#f6cdd2 #a5545f #a5545f #f6cdd2; border-style:solid; border-width:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
 
-  nav.tabs{ position: fixed; bottom:0; left:0; right:0; z-index: 10; display:flex; background: var(--panel); border-top: 3px solid var(--panel-dark); }
-  nav.tabs button{ flex:1; padding: 10px 1px 9px; background: none; border:none; font-size: 10.5px; color: var(--ink-soft); cursor:pointer; font-family:"DotGothic16",sans-serif; font-weight:700; }
-  nav.tabs button svg{ display:block; margin: 0 auto 3px; width:20px; height:20px; }
-  nav.tabs button.active{ color: var(--vermillion); }
-  nav.tabs button.active svg{ stroke: var(--vermillion); }
+  nav.tabs{ position:fixed; bottom:0; left:0; right:0; z-index:10; display:flex; background:var(--panel); border-top:3px solid var(--panel-dark); }
+  nav.tabs button{ flex:1; padding:10px 1px 9px; background:none; border:none; font-size:10.5px; color:var(--ink-soft); cursor:pointer; font-family:"DotGothic16",sans-serif; font-weight:700; }
+  nav.tabs button svg{ display:block; margin:0 auto 3px; width:20px; height:20px; }
+  nav.tabs button.active{ color:var(--vermillion); }
+  nav.tabs button.active svg{ stroke:var(--vermillion); }
 
-  .view{ display:none; }
-  .view.active{ display:block; }
+  .view{ display:none; } .view.active{ display:block; }
+  .setup-warning{ background:#fbe2de; color:var(--danger); border:2px solid var(--danger); border-radius:4px; padding:12px 13px; font-size:13px; margin-bottom:14px; font-weight:700; }
 
-  .setup-warning{ background: #fbe2de; color: var(--danger); border: 2px solid var(--danger); border-radius:4px; padding: 12px 13px; font-size: 13px; margin-bottom: 14px; font-weight:700; }
-
-  .overlay{ position: fixed; inset:0; z-index: 90; background: rgba(20,15,10,0.6); display:none; align-items:flex-end; justify-content:center; }
+  .overlay{ position:fixed; inset:0; z-index:90; background:rgba(20,15,10,0.6); display:none; align-items:flex-end; justify-content:center; }
   .overlay.show{ display:flex; }
-  .sheet{ background: var(--card); width:100%; max-width: 480px; padding: 20px 18px 26px; border-top: 4px solid var(--panel-dark); border-radius: 12px 12px 0 0; max-height: 90vh; overflow-y:auto; }
-  .sheet h3{ margin:0 0 14px; font-size: 15px; color: var(--ink); }
+  .sheet{ background:var(--card); width:100%; max-width:480px; padding:20px 18px 26px; border-top:4px solid var(--panel-dark); border-radius:12px 12px 0 0; max-height:90vh; overflow-y:auto; }
+  .sheet h3{ margin:0 0 14px; font-size:15px; }
   .edit-status{ font-size:13px; min-height:16px; margin-top:8px; font-weight:700; }
 
-  .zodiac-badge{ display:inline-block; margin-top:8px; font-size: 13px; background: var(--wave); color:#fff; padding: 5px 11px; font-weight:700; border-radius:4px; }
-  .profile-block{ padding: 16px 0; border-bottom: 3px dashed var(--panel-dark); }
+  .zodiac-badge{ display:inline-block; margin-top:8px; font-size:13px; background:var(--wave); color:#fff; padding:5px 11px; font-weight:700; border-radius:4px; }
+  .profile-block{ padding:16px 0; border-bottom:3px dashed var(--panel-dark); }
   .profile-block:last-of-type{ border-bottom:none; }
-  .profile-head{ display:flex; align-items:center; gap:12px; margin-bottom: 6px; }
-  .profile-head .avatar-wrap{ width: 60px; height: 80px; flex-shrink:0; }
-  .profile-head .avatar-wrap svg{ width:100%; height:100%; }
-  .profile-head .ptitle{ font-size: 15px; font-weight:700; }
-  .field-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 0 10px; }
+  .profile-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .profile-head .avatar-wrap{ width:64px; height:86px; flex-shrink:0; }
+  .profile-head .avatar-wrap svg{ width:100%; height:100%; overflow:visible; }
+  .profile-head .ptitle{ font-size:15px; font-weight:700; }
+  .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
 </style>
 </head>
 <body>
@@ -211,7 +183,7 @@
 <div id="lockScreen">
   <div class="lock-card bevel-out">
     <div class="lock-mark">▦</div>
-    <h2>MONEYCRAFT<br>請輸入密碼</h2>
+    <h2>錢莊<br>請輸入密碼</h2>
     <input type="password" id="lockPassword" placeholder="密碼" />
     <button class="primary" id="lockSubmit">⚔ 進入世界</button>
     <div id="lockStatus"></div>
@@ -221,9 +193,12 @@
 <div id="app">
 <header>
   <div class="header-top">
-    <div>
-      <div class="eyebrow">MONEYCRAFT</div>
-      <h1>Money獵人2人組</h1>
+    <div class="brand">
+      <svg class="coin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#c9a15a" stroke="#7a5a25" stroke-width="1.5"/><circle cx="12" cy="12" r="7" fill="none" stroke="#7a5a25" stroke-width="1.2"/><rect x="9" y="9" width="6" height="6" fill="#7a5a25"/></svg>
+      <div>
+        <div class="eyebrow">錢莊</div>
+        <h1>Money獵人2人組</h1>
+      </div>
     </div>
     <button class="icon-btn bevel-out" id="settingsBtn" title="人員設定">⚙</button>
   </div>
@@ -231,10 +206,7 @@
 </header>
 
 <main>
-
-  <div id="setupWarning" class="setup-warning" style="display:none;">
-    ⚠️ 尚未設定 Apps Script 網址，請打開這個檔案的原始碼，把最上面 CONFIG.WEB_APP_URL 換成你部署後拿到的網址。
-  </div>
+  <div id="setupWarning" class="setup-warning" style="display:none;">⚠️ 尚未設定 Apps Script 網址，請把 CONFIG.WEB_APP_URL 換成你部署後的網址。</div>
 
   <section id="view-character" class="view active">
     <div class="character-stage" id="characterStage"></div>
@@ -249,24 +221,16 @@
         <button id="modeRepayBtn">💵 現金入帳</button>
       </div>
       <div id="expenseFields">
-        <label>🙋 記帳人員</label>
-        <select id="inputPerson"></select>
-        <label>📅 日期</label>
-        <input type="date" id="inputDate" />
-        <label>📝 項目名目</label>
-        <input id="inputItem" placeholder="例如：晚餐、水電費" autocomplete="off" />
-        <label>💴 金額</label>
-        <input id="inputAmount" type="number" inputmode="decimal" placeholder="0" />
+        <label>🙋 記帳人員</label><select id="inputPerson"></select>
+        <label>📅 日期</label><input type="date" id="inputDate" />
+        <label>📝 項目名目</label><input id="inputItem" placeholder="例如：晚餐、水電費" autocomplete="off" />
+        <label>💴 金額</label><input id="inputAmount" type="number" inputmode="decimal" placeholder="0" />
       </div>
       <div id="repayFields" style="display:none;">
-        <label>🎁 要還給誰？</label>
-        <select id="repayPerson"><option value="">請先選擇要還給誰</option></select>
-        <label>📅 日期</label>
-        <input type="date" id="repayDate" />
-        <label>💴 還款金額</label>
-        <input id="repayAmount" type="number" inputmode="decimal" placeholder="請先選擇要還給誰" disabled />
-        <label>📝 備註(選填)</label>
-        <input id="repayNote" placeholder="例如：發薪日撥入" autocomplete="off" />
+        <label>🎁 要還給誰？</label><select id="repayPerson"><option value="">請先選擇要還給誰</option></select>
+        <label>📅 日期</label><input type="date" id="repayDate" />
+        <label>💴 還款金額</label><input id="repayAmount" type="number" inputmode="decimal" placeholder="請先選擇要還給誰" disabled />
+        <label>📝 備註(選填)</label><input id="repayNote" placeholder="例如：發薪日撥入" autocomplete="off" />
       </div>
       <button class="primary" id="submitBtn">✔ 送出記帳</button>
       <div class="status" id="submitStatus"></div>
@@ -277,7 +241,7 @@
     <div class="card bevel-out">
       <h2><span class="idx">📖</span>月結明細</h2>
       <p style="font-size:13px;color:var(--ink-soft);margin:-6px 0 12px;font-weight:700;">點任一筆紀錄可以修改或刪除</p>
-      <div id="ledgerBody"><div class="skeleton"><div class="skeleton-line" style="width:60%"></div><div class="skeleton-line" style="width:90%"></div><div class="skeleton-line" style="width:75%"></div></div></div>
+      <div id="ledgerBody"><div class="skeleton-line" style="width:60%"></div><div class="skeleton-line" style="width:90%"></div><div class="skeleton-line" style="width:75%"></div></div>
     </div>
   </section>
 
@@ -300,15 +264,8 @@
       <button class="sub-tab-btn" data-sub="sub-equip">🛡 裝備</button>
     </div>
     <div class="person-select-row" id="achievePersonRow"></div>
-
-    <div id="sub-trophy" class="sub-view active card bevel-out">
-      <h2><span class="idx">🏆</span>稱號收藏</h2>
-      <div class="title-list" id="titleList"></div>
-    </div>
-    <div id="sub-level" class="sub-view card bevel-out">
-      <h2><span class="idx">⭐</span>累積等級</h2>
-      <div class="level-box" id="levelBox"></div>
-    </div>
+    <div id="sub-trophy" class="sub-view active card bevel-out"><h2><span class="idx">🏆</span>稱號收藏</h2><div class="title-list" id="titleList"></div></div>
+    <div id="sub-level" class="sub-view card bevel-out"><h2><span class="idx">⭐</span>累積等級</h2><div class="level-box" id="levelBox"></div></div>
     <div id="sub-equip" class="sub-view card bevel-out">
       <h2><span class="idx">🛡</span>裝備收藏</h2>
       <div class="equip-preview"><div class="avatar-wrap" id="equipPreviewAvatar"></div></div>
@@ -316,7 +273,6 @@
       <div class="equip-grid" id="equipGrid"></div>
     </div>
   </section>
-
 </main>
 
 <nav class="tabs">
@@ -359,30 +315,28 @@ const CONFIG = {
   APP_PASSWORD: "20210318",
   HEADER_IMAGE_URL: "",
   APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.jpg?raw=true",
-  APP_NAME: "MONEYCRAFT"
+  APP_NAME: "錢莊"
 };
 if (CONFIG.HEADER_IMAGE_URL) document.documentElement.style.setProperty("--header-photo", `url("${CONFIG.HEADER_IMAGE_URL}")`);
 if (CONFIG.APP_ICON_URL) { const l=document.createElement("link"); l.rel="apple-touch-icon"; l.href=CONFIG.APP_ICON_URL; document.head.appendChild(l); }
 if (CONFIG.APP_NAME) { const m=document.createElement("meta"); m.name="apple-mobile-web-app-title"; m.content=CONFIG.APP_NAME; document.head.appendChild(m); }
 
 const TITLE_THRESHOLDS = [
-  { amount: 10000, name: "貢獻萌新", color: "#6b8f5c" },
-  { amount: 50000, name: "貢獻勇者", color: "#4d7c8a" },
-  { amount: 100000, name: "貢獻大師", color: "#6b4c7a" },
-  { amount: 150000, name: "終點還是起點?", color: "#c85a3f" },
-  { amount: 200000, name: "活著真好", color: "#c9a15a" },
-  { amount: 250000, name: "撒錢尊者", color: "#8b2942" }
+  { amount:10000, name:"貢獻萌新", color:"#6b8f5c" }, { amount:50000, name:"貢獻勇者", color:"#4d7c8a" },
+  { amount:100000, name:"貢獻大師", color:"#6b4c7a" }, { amount:150000, name:"終點還是起點?", color:"#c85a3f" },
+  { amount:200000, name:"活著真好", color:"#c9a15a" }, { amount:250000, name:"撒錢尊者", color:"#8b2942" }
 ];
 const EQUIPMENT_ITEMS = [
-  { amount: 10000, name: "內褲", color: "#f2f2f2" }, { amount: 30000, name: "襪子", color: "#e8e8e8" },
-  { amount: 50000, name: "內衣", color: "#fdf6d8" }, { amount: 100000, name: "手套", color: "#c0392b" },
-  { amount: 150000, name: "長褲", color: "#34495e" }, { amount: 160000, name: "T恤", color: "#2980b9" },
-  { amount: 170000, name: "鞋子", color: "#5a3a22" }, { amount: 180000, name: "外套", color: "#6b4c7a" },
-  { amount: 190000, name: "帽子", color: "#16a085" }, { amount: 200000, name: "兔耳帽", color: "#e39aa0" },
-  { amount: 210000, name: "魔法手杖", color: "#c9a15a" }, { amount: 220000, name: "皇冠", color: "#f7d716" }
+  { amount:10000, name:"內褲", color:"#eef0f2" }, { amount:30000, name:"襪子", color:"#e8e8e8" },
+  { amount:50000, name:"內衣", color:"#fdf6d8" }, { amount:100000, name:"手套", color:"#c0392b" },
+  { amount:150000, name:"長褲", color:"#34495e" }, { amount:160000, name:"T恤", color:"#2980b9" },
+  { amount:170000, name:"鞋子", color:"#5a3a22" }, { amount:180000, name:"外套", color:"#6b4c7a" },
+  { amount:190000, name:"帽子", color:"#16a085" }, { amount:200000, name:"兔耳帽", color:"#e39aa0" },
+  { amount:210000, name:"魔法手杖", color:"#c9a15a" }, { amount:220000, name:"皇冠", color:"#f7d716" }
 ];
 function unlockedEquipmentThresholds(cumulative){ return EQUIPMENT_ITEMS.filter(i=>cumulative>=i.amount).map(i=>i.amount); }
 function nextEquipmentItem(cumulative){ return EQUIPMENT_ITEMS.find(i=>cumulative<i.amount) || null; }
+const RAINBOW = ["#ff4d4d","#ff9d3f","#ffe14d","#4dff7a","#4d9dff","#7a4dff","#d94dff"];
 
 function zodiacOf(m,d){
   const ranges=[{sign:"摩羯座",start:[12,22],end:[1,19]},{sign:"水瓶座",start:[1,20],end:[2,18]},{sign:"雙魚座",start:[2,19],end:[3,20]},{sign:"牡羊座",start:[3,21],end:[4,19]},{sign:"金牛座",start:[4,20],end:[5,20]},{sign:"雙子座",start:[5,21],end:[6,21]},{sign:"巨蟹座",start:[6,22],end:[7,22]},{sign:"獅子座",start:[7,23],end:[8,22]},{sign:"處女座",start:[8,23],end:[9,22]},{sign:"天秤座",start:[9,23],end:[10,23]},{sign:"天蠍座",start:[10,24],end:[11,21]},{sign:"射手座",start:[11,22],end:[12,21]}];
@@ -390,121 +344,165 @@ function zodiacOf(m,d){
   return "摩羯座";
 }
 
-function levelFor(cumulative){ return Math.floor(cumulative / 10000); }
-function ageFor(cumulative){ return Math.round(levelFor(cumulative) * 1.5); }
+function levelFor(c){ return Math.floor(c/10000); }
+function ageFor(c){ return Math.round(levelFor(c)*1.5); }
 function stageFor(age){ if(age<=2) return "baby"; if(age<=11) return "child"; if(age<=17) return "teen"; if(age<=59) return "adult"; return "elder"; }
 const STAGE_LABEL = { baby:"寶寶", child:"孩童", teen:"青少年", adult:"成人", elder:"長者" };
 const STAGE_PROPORTIONS = {
-  baby:  { headW:44, headH:40, headY:14, torsoW:24, torsoH:16, torsoY:52, legW:10, legH:12, legY:66, armW:8, armH:14, armY:54 },
-  child: { headW:40, headH:37, headY:10, torsoW:25, torsoH:22, torsoY:45, legW:10, legH:20, legY:65, armW:8, armH:20, armY:47 },
-  teen:  { headW:36, headH:34, headY:8,  torsoW:26, torsoH:28, torsoY:40, legW:11, legH:28, legY:66, armW:8, armH:27, armY:42 },
-  adult: { headW:34, headH:32, headY:7,  torsoW:28, torsoH:32, torsoY:37, legW:12, legH:34, legY:67, armW:9, armH:32, armY:39 },
-  elder: { headW:34, headH:32, headY:9,  torsoW:26, torsoH:30, torsoY:39, legW:12, legH:31, legY:68, armW:9, armH:29, armY:41 }
+  baby:{ headW:44,headH:40,headY:14,torsoW:24,torsoH:16,torsoY:52,legW:10,legH:12,legY:66,armW:8,armH:14,armY:54 },
+  child:{ headW:40,headH:37,headY:10,torsoW:25,torsoH:22,torsoY:45,legW:10,legH:20,legY:65,armW:8,armH:20,armY:47 },
+  teen:{ headW:36,headH:34,headY:8,torsoW:26,torsoH:28,torsoY:40,legW:11,legH:28,legY:66,armW:8,armH:27,armY:42 },
+  adult:{ headW:34,headH:32,headY:7,torsoW:28,torsoH:32,torsoY:37,legW:12,legH:34,legY:67,armW:9,armH:32,armY:39 },
+  elder:{ headW:34,headH:32,headY:9,torsoW:26,torsoH:30,torsoY:39,legW:12,legH:31,legY:68,armW:9,armH:29,armY:41 }
 };
-const SKIN_TONES = { light:"#f6dcb8", medium:"#f0c090", tan:"#d99f6c", dark:"#a2714a" };
+const SKIN_TONES = { porcelain:"#fbe8d3", light:"#f6dcb8", ivory:"#f2d9b6", medium:"#f0c090", rosy:"#eebfa8", olive:"#c9a96b", tan:"#d99f6c", bronze:"#b97f4a", dark:"#a2714a", deep:"#7a5636" };
+const BODY_MULT = { slim:{w:0.82,h:1}, regular:{w:1,h:1}, broad:{w:1.28,h:1}, chubby:{w:1.18,h:1.08}, tall:{w:1,h:1.16}, short:{w:1,h:0.85}, athletic:{w:1.1,h:1.05}, petite:{w:0.85,h:0.85}, curvy:{w:1.08,h:1.02}, stocky:{w:1.22,h:0.9} };
+const FACE_SHAPE = { round:{rx:0.32,w:1,h:1}, square:{rx:0.05,w:1,h:1}, oval:{rx:0.22,w:0.92,h:1.08}, heart:{rx:0.28,w:1,h:0.96}, long:{rx:0.18,w:0.85,h:1.18}, diamond:{rx:0.12,w:0.86,h:1.05}, triangle:{rx:0.08,w:1.05,h:0.94}, pear:{rx:0.22,w:1.05,h:1}, chubby:{rx:0.36,w:1.12,h:0.94}, sharp:{rx:0.06,w:0.82,h:1.1} };
 
-function rectTag(x,y,w,h,fill,extra){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#4a3222" stroke-width="1" shape-rendering="crispEdges" ${extra||""}/>`; }
+function rectTag(x,y,w,h,fill,extra){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#3a2c1e" stroke-width="1" shape-rendering="crispEdges" ${extra||""}/>`; }
+function pxTag(x,y,s,fill){ return `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fill}" shape-rendering="crispEdges"/>`; }
 
-function hairSVG(profile, headX, headY, headW, headH){
+function hairSVG(profile, hx, hy, hw, hh){
   let style = profile.hairstyle;
   if (!style || style==="auto") style = profile.gender==="female" ? "long" : "short";
-  const color = "#4a3222";
-  if (style==="bald") return "";
-  if (style==="long") return rectTag(headX-2, headY-2, headW+4, headH*0.95, color);
-  if (style==="ponytail") return rectTag(headX-1, headY-2, headW+2, headH*0.32, color) + rectTag(headX+headW-2, headY+headH*0.12, 4, headH*0.7, color);
-  return rectTag(headX-1, headY-2, headW+2, headH*0.32, color);
+  const c = "#4a3222", c2="#3a2818";
+  switch(style){
+    case "bald": return "";
+    case "long": return rectTag(hx-2, hy-2, hw+4, hh*0.98, c);
+    case "ponytail": return rectTag(hx-1, hy-2, hw+2, hh*0.3, c) + rectTag(hx+hw-2, hy+hh*0.1, 4, hh*0.75, c);
+    case "bob": return rectTag(hx-2, hy-2, hw+4, hh*0.62, c);
+    case "curly": return rectTag(hx-2, hy-4, hw+4, hh*0.34, c) + pxTag(hx-3,hy-2,5,c) + pxTag(hx+hw*0.2,hy-5,5,c) + pxTag(hx+hw*0.5,hy-5,5,c) + pxTag(hx+hw*0.8,hy-5,5,c) + pxTag(hx+hw-2,hy-2,5,c);
+    case "mohawk": return rectTag(hx+hw*0.4, hy-8, hw*0.2, hh*0.4, c);
+    case "bun": return rectTag(hx-1, hy-2, hw+2, hh*0.3, c) + pxTag(hx+hw*0.42, hy-8, hw*0.16, c);
+    case "twintails": return rectTag(hx-1, hy-2, hw+2, hh*0.3, c) + rectTag(hx-4, hy+hh*0.1, 4, hh*0.65, c) + rectTag(hx+hw, hy+hh*0.1, 4, hh*0.65, c);
+    case "afro": return `<circle cx="${hx+hw/2}" cy="${hy+hh*0.28}" r="${hw*0.62}" fill="${c}" stroke="${c2}" stroke-width="1"/>`;
+    case "sidepart": return rectTag(hx-1, hy-2, hw*0.55, hh*0.34, c) + rectTag(hx+hw*0.5, hy-2, hw*0.52, hh*0.24, c);
+    case "buzzcut": return rectTag(hx, hy-1, hw, hh*0.16, c);
+    case "pixie": return rectTag(hx-1, hy-3, hw+2, hh*0.28, c) + pxTag(hx-2,hy+hh*0.06,4,c) + pxTag(hx+hw-2,hy+hh*0.06,4,c);
+    default: return rectTag(hx-1, hy-2, hw+2, hh*0.34, c);
+  }
 }
-function eyesSVG(style, headX, headY, headW, headH){
-  const cy=headY+headH*0.46, r=Math.max(1.8, headW*0.06);
-  const cx1=headX+headW*0.3, cx2=headX+headW*0.7;
-  if (style==="happy") return `<path d="M${cx1-2.5},${cy} q2.5,-3.5 5,0" stroke="#2b2620" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M${cx2-2.5},${cy} q2.5,-3.5 5,0" stroke="#2b2620" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
-  if (style==="sleepy") return `<rect x="${cx1-2.5}" y="${cy}" width="5" height="1.6" fill="#2b2620"/><rect x="${cx2-2.5}" y="${cy}" width="5" height="1.6" fill="#2b2620"/>`;
-  return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.3}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.3}" fill="#fff"/>`;
+function eyesSVG(style, hx, hy, hw, hh){
+  const cy=hy+hh*0.46, r=Math.max(1.8,hw*0.06), cx1=hx+hw*0.3, cx2=hx+hw*0.7;
+  switch(style){
+    case "happy": return `<path d="M${cx1-2.5},${cy} q2.5,-3.5 5,0" stroke="#2b2620" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M${cx2-2.5},${cy} q2.5,-3.5 5,0" stroke="#2b2620" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    case "sleepy": return `<rect x="${cx1-2.5}" y="${cy}" width="5" height="1.6" fill="#2b2620"/><rect x="${cx2-2.5}" y="${cy}" width="5" height="1.6" fill="#2b2620"/>`;
+    case "wink": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><path d="M${cx2-2.5},${cy} q2.5,-3 5,0" stroke="#2b2620" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    case "star": return [cx1,cx2].map(cx=>`<polygon points="${cx},${cy-2.6} ${cx+0.8},${cy-0.5} ${cx+2.6},${cy-0.5} ${cx+1.1},${cy+0.8} ${cx+1.7},${cy+2.6} ${cx},${cy+1.4} ${cx-1.7},${cy+2.6} ${cx-1.1},${cy+0.8} ${cx-2.6},${cy-0.5} ${cx-0.8},${cy-0.5}" fill="#e8c04a"/>`).join("");
+    case "angry": return `<path d="M${cx1-3},${cy-2} l6,2" stroke="#2b2620" stroke-width="1.6"/><circle cx="${cx1}" cy="${cy+1}" r="${r*0.8}" fill="#2b2620"/><path d="M${cx2+3},${cy-2} l-6,2" stroke="#2b2620" stroke-width="1.6"/><circle cx="${cx2}" cy="${cy+1}" r="${r*0.8}" fill="#2b2620"/>`;
+    case "teary": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#2b2620"/><ellipse cx="${cx2+2}" cy="${cy+4}" rx="1.2" ry="1.8" fill="#7ec8e3"/>`;
+    case "heart": return [cx1,cx2].map(cx=>`<path d="M${cx},${cy+2} q-3,-4 -1.5,-5.5 q1.5,-1 1.5,1 q0,-2 1.5,-1 q1.5,1.5 -1.5,5.5 z" fill="#c85a3f"/>`).join("");
+    case "sharp": return `<rect x="${cx1-2.6}" y="${cy}" width="5.2" height="1.4" fill="#2b2620" transform="rotate(-6 ${cx1} ${cy})"/><rect x="${cx2-2.6}" y="${cy}" width="5.2" height="1.4" fill="#2b2620" transform="rotate(6 ${cx2} ${cy})"/>`;
+    case "closed": return `<rect x="${cx1-2.5}" y="${cy+1}" width="5" height="1.2" fill="#2b2620" rx="0.6"/><rect x="${cx2-2.5}" y="${cy+1}" width="5" height="1.2" fill="#2b2620" rx="0.6"/>`;
+    case "sparkle": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.35}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.35}" fill="#fff"/><circle cx="${cx2+r*0.5}" cy="${cy+r*0.5}" r="${r*0.2}" fill="#fff"/>`;
+    default: return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.3}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#2b2620"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.3}" fill="#fff"/>`;
+  }
 }
-function mouthSVG(style, headX, headY, headW, headH){
-  const cy=headY+headH*0.74, cx=headX+headW*0.5;
-  if (style==="open") return `<ellipse cx="${cx}" cy="${cy}" rx="3.2" ry="2.4" fill="#8b3a2b"/>`;
-  if (style==="neutral") return `<rect x="${cx-3.2}" y="${cy}" width="6.4" height="1.5" fill="#8b3a2b"/>`;
-  return `<path d="M${cx-3.8},${cy} q3.8,3.8 7.6,0" stroke="#8b3a2b" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+function mouthSVG(style, hx, hy, hw, hh){
+  const cy=hy+hh*0.74, cx=hx+hw*0.5;
+  switch(style){
+    case "open": return `<ellipse cx="${cx}" cy="${cy}" rx="3.2" ry="2.4" fill="#8b3a2b"/>`;
+    case "neutral": return `<rect x="${cx-3.2}" y="${cy}" width="6.4" height="1.5" fill="#8b3a2b"/>`;
+    case "smirk": return `<path d="M${cx-3.5},${cy} q3.5,2.5 6,-0.5" stroke="#8b3a2b" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    case "pout": return `<ellipse cx="${cx}" cy="${cy}" rx="1.6" ry="1.4" fill="#c96b5a"/>`;
+    case "grin": return `<path d="M${cx-4},${cy-1} q4,4 8,0 z" fill="#fff" stroke="#8b3a2b" stroke-width="1"/>`;
+    case "frown": return `<path d="M${cx-3.5},${cy+2} q3.5,-3.5 7,0" stroke="#8b3a2b" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+    case "tongue": return `<ellipse cx="${cx}" cy="${cy}" rx="2.8" ry="2" fill="#8b3a2b"/><rect x="${cx-1.4}" y="${cy+0.5}" width="2.8" height="2.2" fill="#e0847a" rx="1"/>`;
+    case "kiss": return `<ellipse cx="${cx}" cy="${cy}" rx="1.8" ry="1.6" fill="#c96b5a"/>`;
+    case "whistle": return `<circle cx="${cx+1}" cy="${cy}" r="1.4" fill="#8b3a2b"/>`;
+    case "surprised": return `<ellipse cx="${cx}" cy="${cy}" rx="2.4" ry="3" fill="#8b3a2b"/>`;
+    default: return `<path d="M${cx-3.8},${cy} q3.8,3.8 7.6,0" stroke="#8b3a2b" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+  }
 }
 
-function equipmentSVG(name, b){
+function equipIconSVG(name, color){
+  const s = `<svg class="equip-icon" viewBox="0 0 24 24">`;
+  const e = `</svg>`;
   switch(name){
-    case "內褲":
-      return `<path d="M${b.torsoX},${b.torsoY+b.torsoH*0.62} h${b.torsoW} v${b.torsoH*0.18} q0,${b.torsoH*0.16} -${b.torsoW*0.18},${b.torsoH*0.2} q-${b.torsoW*0.32},${b.torsoH*0.1} -${b.torsoW*0.5},0 q-${b.torsoW*0.18},-${b.torsoH*0.04} -${b.torsoW*0.18},-${b.torsoH*0.2} z" fill="#f7f7f7" stroke="#b8ada0" stroke-width="1"/>`;
-    case "襪子":
-      return rectTag(b.leg1X-0.5, b.legY+b.legH*0.58, b.legW+1, b.legH*0.42, "#eeeeee") + rectTag(b.leg1X-0.5, b.legY+b.legH*0.58, b.legW+1, 3, "#cfc9bd")
-           + rectTag(b.leg2X-0.5, b.legY+b.legH*0.58, b.legW+1, b.legH*0.42, "#eeeeee") + rectTag(b.leg2X-0.5, b.legY+b.legH*0.58, b.legW+1, 3, "#cfc9bd");
-    case "內衣":
-      return rectTag(b.torsoX, b.torsoY+2, b.torsoW, b.torsoH*0.42, "#fdf6d8")
-           + rectTag(b.torsoX+2, b.torsoY-2, 3, 6, "#fdf6d8") + rectTag(b.torsoX+b.torsoW-5, b.torsoY-2, 3, 6, "#fdf6d8");
-    case "手套":
-      return rectTag(b.armLX, b.armY+b.armH*0.72, b.armW, b.armH*0.28, "#c0392b", 'rx="2"') + rectTag(b.armLX-1.5, b.armY+b.armH*0.8, 2.5, b.armH*0.16, "#c0392b")
-           + rectTag(b.armRX, b.armY+b.armH*0.72, b.armW, b.armH*0.28, "#c0392b", 'rx="2"') + rectTag(b.armRX+b.armW-1, b.armY+b.armH*0.8, 2.5, b.armH*0.16, "#c0392b");
-    case "長褲":
-      return rectTag(b.torsoX+1, b.torsoY+b.torsoH*0.7, b.torsoW-2, b.torsoH*0.3, "#34495e")
-           + rectTag(b.leg1X-0.5, b.legY, b.legW+1, b.legH*0.72, "#34495e") + rectTag(b.leg2X-0.5, b.legY, b.legW+1, b.legH*0.72, "#34495e")
-           + rectTag(b.leg1X+b.legW/2-0.5, b.legY, 1, b.legH*0.7, "#25384a");
-    case "T恤":
-      return `<path d="M${b.torsoX-2},${b.torsoY+3} l3,-4 h${b.torsoW*0.28} q${b.torsoW*0.22},-3 ${b.torsoW*0.44},0 h${b.torsoW*0.28} l3,4 l-2.5,5 l-2.5,-2 v${b.torsoH*0.7} h-${b.torsoW+1} v-${b.torsoH*0.7} l-2.5,2 z" fill="#2980b9" stroke="#1c5a80" stroke-width="1"/>`;
-    case "鞋子":
-      return `<path d="M${b.leg1X-1.5},${b.legY+b.legH-7} h${b.legW+3} v4 q0,3 4,3 h-${b.legW+7} z" fill="#5a3a22" stroke="#3a230f" stroke-width="1"/>`+
-             `<path d="M${b.leg2X-1.5},${b.legY+b.legH-7} h${b.legW+3} v4 q0,3 4,3 h-${b.legW+7} z" fill="#5a3a22" stroke="#3a230f" stroke-width="1"/>`;
-    case "外套":
-      return `<path d="M${b.torsoX-4},${b.torsoY-1} h${b.torsoW*0.4} l${b.torsoW*0.1},4 l${b.torsoW*0.1},-4 h${b.torsoW*0.4} l3,5 l-3,4 v${b.torsoH*0.75} h-${b.torsoW+2} v-${b.torsoH*0.75} l-3,-4 z" fill="#6b4c7a" fill-opacity="0.92" stroke="#432f52" stroke-width="1"/>`
-           + `<rect x="${b.torsoX+b.torsoW/2-0.5}" y="${b.torsoY+3}" width="1" height="${b.torsoH*0.7}" fill="#432f52"/>`;
-    case "帽子":
-      return `<path d="M${b.headX-2},${b.headY-2} q${b.headW*0.5},-11 ${b.headW+4},0 v3 h-${b.headW+4} z" fill="#16a085" stroke="#0e6655" stroke-width="1"/>`
-           + rectTag(b.headX-4, b.headY-2, b.headW+8, 3, "#0e6655");
-    case "兔耳帽":
-      return `<path d="M${b.headX+3},${b.headY-3} q-2,-14 2,-17 q4,3 2,17 z" fill="#e39aa0" stroke="#a5545f" stroke-width="1"/>`
-           + `<path d="M${b.headX+b.headW-8},${b.headY-3} q-2,-14 2,-17 q4,3 2,17 z" fill="#e39aa0" stroke="#a5545f" stroke-width="1"/>`
-           + `<path d="M${b.headX+4},${b.headY-5} q-1,-9 1,-11 q2,2 1,11 z" fill="#fbd7db"/>`;
-    case "魔法手杖":
-      return `<g transform="rotate(20 ${b.armRX} ${b.armY})"><rect x="${b.armRX+2}" y="${b.armY-10}" width="2.5" height="${b.armH+14}" fill="#c9a15a" stroke="#8a6a35" stroke-width="1"/><polygon points="${b.armRX+3.25},${b.armY-16} ${b.armRX+6},${b.armY-9} ${b.armRX+3.25},${b.armY-11} ${b.armRX+0.5},${b.armY-9}" fill="#f7d716" stroke="#a5822a" stroke-width="0.8"/></g>`;
-    case "皇冠":
-      return `<polygon points="${b.headX-1},${b.headY-2} ${b.headX+b.headW*0.2},${b.headY-10} ${b.headX+b.headW*0.4},${b.headY-3} ${b.headX+b.headW*0.5},${b.headY-11} ${b.headX+b.headW*0.6},${b.headY-3} ${b.headX+b.headW*0.8},${b.headY-10} ${b.headX+b.headW+1},${b.headY-2}" fill="#f7d716" stroke="#a5822a" stroke-width="1"/>`
-           + `<circle cx="${b.headX+b.headW*0.5}" cy="${b.headY-8}" r="1.6" fill="#c85a3f"/>`;
+    case "內褲": return s+`<path d="M4,7 h16 v4 q0,6 -6,7 q-2,1 -4,0 q-6,-1 -6,-7 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "襪子": return s+`<path d="M9,3 h6 v11 q0,3 4,3 v4 h-14 v-4 h4 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "內衣": return s+`<path d="M6,6 l3,-2 h6 l3,2 v3 l-2,1 v10 h-8 v-10 l-2,-1 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "手套": return s+`<path d="M8,10 v-4 q0,-2 2,-2 q2,0 2,2 v4 h1 v-3 q0,-2 2,-2 q2,0 2,2 v3 h1 v10 h-10 v-8 q0,-2 2,-2 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "長褲": return s+`<path d="M6,3 h12 v6 l1,12 h-5 l-1,-9 -1,9 h-5 l1,-12 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "T恤": return s+`<path d="M8,4 l4,-1 4,1 4,3 -2,3 -2,-1 v11 h-8 v-11 l-2,1 -2,-3 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "鞋子": return s+`<path d="M6,4 h6 v9 q4,0 8,3 v3 h-16 v-6 q0,-3 2,-5 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "外套": return s+`<path d="M7,4 l3,-1 2,2 2,-2 3,1 4,3 -2,3 -2,-1 v12 h-10 v-12 l-2,1 -2,-3 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/><path d="M11,5 v14 M13,5 v14" stroke="#2b2620" stroke-width="0.8"/>`+e;
+    case "帽子": return s+`<path d="M3,16 q1,-10 9,-10 q9,0 9,10 z" fill="${color}" stroke="#2b2620" stroke-width="1.5"/><rect x="2" y="15" width="20" height="3" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "兔耳帽": return s+`<path d="M8,10 q-2,-8 1,-9 q2,1 1,9 z" fill="${color}" stroke="#2b2620" stroke-width="1.2"/><path d="M15,10 q2,-8 -1,-9 q-2,1 -1,9 z" fill="${color}" stroke="#2b2620" stroke-width="1.2"/><ellipse cx="12" cy="15" rx="8" ry="6" fill="${color}" stroke="#2b2620" stroke-width="1.5"/>`+e;
+    case "魔法手杖": return s+`<rect x="11" y="7" width="2" height="15" fill="${color}" stroke="#2b2620" stroke-width="1"/><circle cx="12" cy="4" r="3.2" fill="#fdf3c8" stroke="#a5822a" stroke-width="1.2"/>`+e;
+    case "皇冠": return s+`<polygon points="4,18 4,10 8,13 12,7 16,13 20,10 20,18" fill="${color}" stroke="#2b2620" stroke-width="1.5"/><circle cx="12" cy="14" r="1.4" fill="#c85a3f"/>`+e;
+    default: return s+`<rect x="4" y="4" width="16" height="16" fill="${color}" stroke="#2b2620" stroke-width="2"/>`+e;
+  }
+}
+function equipmentOnBodySVG(name, b){
+  switch(name){
+    case "內褲": return rectTag(b.torsoX, b.torsoY+b.torsoH*0.64, b.torsoW, b.torsoH*0.3, "#f7f7f7", 'rx="2"');
+    case "襪子": return rectTag(b.leg1X, b.legY+b.legH*0.55, b.legW, b.legH*0.45, "#eeeeee") + rectTag(b.leg2X, b.legY+b.legH*0.55, b.legW, b.legH*0.45, "#eeeeee");
+    case "內衣": return rectTag(b.torsoX, b.torsoY, b.torsoW, b.torsoH*0.48, "#fdf6d8");
+    case "手套": return rectTag(b.armLX, b.armY+b.armH*0.7, b.armW, b.armH*0.3, "#c0392b", 'rx="2"') + rectTag(b.armRX, b.armY+b.armH*0.7, b.armW, b.armH*0.3, "#c0392b", 'rx="2"');
+    case "長褲": return rectTag(b.leg1X, b.legY, b.legW, b.legH*0.75, "#34495e") + rectTag(b.leg2X, b.legY, b.legW, b.legH*0.75, "#34495e") + rectTag(b.torsoX, b.torsoY+b.torsoH*0.78, b.torsoW, b.torsoH*0.22, "#34495e");
+    case "T恤": return rectTag(b.torsoX-1, b.torsoY-1, b.torsoW+2, b.torsoH*0.75, "#2980b9") + rectTag(b.armLX-1, b.armY-1, b.armW+2, b.armH*0.22, "#2980b9") + rectTag(b.armRX-1, b.armY-1, b.armW+2, b.armH*0.22, "#2980b9");
+    case "鞋子": return rectTag(b.leg1X-1, b.legY+b.legH-6, b.legW+2, 7, "#5a3a22", 'rx="1.5"') + rectTag(b.leg2X-1, b.legY+b.legH-6, b.legW+2, 7, "#5a3a22", 'rx="1.5"');
+    case "外套": return rectTag(b.torsoX-3, b.torsoY-2, b.torsoW+6, b.torsoH*0.85, "#6b4c7a", 'fill-opacity="0.94"') + rectTag(b.armLX-2, b.armY-2, b.armW+3, b.armH*0.55, "#6b4c7a") + rectTag(b.armRX-1, b.armY-2, b.armW+3, b.armH*0.55, "#6b4c7a") + rectTag(b.torsoX+b.torsoW/2-0.5, b.torsoY+1, 1, b.torsoH*0.7, "#432f52");
+    case "帽子": return `<path d="M${b.headX-2},${b.headY-1} q${b.headW*0.5},-10 ${b.headW+4},0 z" fill="#16a085" stroke="#0e6655" stroke-width="1"/>` + rectTag(b.headX-4, b.headY-2, b.headW+8, 3, "#0e6655");
+    case "兔耳帽": return `<path d="M${b.headX+b.headW*0.18},${b.headY-2} q-2,-13 1.5,-16 q3.5,3 1.5,16 z" fill="#e39aa0" stroke="#a5545f" stroke-width="1"/><path d="M${b.headX+b.headW*0.62},${b.headY-2} q-2,-13 1.5,-16 q3.5,3 1.5,16 z" fill="#e39aa0" stroke="#a5545f" stroke-width="1"/>`;
+    case "魔法手杖": return `<rect x="${b.armRX+b.armW+1}" y="${b.armY-6}" width="2.2" height="${b.armH+10}" fill="#c9a15a" stroke="#7a5a25" stroke-width="1"/><circle cx="${b.armRX+b.armW+2.1}" cy="${b.armY-8}" r="2.8" fill="#fdf3c8" stroke="#a5822a" stroke-width="1"/>`;
+    case "皇冠": return `<polygon points="${b.headX-1},${b.headY-2} ${b.headX+b.headW*0.2},${b.headY-10} ${b.headX+b.headW*0.4},${b.headY-3} ${b.headX+b.headW*0.5},${b.headY-11} ${b.headX+b.headW*0.6},${b.headY-3} ${b.headX+b.headW*0.8},${b.headY-10} ${b.headX+b.headW+1},${b.headY-2}" fill="#f7d716" stroke="#a5822a" stroke-width="1"/><circle cx="${b.headX+b.headW*0.5}" cy="${b.headY-7}" r="1.6" fill="#c85a3f"/>`;
     default: return "";
   }
 }
+let glowIdSeq = 0;
 function renderAvatarSVG(profile, cumulative, mode){
   const stage = stageFor(ageFor(cumulative));
   const p = STAGE_PROPORTIONS[stage];
-  const bodyMult = { slim:0.85, regular:1, broad:1.2 }[profile.bodyType || "regular"];
-  const torsoW = p.torsoW*bodyMult, armW = p.armW*bodyMult;
-  const centerX=50, headX=centerX-p.headW/2, torsoX=centerX-torsoW/2;
+  const bm = BODY_MULT[profile.bodyType] || BODY_MULT.regular;
+  const torsoW=p.torsoW*bm.w, armW=p.armW*bm.w, legH=p.legH*bm.h, torsoH=p.torsoH*bm.h;
+  const centerX=50, torsoX=centerX-torsoW/2;
   const legGap=2, leg1X=centerX-p.legW-legGap/2, leg2X=centerX+legGap/2;
   const armLX=torsoX-armW-1, armRX=torsoX+torsoW+1;
+  const fs = FACE_SHAPE[profile.faceShape] || FACE_SHAPE.round;
+  const headW=p.headW*fs.w, headH=p.headH*fs.h;
+  const headX=centerX-headW/2, headY=p.headY;
   const skin = SKIN_TONES[profile.skinTone] || SKIN_TONES.medium;
-  const b = { torsoX, torsoY:p.torsoY, torsoW, torsoH:p.torsoH, headX, headY:p.headY, headW:p.headW, headH:p.headH, leg1X, leg2X, legY:p.legY, legW:p.legW, legH:p.legH, armLX, armRX, armY:p.armY, armW, armH:p.armH };
+  const b = { torsoX,torsoY:p.torsoY,torsoW,torsoH, headX,headY,headW,headH, leg1X,leg2X,legY:p.legY,legW:p.legW,legH, armLX,armRX,armY:p.armY,armW,armH:p.armH };
 
-  let inner = "";
-  inner += rectTag(leg1X, p.legY, p.legW, p.legH, skin) + rectTag(leg2X, p.legY, p.legW, p.legH, skin);
+  const level = levelFor(cumulative);
+  const glowCount = Math.min(RAINBOW.length, Math.floor(level/3));
+  const gid = "glow"+(glowIdSeq++);
+  let glow = "";
+  if (glowCount>0){
+    glow += `<defs><filter id="${gid}" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.2"/></filter></defs>`;
+    for (let i=0;i<glowCount;i++){
+      const r = 26+i*7;
+      glow += `<circle cx="50" cy="70" r="${r}" fill="none" stroke="${RAINBOW[i]}" stroke-width="3" opacity="0.4" filter="url(#${gid})"/>`;
+    }
+  }
+
+  let inner = glow;
+  inner += rectTag(leg1X, p.legY, p.legW, legH, skin) + rectTag(leg2X, p.legY, p.legW, legH, skin);
   inner += rectTag(armLX, p.armY, armW, p.armH, skin) + rectTag(armRX, p.armY, armW, p.armH, skin);
-  inner += rectTag(torsoX, p.torsoY, torsoW, p.torsoH, skin);
-  const headRadius = profile.faceShape==="round" ? p.headW*0.28 : (profile.faceShape==="square" ? 2 : 7);
-  inner += `<rect x="${headX}" y="${p.headY}" width="${p.headW}" height="${p.headH}" rx="${headRadius}" fill="${skin}" stroke="#7a5230" stroke-width="1.5" shape-rendering="crispEdges"/>`;
-  inner += hairSVG(profile, headX, p.headY, p.headW, p.headH);
-  inner += eyesSVG(profile.eyeStyle, headX, p.headY, p.headW, p.headH);
-  inner += mouthSVG(profile.mouthStyle, headX, p.headY, p.headW, p.headH);
+  inner += rectTag(torsoX, p.torsoY, torsoW, torsoH, skin);
+  const headRadius = headW*fs.rx;
+  inner += `<rect x="${headX}" y="${headY}" width="${headW}" height="${headH}" rx="${headRadius}" fill="${skin}" stroke="#7a5230" stroke-width="1.5" shape-rendering="crispEdges"/>`;
+  inner += hairSVG(profile, headX, headY, headW, headH);
+  inner += eyesSVG(profile.eyeStyle, headX, headY, headW, headH);
+  inner += mouthSVG(profile.mouthStyle, headX, headY, headW, headH);
   const equipped = profile.equippedItems || [];
-  EQUIPMENT_ITEMS.forEach(item => { if (equipped.includes(item.amount)) inner += equipmentSVG(item.name, b); });
+  EQUIPMENT_ITEMS.forEach(item => { if (equipped.includes(item.amount)) inner += equipmentOnBodySVG(item.name, b); });
 
-  const viewBox = mode==="portrait" ? `${headX-8} ${p.headY-14} ${p.headW+16} ${p.headH+22}` : "0 0 100 140";
+  const viewBox = mode==="portrait" ? `${headX-8} ${headY-14} ${headW+16} ${headH+22}` : "-15 40 130 100";
   return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
 }
 
-let allRecords = [], profiles = [], chartInstance = null, sessionKey = null, editingId = null, achievePersonName = null;
-
-function safeDate(v){ if (v instanceof Date && !isNaN(v.getTime())) return v; const d = v ? new Date(v) : null; return (d && !isNaN(d.getTime())) ? d : new Date(); }
+let allRecords=[], profiles=[], chartInstance=null, sessionKey=null, editingId=null, achievePersonName=null;
+function safeDate(v){ if (v instanceof Date && !isNaN(v.getTime())) return v; const d=v?new Date(v):null; return (d&&!isNaN(d.getTime()))?d:new Date(); }
 function toDateInputValue(v){ return safeDate(v).toISOString().slice(0,10); }
 
 function initLogin(){
-  const saved = localStorage.getItem("ledger_key");
-  if (saved === CONFIG.APP_PASSWORD){ unlock(saved); return; }
+  const saved=localStorage.getItem("ledger_key");
+  if (saved===CONFIG.APP_PASSWORD){ unlock(saved); return; }
   document.getElementById("lockSubmit").addEventListener("click", tryLogin);
-  document.getElementById("lockPassword").addEventListener("keydown", e => { if (e.key==="Enter") tryLogin(); });
+  document.getElementById("lockPassword").addEventListener("keydown", e=>{ if(e.key==="Enter") tryLogin(); });
 }
 function tryLogin(){
   const val=document.getElementById("lockPassword").value;
@@ -513,19 +511,26 @@ function tryLogin(){
   statusEl.textContent=""; localStorage.setItem("ledger_key", val); unlock(val);
 }
 function unlock(key){ sessionKey=key; document.getElementById("lockScreen").style.display="none"; document.getElementById("app").classList.add("unlocked"); boot(); }
-document.getElementById("logoutBtn").addEventListener("click", () => { localStorage.removeItem("ledger_key"); location.reload(); });
+document.getElementById("logoutBtn").addEventListener("click", ()=>{ localStorage.removeItem("ledger_key"); location.reload(); });
 
-function fmt(n){ return "$" + Math.round(n).toLocaleString("zh-TW"); }
-function monthKeyOf(date){ return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,"0")}`; }
-function dateLabel(date){ return `${(date.getMonth()+1).toString().padStart(2,"0")}/${date.getDate().toString().padStart(2,"0")}`; }
+function fmt(n){ return "$"+Math.round(n).toLocaleString("zh-TW"); }
+function monthKeyOf(d){ return `${d.getFullYear()}-${(d.getMonth()+1).toString().padStart(2,"0")}`; }
+function dateLabel(d){ return `${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getDate().toString().padStart(2,"0")}`; }
 function personNames(){ return profiles.map(p=>p.name); }
-function populateSelect(el, includeEmpty){ el.innerHTML = (includeEmpty?'<option value="">請先選擇要還給誰</option>':"") + personNames().map(p=>`<option value="${p}">${p}</option>`).join(""); }
+function populateSelect(el, empty){ el.innerHTML=(empty?'<option value="">請先選擇要還給誰</option>':"")+personNames().map(p=>`<option value="${p}">${p}</option>`).join(""); }
 function setDefaultDates(){ const t=toDateInputValue(new Date()); document.getElementById("inputDate").value=t; document.getElementById("repayDate").value=t; }
 
-async function parseJsonSafe(res){
-  const text = await res.text();
-  try { return JSON.parse(text); }
-  catch(e){ throw new Error("伺服器回應異常，請確認 Apps Script 網址與部署設定是否正確"); }
+async function fetchJson(url, opts){
+  let lastErr;
+  for (let attempt=0; attempt<2; attempt++){
+    try{
+      const res = await fetch(url, opts);
+      const text = await res.text();
+      try { return JSON.parse(text); }
+      catch(e){ throw new Error("伺服器回應非 JSON，請確認 Apps Script 已重新部署為最新版本"); }
+    } catch(err){ lastErr=err; if (attempt===0) await new Promise(r=>setTimeout(r,800)); }
+  }
+  throw lastErr;
 }
 
 async function loadRecords(){
@@ -535,45 +540,39 @@ async function loadRecords(){
     return;
   }
   try{
-    const url = CONFIG.WEB_APP_URL + "?key=" + encodeURIComponent(sessionKey);
-    const res = await fetch(url, { method:"GET" });
-    const json = await parseJsonSafe(res);
-    if (json.status !== "success") throw new Error(json.message || "讀取失敗");
-    allRecords = json.data.map(r => ({ id:r.id, timestamp:safeDate(r.timestamp), person:r.person, item:r.item, amount:Number(r.amount)||0, type:r.type||"expense" })).sort((a,b)=>a.timestamp-b.timestamp);
-    profiles = json.profiles || [];
-    if (!achievePersonName && profiles.length) achievePersonName = profiles[0].name;
+    const url=CONFIG.WEB_APP_URL+"?key="+encodeURIComponent(sessionKey);
+    const json=await fetchJson(url,{method:"GET"});
+    if (json.status!=="success") throw new Error(json.message||"讀取失敗");
+    allRecords=json.data.map(r=>({id:r.id,timestamp:safeDate(r.timestamp),person:r.person,item:r.item,amount:Number(r.amount)||0,type:r.type||"expense"})).sort((a,b)=>a.timestamp-b.timestamp);
+    profiles=json.profiles||[];
+    if (!achievePersonName && profiles.length) achievePersonName=profiles[0].name;
     renderAll();
-  } catch(err){
-    document.getElementById("ledgerBody").innerHTML = `<div class="empty">讀取失敗：${err.message}</div>`;
-  }
+  } catch(err){ document.getElementById("ledgerBody").innerHTML=`<div class="empty">讀取失敗：${err.message}</div>`; }
 }
-function renderAll(){
-  renderPersonSelects(); renderPlayerStrip(); renderCharacterStage(); renderLedger(); renderChart(); renderAchievePersonRow(); renderAchieveContent();
-}
-function renderPersonSelects(){
-  populateSelect(document.getElementById("inputPerson"), false);
-  populateSelect(document.getElementById("repayPerson"), true);
-  populateSelect(document.getElementById("editPerson"), false);
-}
+function renderAll(){ renderPersonSelects(); renderPlayerStrip(); renderCharacterStage(); renderLedger(); renderChart(); renderAchievePersonRow(); renderAchieveContent(); }
+function renderPersonSelects(){ populateSelect(document.getElementById("inputPerson"),false); populateSelect(document.getElementById("repayPerson"),true); populateSelect(document.getElementById("editPerson"),false); }
 
 function cumulativeContribution(name){ return allRecords.filter(r=>r.person===name && r.type==="expense").reduce((s,r)=>s+r.amount,0); }
 function repaidTotal(name){ return allRecords.filter(r=>r.person===name && r.type==="repayment").reduce((s,r)=>s+r.amount,0); }
-function outstandingBalance(name){ return cumulativeContribution(name) - repaidTotal(name); }
+function outstandingBalance(name){ return cumulativeContribution(name)-repaidTotal(name); }
 
 function renderCharacterStage(){
-  const stage = document.getElementById("characterStage");
-  stage.innerHTML = profiles.map(p => {
-    const cumulative = cumulativeContribution(p.name);
-    return `<div class="character-slot"><div class="avatar-wrap">${renderAvatarSVG(p, cumulative, "full")}</div></div>`;
+  const stage=document.getElementById("characterStage");
+  stage.innerHTML = profiles.map(p=>{
+    const cumulative=cumulativeContribution(p.name);
+    const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
+    return `<div class="character-slot">
+      <div class="avatar-wrap">${renderAvatarSVG(p, cumulative, "full")}</div>
+      <div class="ctitle" style="color:${titleObj?titleObj.color:'var(--ink-soft)'}">${titleObj?"「"+titleObj.name+"」":""}</div>
+      <div class="cname">${p.name}</div>
+    </div>`;
   }).join("");
 }
-
 function renderPlayerStrip(){
-  const strip = document.getElementById("playerStrip");
-  strip.innerHTML = profiles.map(p => {
-    const cumulative = cumulativeContribution(p.name);
-    const outstanding = outstandingBalance(p.name);
-    const titleObj = TITLE_THRESHOLDS.find(t => t.name===p.activeTitle && cumulative>=t.amount);
+  const strip=document.getElementById("playerStrip");
+  strip.innerHTML = profiles.map(p=>{
+    const cumulative=cumulativeContribution(p.name), outstanding=outstandingBalance(p.name);
+    const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
     return `<div class="player-card">
       <div class="player-title" style="color:${titleObj?titleObj.color:'rgba(255,255,255,0.5)'}">${titleObj?"「"+titleObj.name+"」":"尚無稱號"}</div>
       <div class="portrait-wrap">${renderAvatarSVG(p, cumulative, "portrait")}</div>
@@ -591,17 +590,16 @@ function setMode(mode){
   currentMode=mode;
   document.getElementById("modeExpenseBtn").classList.toggle("active", mode==="expense");
   document.getElementById("modeRepayBtn").classList.toggle("active", mode==="repay");
-  document.getElementById("expenseFields").style.display = mode==="expense" ? "block":"none";
-  document.getElementById("repayFields").style.display = mode==="repay" ? "block":"none";
+  document.getElementById("expenseFields").style.display = mode==="expense"?"block":"none";
+  document.getElementById("repayFields").style.display = mode==="repay"?"block":"none";
   const btn=document.getElementById("submitBtn");
   btn.innerHTML = mode==="expense" ? "✔ 送出記帳" : "✔ 送出還款";
   btn.classList.toggle("repay-mode", mode==="repay");
   document.getElementById("submitStatus").textContent="";
 }
 document.getElementById("repayPerson").addEventListener("change", e=>{
-  const amountEl=document.getElementById("repayAmount");
-  if (e.target.value){ amountEl.disabled=false; amountEl.placeholder="0"; amountEl.focus(); }
-  else { amountEl.disabled=true; amountEl.placeholder="請先選擇要還給誰"; amountEl.value=""; }
+  const a=document.getElementById("repayAmount");
+  if (e.target.value){ a.disabled=false; a.placeholder="0"; a.focus(); } else { a.disabled=true; a.placeholder="請先選擇要還給誰"; a.value=""; }
 });
 
 async function submitRecord(){ return currentMode==="expense" ? submitExpense() : submitRepay(); }
@@ -628,8 +626,7 @@ async function postAndReload(payload, statusEl, onSuccess){
   const btn=document.getElementById("submitBtn");
   btn.disabled=true; statusEl.textContent="送出中…"; statusEl.className="status";
   try{
-    const res=await fetch(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:sessionKey,...payload})});
-    const json=await parseJsonSafe(res);
+    const json=await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:sessionKey,...payload})});
     if (json.status!=="success") throw new Error(json.message||"寫入失敗");
     statusEl.textContent="已記錄！"; statusEl.className="status ok";
     onSuccess(); await loadRecords();
@@ -656,8 +653,8 @@ async function saveEdit(){
   if (!person||!date||!item||isNaN(amount)){ statusEl.textContent="請完整填寫所有欄位"; statusEl.className="edit-status error"; return; }
   statusEl.textContent="儲存中…"; statusEl.className="edit-status";
   try{
-    const res=await fetch(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:sessionKey,action:"update",id:editingId,person,item,amount,date})});
-    const json=await parseJsonSafe(res); if(json.status!=="success") throw new Error(json.message||"修改失敗");
+    const json=await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:sessionKey,action:"update",id:editingId,person,item,amount,date})});
+    if (json.status!=="success") throw new Error(json.message||"修改失敗");
     closeEdit(); await loadRecords();
   } catch(err){ statusEl.textContent="修改失敗："+err.message; statusEl.className="edit-status error"; }
 }
@@ -666,8 +663,8 @@ async function deleteEdit(){
   const statusEl=document.getElementById("editStatus");
   statusEl.textContent="刪除中…"; statusEl.className="edit-status";
   try{
-    const res=await fetch(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:sessionKey,action:"delete",id:editingId})});
-    const json=await parseJsonSafe(res); if(json.status!=="success") throw new Error(json.message||"刪除失敗");
+    const json=await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({key:sessionKey,action:"delete",id:editingId})});
+    if (json.status!=="success") throw new Error(json.message||"刪除失敗");
     closeEdit(); await loadRecords();
   } catch(err){ statusEl.textContent="刪除失敗："+err.message; statusEl.className="edit-status error"; }
 }
@@ -691,7 +688,7 @@ function renderLedger(){
     const g=groups[key];
     const persons=Object.entries(g.byPerson).sort((a,b)=>b[1]-a[1]);
     const itemsHtml=g.items.slice().reverse().map(r=>{
-      const tag = r.type==="repayment" ? '<span class="tag">還款</span>' : "";
+      const tag=r.type==="repayment"?'<span class="tag">還款</span>':"";
       return `<li class="${r.type==="repayment"?"repayment":""}" data-id="${r.id}"><span><span class="date">${dateLabel(r.timestamp)}</span>${tag}${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`;
     }).join("");
     html += `<div class="month-block"><div class="month-head"><span>${key} 月結(支出)</span><span class="amt">${fmt(g.total)}</span></div>${persons.map(([p,amt])=>`<div class="person-row"><span>${p}</span><span class="amt">${fmt(amt)}</span></div>`).join("")}<ul class="items">${itemsHtml}</ul></div>`;
@@ -704,8 +701,7 @@ function renderChart(){
   const type=document.getElementById("chartType").value;
   const ctx=document.getElementById("mainChart").getContext("2d");
   const expenseRecords=allRecords.filter(r=>r.type==="expense");
-  const groups={};
-  expenseRecords.forEach(r=>{ const k=monthKeyOf(r.timestamp); groups[k]=(groups[k]||0)+r.amount; });
+  const groups={}; expenseRecords.forEach(r=>{ const k=monthKeyOf(r.timestamp); groups[k]=(groups[k]||0)+r.amount; });
   const monthKeys=Object.keys(groups).sort();
   let data;
   if (type==="pie"){
@@ -716,12 +712,12 @@ function renderChart(){
     data={ labels:monthKeys, datasets:[{ label:"每月支出總額", data:monthKeys.map(k=>groups[k]), borderColor:"#2d3561", backgroundColor: type==="bar"?"#4d7c8a":"rgba(77,124,138,0.25)", fill:type==="line", tension:0.3, pointBackgroundColor:"#c85a3f", borderWidth:2 }] };
   }
   if (chartInstance) chartInstance.destroy();
-  chartInstance = new Chart(ctx,{ type: type==="pie"?"pie":type, data, options:{ responsive:true, plugins:{legend:{display:true,position:type==="pie"?"bottom":"top"}}, scales: type==="pie"?{}:{y:{beginAtZero:true}} } });
+  chartInstance=new Chart(ctx,{ type: type==="pie"?"pie":type, data, options:{ responsive:true, plugins:{legend:{display:true,position:type==="pie"?"bottom":"top"}}, scales: type==="pie"?{}:{y:{beginAtZero:true}} } });
 }
 
 function renderAchievePersonRow(){
   const row=document.getElementById("achievePersonRow");
-  row.innerHTML = personNames().map(name=>`<button class="${name===achievePersonName?"active":""}" data-name="${name}">${name}</button>`).join("");
+  row.innerHTML=personNames().map(name=>`<button class="${name===achievePersonName?"active":""}" data-name="${name}">${name}</button>`).join("");
   row.querySelectorAll("button").forEach(btn=>btn.addEventListener("click",()=>{ achievePersonName=btn.dataset.name; renderAchievePersonRow(); renderAchieveContent(); }));
 }
 function currentProfile(){ return profiles.find(p=>p.name===achievePersonName); }
@@ -733,8 +729,7 @@ function renderAchieveContent(){
 function renderTitleList(cumulative){
   const profile=currentProfile();
   document.getElementById("titleList").innerHTML = TITLE_THRESHOLDS.map(t=>{
-    const unlocked=cumulative>=t.amount;
-    const isActive=profile && profile.activeTitle===t.name && unlocked;
+    const unlocked=cumulative>=t.amount, isActive=profile && profile.activeTitle===t.name && unlocked;
     return `<div class="title-row ${unlocked?"":"locked"}" style="border-left-color:${t.color}; ${isActive?`background:${t.color}22;`:""}">
       <div class="title-check ${isActive?"checked":""}" data-title="${t.name}" ${unlocked?"":"style='pointer-events:none'"} style="${isActive?`background:${t.color};border-color:${t.color};`:""}">${isActive?"✓":""}</div>
       <div class="title-info"><div class="name" style="color:${unlocked?t.color:'inherit'}">${t.name}</div><div class="req">${unlocked?"已解鎖":"累積貢獻滿 "+fmt(t.amount)+" 解鎖"}</div></div>
@@ -744,36 +739,35 @@ function renderTitleList(cumulative){
 }
 function toggleActiveTitle(titleName){
   const profile=currentProfile(); if(!profile) return;
-  const newTitle = profile.activeTitle===titleName ? "" : titleName;
-  patchProfileLocalThenSync(profile, { activeTitle:newTitle });
+  const newTitle=profile.activeTitle===titleName?"":titleName;
+  patchProfileLocalThenSync(profile,{activeTitle:newTitle});
 }
 function renderLevelBox(cumulative){
   const level=levelFor(cumulative), stage=stageFor(ageFor(cumulative));
   const cur=level*10000, next=(level+1)*10000;
   const progress=Math.min(100, Math.round(((cumulative-cur)/(next-cur))*100));
+  const glowCount=Math.min(RAINBOW.length, Math.floor(level/3));
+  const dots = RAINBOW.slice(0,glowCount).map(c=>`<span class="glow-dot" style="background:${c}"></span>`).join("");
   document.getElementById("levelBox").innerHTML = `
     <div class="level-num">Lv. ${level}</div>
     <div class="level-stage">${STAGE_LABEL[stage]}(約 ${ageFor(cumulative)} 歲)</div>
     <div class="xp-bar-outer"><div class="xp-bar-inner" style="width:${progress}%"></div></div>
-    <div class="xp-label">${fmt(cumulative)} / ${fmt(next)}(距離下一等級還差 ${fmt(next-cumulative)})</div>`;
+    <div class="xp-label">${fmt(cumulative)} / ${fmt(next)}(距離下一等級還差 ${fmt(next-cumulative)})</div>
+    <div class="glow-hint">身體光環：${glowCount>0?dots:"尚未點亮(每3級增加一色)"}</div>`;
 }
 function renderEquipGrid(cumulative){
   const profile=currentProfile();
-  const unlocked=unlockedEquipmentThresholds(cumulative);
-  const equipped=(profile&&profile.equippedItems)||[];
-  const nextItem=nextEquipmentItem(cumulative);
+  const unlocked=unlockedEquipmentThresholds(cumulative), equipped=(profile&&profile.equippedItems)||[], nextItem=nextEquipmentItem(cumulative);
   document.getElementById("equipPreviewAvatar").innerHTML = profile ? renderAvatarSVG(profile, cumulative, "full") : "";
   let html = EQUIPMENT_ITEMS.filter(i=>unlocked.includes(i.amount)).map(item=>{
     const isEquipped=equipped.includes(item.amount);
     return `<div class="equip-slot ${isEquipped?"equipped":""}" data-threshold="${item.amount}">
-      <svg class="equip-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="${item.color}" stroke="#2b2620" stroke-width="2"/></svg>
+      ${equipIconSVG(item.name, item.color)}
       <div class="equip-name">${item.name}</div><div class="equip-req">滿 ${fmt(item.amount)}</div>
       ${isEquipped?'<div class="equip-check">✓</div>':""}
     </div>`;
   }).join("");
-  if (nextItem){
-    html += `<div class="equip-slot locked"><svg class="equip-icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="#999" stroke="#2b2620" stroke-width="2"/></svg><div class="equip-name">${nextItem.name}</div><div class="equip-req">滿 ${fmt(nextItem.amount)} 解鎖</div></div>`;
-  }
+  if (nextItem){ html += `<div class="equip-slot locked">${equipIconSVG(nextItem.name,"#999")}<div class="equip-name">${nextItem.name}</div><div class="equip-req">滿 ${fmt(nextItem.amount)} 解鎖</div></div>`; }
   document.getElementById("equipGrid").innerHTML = html;
   document.querySelectorAll(".equip-slot[data-threshold]").forEach(el=>el.addEventListener("click",()=>toggleEquip(Number(el.dataset.threshold))));
 }
@@ -781,44 +775,40 @@ function toggleEquip(threshold){
   const profile=currentProfile(); if(!profile) return;
   const current=profile.equippedItems||[];
   const newList = current.includes(threshold) ? current.filter(t=>t!==threshold) : [...current, threshold];
-  patchProfileLocalThenSync(profile, { equippedItems:newList });
+  patchProfileLocalThenSync(profile,{equippedItems:newList});
 }
-document.getElementById("equipAllBtn").addEventListener("click", () => {
+document.getElementById("equipAllBtn").addEventListener("click", ()=>{
   const profile=currentProfile(); if(!profile) return;
   const cumulative=cumulativeContribution(achievePersonName);
-  patchProfileLocalThenSync(profile, { equippedItems: unlockedEquipmentThresholds(cumulative) });
+  patchProfileLocalThenSync(profile,{equippedItems:unlockedEquipmentThresholds(cumulative)});
 });
 
 function patchProfileLocalThenSync(profile, patch){
-  const idx = profiles.findIndex(p => p.slot === profile.slot);
-  const updated = { ...profile, ...patch };
-  if (idx !== -1) profiles[idx] = updated;
+  const idx=profiles.findIndex(p=>p.slot===profile.slot);
+  const updated={...profile, ...patch};
+  if (idx!==-1) profiles[idx]=updated;
   renderPlayerStrip(); renderCharacterStage(); renderAchieveContent();
 
-  fetch(CONFIG.WEB_APP_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
-    body: JSON.stringify({ key: sessionKey, action:"updateProfile", slot: profile.slot, name: updated.name,
-      birthdate: updated.birthdate||"", gender: updated.gender||"", equippedItems: updated.equippedItems||[],
-      activeTitle: updated.activeTitle||"", hairstyle: updated.hairstyle||"", eyeStyle: updated.eyeStyle||"",
-      faceShape: updated.faceShape||"", mouthStyle: updated.mouthStyle||"", bodyType: updated.bodyType||"", skinTone: updated.skinTone||"" }) })
-    .then(res => parseJsonSafe(res))
-    .then(json => { if (json.status !== "success") throw new Error(json.message); })
-    .catch(err => { alert("同步失敗，正在重新整理：" + err.message); loadRecords(); });
+  fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify({key:sessionKey,action:"updateProfile",slot:profile.slot,name:updated.name,
+      birthdate:updated.birthdate||"",gender:updated.gender||"",equippedItems:updated.equippedItems||[],
+      activeTitle:updated.activeTitle||"",hairstyle:updated.hairstyle||"",eyeStyle:updated.eyeStyle||"",
+      faceShape:updated.faceShape||"",mouthStyle:updated.mouthStyle||"",bodyType:updated.bodyType||"",skinTone:updated.skinTone||""})})
+    .then(json=>{ if (json.status!=="success") throw new Error(json.message); })
+    .catch(err=>{ alert("同步失敗，正在重新整理："+err.message); loadRecords(); });
 }
 
 function openSettings(){
   const container=document.getElementById("profileForms");
-  container.innerHTML = profiles.map(p => {
-    const cumulative = cumulativeContribution(p.name);
+  container.innerHTML = profiles.map(p=>{
+    const cumulative=cumulativeContribution(p.name);
     return `
     <div class="profile-block" data-slot="${p.slot}">
       <div class="profile-head"><div class="avatar-wrap" id="settingsAvatar-${p.slot}">${renderAvatarSVG(p, cumulative, "full")}</div><div class="ptitle">${p.name}</div></div>
       <label>🙋 名字</label><input class="f-name" value="${p.name}" />
       <div class="field-grid">
-        <div><label>🎂 出生年月日</label><input class="f-birthdate" type="date" value="${p.birthdate||""}" /></div>
-        <div><label>⚧ 性別</label><select class="f-gender">
-          <option value="">不指定</option><option value="male" ${p.gender==="male"?"selected":""}>男</option>
-          <option value="female" ${p.gender==="female"?"selected":""}>女</option><option value="other" ${p.gender==="other"?"selected":""}>其他</option>
-        </select></div>
+        <div><label>🎂 生日</label><input class="f-birthdate" type="date" value="${p.birthdate||""}" /></div>
+        <div><label>⚧ 性別</label><select class="f-gender"><option value="">不指定</option><option value="male" ${p.gender==="male"?"selected":""}>男</option><option value="female" ${p.gender==="female"?"selected":""}>女</option><option value="other" ${p.gender==="other"?"selected":""}>其他</option></select></div>
       </div>
       <div class="zodiac-preview"></div>
       <div class="field-grid">
@@ -826,63 +816,83 @@ function openSettings(){
           <option value="auto" ${!p.hairstyle||p.hairstyle==="auto"?"selected":""}>依性別預設</option>
           <option value="short" ${p.hairstyle==="short"?"selected":""}>短髮</option><option value="long" ${p.hairstyle==="long"?"selected":""}>長髮</option>
           <option value="ponytail" ${p.hairstyle==="ponytail"?"selected":""}>馬尾</option><option value="bald" ${p.hairstyle==="bald"?"selected":""}>光頭</option>
+          <option value="bob" ${p.hairstyle==="bob"?"selected":""}>妹妹頭</option><option value="curly" ${p.hairstyle==="curly"?"selected":""}>捲髮</option>
+          <option value="mohawk" ${p.hairstyle==="mohawk"?"selected":""}>龐克頭</option><option value="bun" ${p.hairstyle==="bun"?"selected":""}>丸子頭</option>
+          <option value="twintails" ${p.hairstyle==="twintails"?"selected":""}>雙馬尾</option><option value="afro" ${p.hairstyle==="afro"?"selected":""}>爆炸頭</option>
+          <option value="sidepart" ${p.hairstyle==="sidepart"?"selected":""}>旁分</option><option value="buzzcut" ${p.hairstyle==="buzzcut"?"selected":""}>平頭</option>
+          <option value="pixie" ${p.hairstyle==="pixie"?"selected":""}>精靈短髮</option>
         </select></div>
         <div><label>👀 眼睛</label><select class="f-eyeStyle">
-          <option value="round" ${(!p.eyeStyle||p.eyeStyle==="round")?"selected":""}>圓眼</option>
-          <option value="happy" ${p.eyeStyle==="happy"?"selected":""}>笑眼</option><option value="sleepy" ${p.eyeStyle==="sleepy"?"selected":""}>瞇眼</option>
+          <option value="round" ${(!p.eyeStyle||p.eyeStyle==="round")?"selected":""}>圓眼</option><option value="happy" ${p.eyeStyle==="happy"?"selected":""}>笑眼</option>
+          <option value="sleepy" ${p.eyeStyle==="sleepy"?"selected":""}>瞇眼</option><option value="wink" ${p.eyeStyle==="wink"?"selected":""}>眨眼</option>
+          <option value="star" ${p.eyeStyle==="star"?"selected":""}>星星眼</option><option value="angry" ${p.eyeStyle==="angry"?"selected":""}>生氣眼</option>
+          <option value="teary" ${p.eyeStyle==="teary"?"selected":""}>淚眼</option><option value="heart" ${p.eyeStyle==="heart"?"selected":""}>愛心眼</option>
+          <option value="sharp" ${p.eyeStyle==="sharp"?"selected":""}>銳利眼</option><option value="closed" ${p.eyeStyle==="closed"?"selected":""}>閉眼</option>
+          <option value="sparkle" ${p.eyeStyle==="sparkle"?"selected":""}>閃亮眼</option>
         </select></div>
       </div>
       <div class="field-grid">
         <div><label>😊 臉型</label><select class="f-faceShape">
-          <option value="round" ${(!p.faceShape||p.faceShape==="round")?"selected":""}>圓臉</option>
-          <option value="square" ${p.faceShape==="square"?"selected":""}>方臉</option><option value="oval" ${p.faceShape==="oval"?"selected":""}>鵝蛋臉</option>
+          <option value="round" ${(!p.faceShape||p.faceShape==="round")?"selected":""}>圓臉</option><option value="square" ${p.faceShape==="square"?"selected":""}>方臉</option>
+          <option value="oval" ${p.faceShape==="oval"?"selected":""}>鵝蛋臉</option><option value="heart" ${p.faceShape==="heart"?"selected":""}>心形臉</option>
+          <option value="long" ${p.faceShape==="long"?"selected":""}>長臉</option><option value="diamond" ${p.faceShape==="diamond"?"selected":""}>鑽石臉</option>
+          <option value="triangle" ${p.faceShape==="triangle"?"selected":""}>三角臉</option><option value="pear" ${p.faceShape==="pear"?"selected":""}>西洋梨臉</option>
+          <option value="chubby" ${p.faceShape==="chubby"?"selected":""}>圓潤臉</option><option value="sharp" ${p.faceShape==="sharp"?"selected":""}>尖臉</option>
         </select></div>
         <div><label>👄 嘴型</label><select class="f-mouthStyle">
-          <option value="smile" ${(!p.mouthStyle||p.mouthStyle==="smile")?"selected":""}>微笑</option>
-          <option value="neutral" ${p.mouthStyle==="neutral"?"selected":""}>平靜</option><option value="open" ${p.mouthStyle==="open"?"selected":""}>驚訝</option>
+          <option value="smile" ${(!p.mouthStyle||p.mouthStyle==="smile")?"selected":""}>微笑</option><option value="neutral" ${p.mouthStyle==="neutral"?"selected":""}>平靜</option>
+          <option value="open" ${p.mouthStyle==="open"?"selected":""}>驚訝</option><option value="smirk" ${p.mouthStyle==="smirk"?"selected":""}>壞笑</option>
+          <option value="pout" ${p.mouthStyle==="pout"?"selected":""}>嘟嘴</option><option value="grin" ${p.mouthStyle==="grin"?"selected":""}>露齒笑</option>
+          <option value="frown" ${p.mouthStyle==="frown"?"selected":""}>皺眉</option><option value="tongue" ${p.mouthStyle==="tongue"?"selected":""}>吐舌</option>
+          <option value="kiss" ${p.mouthStyle==="kiss"?"selected":""}>親親嘴</option><option value="whistle" ${p.mouthStyle==="whistle"?"selected":""}>吹口哨</option>
+          <option value="surprised" ${p.mouthStyle==="surprised"?"selected":""}>大驚訝</option>
         </select></div>
       </div>
       <div class="field-grid">
         <div><label>💪 體型</label><select class="f-bodyType">
-          <option value="regular" ${(!p.bodyType||p.bodyType==="regular")?"selected":""}>標準</option>
-          <option value="slim" ${p.bodyType==="slim"?"selected":""}>纖細</option><option value="broad" ${p.bodyType==="broad"?"selected":""}>壯碩</option>
+          <option value="regular" ${(!p.bodyType||p.bodyType==="regular")?"selected":""}>標準</option><option value="slim" ${p.bodyType==="slim"?"selected":""}>纖細</option>
+          <option value="broad" ${p.bodyType==="broad"?"selected":""}>壯碩</option><option value="chubby" ${p.bodyType==="chubby"?"selected":""}>圓潤</option>
+          <option value="tall" ${p.bodyType==="tall"?"selected":""}>高瘦</option><option value="short" ${p.bodyType==="short"?"selected":""}>矮壯</option>
+          <option value="athletic" ${p.bodyType==="athletic"?"selected":""}>健壯</option><option value="petite" ${p.bodyType==="petite"?"selected":""}>嬌小</option>
+          <option value="curvy" ${p.bodyType==="curvy"?"selected":""}>豐腴</option><option value="stocky" ${p.bodyType==="stocky"?"selected":""}>敦實</option>
         </select></div>
         <div><label>🎨 膚色</label><select class="f-skinTone">
-          <option value="light" ${p.skinTone==="light"?"selected":""}>白皙</option>
-          <option value="medium" ${(!p.skinTone||p.skinTone==="medium")?"selected":""}>自然</option>
-          <option value="tan" ${p.skinTone==="tan"?"selected":""}>小麥</option><option value="dark" ${p.skinTone==="dark"?"selected":""}>深膚</option>
+          <option value="porcelain" ${p.skinTone==="porcelain"?"selected":""}>瓷白</option><option value="light" ${p.skinTone==="light"?"selected":""}>白皙</option>
+          <option value="ivory" ${p.skinTone==="ivory"?"selected":""}>象牙白</option><option value="medium" ${(!p.skinTone||p.skinTone==="medium")?"selected":""}>自然</option>
+          <option value="rosy" ${p.skinTone==="rosy"?"selected":""}>紅潤</option><option value="olive" ${p.skinTone==="olive"?"selected":""}>橄欖</option>
+          <option value="tan" ${p.skinTone==="tan"?"selected":""}>小麥</option><option value="bronze" ${p.skinTone==="bronze"?"selected":""}>古銅</option>
+          <option value="dark" ${p.skinTone==="dark"?"selected":""}>深膚</option><option value="deep" ${p.skinTone==="deep"?"selected":""}>深邃</option>
         </select></div>
       </div>
     </div>`;
   }).join("");
 
-  container.querySelectorAll(".profile-block").forEach(block => {
-    const slot = block.dataset.slot;
-    const profile = profiles.find(p => p.slot.toString() === slot.toString());
-    const dateInput = block.querySelector(".f-birthdate");
-    const zodiacEl = block.querySelector(".zodiac-preview");
+  container.querySelectorAll(".profile-block").forEach(block=>{
+    const slot=block.dataset.slot;
+    const profile=profiles.find(p=>p.slot.toString()===slot.toString());
+    const dateInput=block.querySelector(".f-birthdate");
+    const zodiacEl=block.querySelector(".zodiac-preview");
     function updateZodiac(){
       if (!dateInput.value){ zodiacEl.innerHTML=""; return; }
-      const d = new Date(dateInput.value + "T12:00:00");
-      if (isNaN(d.getTime())) { zodiacEl.innerHTML=""; return; }
-      zodiacEl.innerHTML = `<span class="zodiac-badge">${zodiacOf(d.getMonth()+1, d.getDate())}</span>`;
+      const d=new Date(dateInput.value+"T12:00:00");
+      if (isNaN(d.getTime())){ zodiacEl.innerHTML=""; return; }
+      zodiacEl.innerHTML=`<span class="zodiac-badge">${zodiacOf(d.getMonth()+1, d.getDate())}</span>`;
     }
-    dateInput.addEventListener("change", updateZodiac);
-    updateZodiac();
+    dateInput.addEventListener("change", updateZodiac); updateZodiac();
 
     function refreshPreview(){
-      const draft = { ...profile,
-        gender: block.querySelector(".f-gender").value, hairstyle: block.querySelector(".f-hairstyle").value,
-        eyeStyle: block.querySelector(".f-eyeStyle").value, faceShape: block.querySelector(".f-faceShape").value,
-        mouthStyle: block.querySelector(".f-mouthStyle").value, bodyType: block.querySelector(".f-bodyType").value,
-        skinTone: block.querySelector(".f-skinTone").value
+      const draft={...profile,
+        gender:block.querySelector(".f-gender").value, hairstyle:block.querySelector(".f-hairstyle").value,
+        eyeStyle:block.querySelector(".f-eyeStyle").value, faceShape:block.querySelector(".f-faceShape").value,
+        mouthStyle:block.querySelector(".f-mouthStyle").value, bodyType:block.querySelector(".f-bodyType").value,
+        skinTone:block.querySelector(".f-skinTone").value
       };
       document.getElementById("settingsAvatar-"+slot).innerHTML = renderAvatarSVG(draft, cumulativeContribution(profile.name), "full");
     }
-    block.querySelectorAll("select").forEach(sel => sel.addEventListener("change", refreshPreview));
+    block.querySelectorAll("select").forEach(sel=>sel.addEventListener("change", refreshPreview));
   });
 
-  document.getElementById("settingsStatus").textContent = "";
+  document.getElementById("settingsStatus").textContent="";
   document.getElementById("settingsOverlay").classList.add("show");
 }
 function closeSettings(){ document.getElementById("settingsOverlay").classList.remove("show"); }
@@ -894,23 +904,22 @@ async function saveSettings(){
     for (const block of blocks){
       const slot=block.dataset.slot;
       const profile=profiles.find(p=>p.slot.toString()===slot.toString());
-      const payload = {
-        key: sessionKey, action:"updateProfile", slot,
-        name: block.querySelector(".f-name").value.trim(),
-        birthdate: block.querySelector(".f-birthdate").value,
-        gender: block.querySelector(".f-gender").value,
-        hairstyle: block.querySelector(".f-hairstyle").value,
-        eyeStyle: block.querySelector(".f-eyeStyle").value,
-        faceShape: block.querySelector(".f-faceShape").value,
-        mouthStyle: block.querySelector(".f-mouthStyle").value,
-        bodyType: block.querySelector(".f-bodyType").value,
-        skinTone: block.querySelector(".f-skinTone").value,
-        equippedItems: profile.equippedItems||[],
-        activeTitle: profile.activeTitle||""
+      const payload={
+        key:sessionKey, action:"updateProfile", slot,
+        name:block.querySelector(".f-name").value.trim(),
+        birthdate:block.querySelector(".f-birthdate").value,
+        gender:block.querySelector(".f-gender").value,
+        hairstyle:block.querySelector(".f-hairstyle").value,
+        eyeStyle:block.querySelector(".f-eyeStyle").value,
+        faceShape:block.querySelector(".f-faceShape").value,
+        mouthStyle:block.querySelector(".f-mouthStyle").value,
+        bodyType:block.querySelector(".f-bodyType").value,
+        skinTone:block.querySelector(".f-skinTone").value,
+        equippedItems:profile.equippedItems||[],
+        activeTitle:profile.activeTitle||""
       };
       if (!payload.name) throw new Error("名字不能空白");
-      const res=await fetch(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
-      const json=await parseJsonSafe(res);
+      const json=await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
       if (json.status!=="success") throw new Error(json.message);
     }
     statusEl.textContent="已儲存！"; statusEl.className="edit-status ok";
@@ -939,7 +948,6 @@ document.getElementById("editSaveBtn").addEventListener("click", saveEdit);
 document.getElementById("editDeleteBtn").addEventListener("click", deleteEdit);
 document.getElementById("editCancelBtn").addEventListener("click", closeEdit);
 document.getElementById("editOverlay").addEventListener("click", e=>{ if(e.target.id==="editOverlay") closeEdit(); });
-
 document.getElementById("settingsBtn").addEventListener("click", openSettings);
 document.getElementById("settingsSaveBtn").addEventListener("click", saveSettings);
 document.getElementById("settingsCancelBtn").addEventListener("click", closeSettings);
