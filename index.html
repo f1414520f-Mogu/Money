@@ -19,6 +19,28 @@
     --card:#2e2620; --panel:#241d18; --panel-dark:#4a3c2e; --panel-light:#5c4c3a;
     --bg-deep:#171310;
   }
+  /* ---------- 4 種配色主題(body 加 class 切換) ---------- */
+  body.theme-parchment{
+    --gold:#c9a15a; --gold-dark:#96733a; --cream:#f0e6d2; --cream-dark:#d9c9a3; --cream-light:#faf3e2;
+    --ink:#2b2620; --ink-soft:#6b5c44; --teal:#5b8a72; --teal-dark:#3d6650;
+    --danger:#b33f32; --danger-dark:#7d2c22;
+    --card:#f6ecd4; --panel:#e9d8ae; --panel-dark:#c2a565; --panel-light:#faf1dc;
+    --bg-deep:#e8dcc0;
+  }
+  body.theme-ocean{
+    --gold:#7fc9d9; --gold-dark:#4a97a8; --cream:#dceef2; --cream-dark:#b8d8e0; --cream-light:#eef8fa;
+    --ink:#e4f4f7; --ink-soft:#a8c8cf; --teal:#4a90a4; --teal-dark:#316877;
+    --danger:#d1665a; --danger-dark:#8a3a2e;
+    --card:#1c333a; --panel:#152128; --panel-dark:#2e4a53; --panel-light:#3d5d67;
+    --bg-deep:#0e181d;
+  }
+  body.theme-forest{
+    --gold:#a8c46a; --gold-dark:#78943e; --cream:#e6ecd4; --cream-dark:#c8d4a3; --cream-light:#f2f6e8;
+    --ink:#eaf0dc; --ink-soft:#b8c49a; --teal:#5b9a72; --teal-dark:#3d6650;
+    --danger:#d17a54; --danger-dark:#8a4a28;
+    --card:#22301e; --panel:#182415; --panel-dark:#3a4e2e; --panel-light:#4a613a;
+    --bg-deep:#101a0d;
+  }
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
   body{ color:var(--ink); font-family:"DotGothic16","Noto Sans TC",sans-serif; font-size:16px; -webkit-tap-highlight-color:transparent; min-height:100vh; padding-bottom:92px; background:var(--bg-deep); overflow-x:hidden; }
@@ -54,6 +76,7 @@
   .player-lv{ display:inline-block; font-family:"Press Start 2P",monospace; font-size:10px; background:rgba(0,0,0,0.3); color:var(--gold); padding:2px 6px; border-radius:3px; margin-bottom:4px; }
   .player-amt{ font-family:"Press Start 2P",monospace; font-size:13px; color:#fff3d6; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
   .player-amt-label{ font-size:10px; opacity:0.9; margin-top:4px; }
+  .player-repaid{ font-size:10px; opacity:0.85; margin-top:3px; color:var(--gold); }
 
   main{ max-width:480px; margin:0 auto; padding:16px 12px; }
   .card{ background:var(--card); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:3px; border-radius:4px; padding:16px; margin-bottom:14px; }
@@ -188,6 +211,19 @@
   .equip-all-btn, .equip-none-btn{ width:100%; padding:11px; font-size:12.5px; font-weight:700; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
   .equip-all-btn{ background:var(--gold); color:#2b2015; border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; border-style:solid; border-width:2px; }
   .equip-none-btn{ background:var(--panel); color:var(--ink-soft); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
+  .equip-color-row{ display:flex; gap:5px; margin-top:6px; flex-wrap:wrap; }
+  .equip-color-dot{ width:18px; height:18px; border-radius:50%; border:2px solid rgba(0,0,0,0.3); cursor:pointer; }
+  .equip-color-dot.selected{ border-color:var(--ink); box-shadow:0 0 0 2px var(--gold); }
+  .pet-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+  .pet-slot{ background:rgba(0,0,0,0.2); border:2px solid var(--panel-dark); border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:10px 4px; cursor:pointer; position:relative; }
+  .pet-slot.locked{ opacity:0.4; cursor:default; }
+  .pet-slot.equipped{ border-color:var(--gold); background:rgba(201,161,90,0.28); }
+  .pet-slot img{ width:34px; height:34px; }
+  .pet-slot .pname{ font-size:12px; font-weight:700; }
+  .pet-slot .preq{ font-size:9.5px; color:var(--ink-soft); text-align:center; }
+  .pet-slot .pcheck{ position:absolute; top:3px; right:5px; font-size:13px; color:var(--teal); }
+  .char-pets{ display:flex; gap:3px; justify-content:center; margin-top:4px; }
+  .char-pets img{ width:20px; height:20px; }
 
   .glow-check-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
   .glow-check{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 2px; border:2px solid var(--panel-dark); border-radius:4px; cursor:pointer; background:rgba(0,0,0,0.2); }
@@ -209,6 +245,9 @@
   .overlay.show{ display:flex; }
   .sheet{ background:var(--card); width:100%; max-width:480px; padding:20px 18px 26px; border-top:4px solid var(--panel-dark); border-radius:12px 12px 0 0; max-height:90vh; overflow-y:auto; }
   .settings-sticky-head{ position:sticky; top:-20px; z-index:5; background:var(--card); margin:-20px -18px 12px; padding:20px 18px 12px; border-bottom:3px solid var(--panel-dark); }
+  .app-theme-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px; }
+  .app-theme-swatch{ height:44px; border-radius:4px; border:3px solid transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; }
+  .app-theme-swatch.selected{ border-color:var(--gold); }
   .settings-preview{ display:flex; align-items:center; gap:14px; margin-top:10px; }
   .settings-preview .avatar-wrap{ width:88px; height:118px; flex-shrink:0; }
   .settings-preview .avatar-wrap img{ width:100%; height:100%; object-fit:contain; }
@@ -330,10 +369,13 @@
   <section id="view-chart" class="view">
     <div class="card bevel-out">
       <h2><span class="idx">📊</span>金流圖表</h2>
-      <select id="chartType" style="margin-bottom:14px;">
+      <select id="chartType" style="margin-bottom:10px;">
         <option value="line">📈 折線圖(每月總額趨勢)</option>
         <option value="bar">📊 長條圖(每月總額趨勢)</option>
         <option value="pie">🥧 圓餅圖(各人員佔比)</option>
+      </select>
+      <select id="chartPerson" style="margin-bottom:14px;">
+        <option value="__all__">👥 總計(不分人員)</option>
       </select>
       <canvas class="chart" id="mainChart"></canvas>
     </div>
@@ -344,6 +386,7 @@
       <button class="sub-tab-btn active" data-sub="sub-trophy">🏆 獎盃</button>
       <button class="sub-tab-btn" data-sub="sub-level">⭐ 等級</button>
       <button class="sub-tab-btn" data-sub="sub-equip">🛡 裝備</button>
+      <button class="sub-tab-btn" data-sub="sub-pet">🐾 寵物</button>
     </div>
     <div class="person-select-row" id="achievePersonRow"></div>
     <div id="sub-trophy" class="sub-view active card bevel-out"><h2><span class="idx">🏆</span>稱號收藏</h2><div class="title-list" id="titleList"></div></div>
@@ -360,6 +403,11 @@
         </div>
         <div class="equip-right" id="equipGrid"></div>
       </div>
+    </div>
+    <div id="sub-pet" class="sub-view card bevel-out">
+      <h2><span class="idx">🐾</span>十二生肖寵物</h2>
+      <p style="font-size:12px;color:var(--ink-soft);margin:-6px 0 12px;font-weight:700;">解鎖後最多可以同時攜帶 3 隻</p>
+      <div class="pet-grid" id="petGrid"></div>
     </div>
   </section>
 </main>
@@ -408,6 +456,8 @@
   <div class="sheet">
     <div class="settings-sticky-head">
       <h3 style="margin-bottom:10px;">⚙ 人員設定</h3>
+      <label style="margin-top:0;">🎨 整體配色</label>
+      <div class="app-theme-row" id="appThemeRow"></div>
       <div class="person-select-row" id="settingsPersonRow"></div>
       <div class="settings-preview" id="settingsPreview"></div>
     </div>
@@ -421,7 +471,7 @@
 
 <script>
 const CONFIG = {
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbzKDJf1RK6EWsqzCrJ_AbwlV6zWOSodWeygRjLrvB4czn1eQhLqxYi7Seq3S_dC1_cQnw/exec",
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbxcZLeU0F7HNzqCPf46cfdf941Ygn5ki8wyNoDoSYZgg9X-83mDYt7_52K0h__Rj8gv/exec",
   APP_PASSWORD: "20210318",
   HEADER_IMAGE_URL: "",
   APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.jpg?raw=true",
@@ -446,6 +496,47 @@ const EQUIPMENT_ITEMS = [
 ];
 function unlockedEquipmentThresholds(cumulative){ return EQUIPMENT_ITEMS.filter(i=>cumulative>=i.amount).map(i=>i.amount); }
 function nextEquipmentItem(cumulative){ return EQUIPMENT_ITEMS.find(i=>cumulative<i.amount) || null; }
+const EQUIP_COLOR_CHOICES = ["#c0392b","#2980b9","#16a085","#6b4c7a","#c9a15a","#e39aa0","#f7d716","#34495e"];
+
+// ---------- 寵物系統(十二生肖，解鎖門檻比照裝備) ----------
+const PET_ITEMS = [
+  { amount:10000, name:"鼠", color:"#8a7a6b", ear:"round" },
+  { amount:30000, name:"牛", color:"#6b5642", ear:"horn" },
+  { amount:50000, name:"虎", color:"#e8a23d", ear:"round" },
+  { amount:100000, name:"兔", color:"#f2ede0", ear:"long" },
+  { amount:150000, name:"龍", color:"#3d8a5c", ear:"horn" },
+  { amount:160000, name:"蛇", color:"#5c8a6b", ear:"none" },
+  { amount:170000, name:"馬", color:"#8a5a3a", ear:"mane" },
+  { amount:180000, name:"羊", color:"#f0ebe0", ear:"round" },
+  { amount:190000, name:"猴", color:"#a8734a", ear:"round" },
+  { amount:200000, name:"雞", color:"#d1554a", ear:"comb" },
+  { amount:210000, name:"狗", color:"#c9a15a", ear:"floppy" },
+  { amount:220000, name:"豬", color:"#e8b8b0", ear:"round" }
+];
+function unlockedPetThresholds(cumulative){ return PET_ITEMS.filter(i=>cumulative>=i.amount).map(i=>i.amount); }
+function nextPetItem(cumulative){ return PET_ITEMS.find(i=>cumulative<i.amount) || null; }
+function petIconDataURL(pet, size){
+  size = size || 24;
+  const c=document.createElement('canvas'); c.width=size; c.height=size;
+  const ctx=c.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  const mid=size/2, bodyR=size*0.34;
+  ctx.fillStyle=pet.color; ctx.strokeStyle="#241a10"; ctx.lineWidth=Math.max(1,size*0.06);
+  // 耳朵/特徵
+  ctx.beginPath();
+  if (pet.ear==="round"){ ctx.arc(mid-bodyR*0.6,mid-bodyR*0.9,bodyR*0.35,0,Math.PI*2); ctx.arc(mid+bodyR*0.6,mid-bodyR*0.9,bodyR*0.35,0,Math.PI*2); }
+  else if (pet.ear==="long"){ ctx.ellipse(mid-bodyR*0.4,mid-bodyR*1.3,bodyR*0.22,bodyR*0.6,0,0,Math.PI*2); ctx.ellipse(mid+bodyR*0.4,mid-bodyR*1.3,bodyR*0.22,bodyR*0.6,0,0,Math.PI*2); }
+  else if (pet.ear==="horn"){ ctx.moveTo(mid-bodyR*0.5,mid-bodyR*0.7); ctx.lineTo(mid-bodyR*0.7,mid-bodyR*1.4); ctx.lineTo(mid-bodyR*0.2,mid-bodyR*0.7); ctx.moveTo(mid+bodyR*0.5,mid-bodyR*0.7); ctx.lineTo(mid+bodyR*0.7,mid-bodyR*1.4); ctx.lineTo(mid+bodyR*0.2,mid-bodyR*0.7); }
+  else if (pet.ear==="mane"){ ctx.fillStyle=shadeColor(pet.color,-25); ctx.fillRect(mid-bodyR,mid-bodyR*1.2,bodyR*2,bodyR*0.6); ctx.fillStyle=pet.color; }
+  else if (pet.ear==="comb"){ ctx.fillStyle="#c0392b"; ctx.fillRect(mid-bodyR*0.3,mid-bodyR*1.4,bodyR*0.6,bodyR*0.5); ctx.fillStyle=pet.color; }
+  else if (pet.ear==="floppy"){ ctx.ellipse(mid-bodyR*0.75,mid-bodyR*0.5,bodyR*0.3,bodyR*0.55,0.3,0,Math.PI*2); ctx.ellipse(mid+bodyR*0.75,mid-bodyR*0.5,bodyR*0.3,bodyR*0.55,-0.3,0,Math.PI*2); }
+  ctx.fill(); ctx.stroke();
+  // 身體
+  ctx.beginPath(); ctx.arc(mid,mid+bodyR*0.15,bodyR,0,Math.PI*2); ctx.fillStyle=pet.color; ctx.fill(); ctx.stroke();
+  // 眼睛
+  ctx.fillStyle="#241a10";
+  ctx.beginPath(); ctx.arc(mid-bodyR*0.35,mid,bodyR*0.13,0,Math.PI*2); ctx.arc(mid+bodyR*0.35,mid,bodyR*0.13,0,Math.PI*2); ctx.fill();
+  return c.toDataURL();
+}
 const RAINBOW = [
   {c:"#ff4d4d",n:"紅"},{c:"#ff9d3f",n:"橙"},{c:"#ffe14d",n:"黃"},{c:"#4dff7a",n:"綠"},
   {c:"#4d9dff",n:"藍"},{c:"#7a4dff",n:"靛"},{c:"#d94dff",n:"紫"}
@@ -625,21 +716,21 @@ function drawMouth(ctx, style, hx,hy,hw,hh){
     default: px(ctx,cx-1.5,cy,3,1,'#8b3a2b'); return;
   }
 }
-function drawEquip(ctx,name,b){
+function drawEquip(ctx,name,b,col){
   const ink="#241a10";
   switch(name){
-    case "內褲": px(ctx,b.torsoX,b.torsoY+b.torsoH*0.62,b.torsoW,b.torsoH*0.3,"#f7f7f7"); return;
-    case "襪子": px(ctx,b.leg1X,b.legY+b.legH*0.5,b.legW,b.legH*0.5,"#eeeeee"); px(ctx,b.leg2X,b.legY+b.legH*0.5,b.legW,b.legH*0.5,"#eeeeee"); return;
-    case "內衣": px(ctx,b.torsoX,b.torsoY,b.torsoW,b.torsoH*0.45,"#fdf6d8"); return;
-    case "手套": px(ctx,b.armLX,b.armY+b.armH*0.68,b.armW,b.armH*0.32,"#c0392b"); px(ctx,b.armRX,b.armY+b.armH*0.68,b.armW,b.armH*0.32,"#c0392b"); return;
-    case "長褲": px(ctx,b.leg1X,b.legY,b.legW,b.legH*0.85,"#34495e"); px(ctx,b.leg2X,b.legY,b.legW,b.legH*0.85,"#34495e"); px(ctx,b.torsoX,b.torsoY+b.torsoH*0.8,b.torsoW,b.torsoH*0.2,"#34495e"); return;
-    case "T恤": px(ctx,b.torsoX-1,b.torsoY,b.torsoW+2,b.torsoH*0.78,"#2980b9"); px(ctx,b.armLX-1,b.armY,b.armW+2,b.armH*0.25,"#2980b9"); px(ctx,b.armRX-1,b.armY,b.armW+2,b.armH*0.25,"#2980b9"); return;
-    case "鞋子": px(ctx,b.leg1X-1,b.legY+b.legH-3,b.legW+2,3,"#5a3a22"); px(ctx,b.leg2X-1,b.legY+b.legH-3,b.legW+2,3,"#5a3a22"); return;
-    case "外套": px(ctx,b.torsoX-2,b.torsoY-1,b.torsoW+4,b.torsoH*0.88,"#6b4c7a"); px(ctx,b.armLX-1,b.armY-1,b.armW+2,b.armH*0.5,"#6b4c7a"); px(ctx,b.armRX-1,b.armY-1,b.armW+2,b.armH*0.5,"#6b4c7a"); return;
-    case "帽子": px(ctx,b.headX-1,b.headY-4,b.headW+2,4,"#16a085"); px(ctx,b.headX-2,b.headY-1,b.headW+4,2,"#0e6655"); return;
-    case "兔耳帽": px(ctx,b.headX+2,b.headY-9,2,9,"#e39aa0"); px(ctx,b.headX+b.headW-4,b.headY-9,2,9,"#e39aa0"); return;
-    case "魔法手杖": px(ctx,b.armRX+b.armW+1,b.armY-4,2,b.armH+6,"#c9a15a"); ctx.fillStyle="#fdf3c8"; ctx.beginPath(); ctx.arc(b.armRX+b.armW+2,b.armY-5,2.4,0,Math.PI*2); ctx.fill(); ctx.strokeStyle=ink; ctx.lineWidth=0.6; ctx.stroke(); return;
-    case "皇冠": px(ctx,b.headX,b.headY-5,3,5,"#f7d716"); px(ctx,b.headX+b.headW*0.4,b.headY-6,3,6,"#f7d716"); px(ctx,b.headX+b.headW-3,b.headY-5,3,5,"#f7d716"); px(ctx,b.headX,b.headY-2,b.headW,2,"#f7d716"); return;
+    case "內褲": px(ctx,b.torsoX,b.torsoY+b.torsoH*0.62,b.torsoW,b.torsoH*0.3,col||"#f7f7f7"); return;
+    case "襪子": px(ctx,b.leg1X,b.legY+b.legH*0.5,b.legW,b.legH*0.5,col||"#eeeeee"); px(ctx,b.leg2X,b.legY+b.legH*0.5,b.legW,b.legH*0.5,col||"#eeeeee"); return;
+    case "內衣": px(ctx,b.torsoX,b.torsoY,b.torsoW,b.torsoH*0.45,col||"#fdf6d8"); return;
+    case "手套": px(ctx,b.armLX,b.armY+b.armH*0.68,b.armW,b.armH*0.32,col||"#c0392b"); px(ctx,b.armRX,b.armY+b.armH*0.68,b.armW,b.armH*0.32,col||"#c0392b"); return;
+    case "長褲": px(ctx,b.leg1X,b.legY,b.legW,b.legH*0.85,col||"#34495e"); px(ctx,b.leg2X,b.legY,b.legW,b.legH*0.85,col||"#34495e"); px(ctx,b.torsoX,b.torsoY+b.torsoH*0.8,b.torsoW,b.torsoH*0.2,col||"#34495e"); return;
+    case "T恤": px(ctx,b.torsoX-1,b.torsoY,b.torsoW+2,b.torsoH*0.78,col||"#2980b9"); px(ctx,b.armLX-1,b.armY,b.armW+2,b.armH*0.25,col||"#2980b9"); px(ctx,b.armRX-1,b.armY,b.armW+2,b.armH*0.25,col||"#2980b9"); return;
+    case "鞋子": px(ctx,b.leg1X-1,b.legY+b.legH-3,b.legW+2,3,col||"#5a3a22"); px(ctx,b.leg2X-1,b.legY+b.legH-3,b.legW+2,3,col||"#5a3a22"); return;
+    case "外套": px(ctx,b.torsoX-2,b.torsoY-1,b.torsoW+4,b.torsoH*0.88,col||"#6b4c7a"); px(ctx,b.armLX-1,b.armY-1,b.armW+2,b.armH*0.5,col||"#6b4c7a"); px(ctx,b.armRX-1,b.armY-1,b.armW+2,b.armH*0.5,col||"#6b4c7a"); return;
+    case "帽子": px(ctx,b.headX-1,b.headY-4,b.headW+2,4,col||"#16a085"); px(ctx,b.headX-2,b.headY-1,b.headW+4,2,shadeColor(col||"#16a085",-20)); return;
+    case "兔耳帽": px(ctx,b.headX+2,b.headY-9,2,9,col||"#e39aa0"); px(ctx,b.headX+b.headW-4,b.headY-9,2,9,col||"#e39aa0"); return;
+    case "魔法手杖": px(ctx,b.armRX+b.armW+1,b.armY-4,2,b.armH+6,col||"#c9a15a"); ctx.fillStyle="#fdf3c8"; ctx.beginPath(); ctx.arc(b.armRX+b.armW+2,b.armY-5,2.4,0,Math.PI*2); ctx.fill(); ctx.strokeStyle=ink; ctx.lineWidth=0.6; ctx.stroke(); return;
+    case "皇冠": px(ctx,b.headX,b.headY-5,3,5,col||"#f7d716"); px(ctx,b.headX+b.headW*0.4,b.headY-6,3,6,col||"#f7d716"); px(ctx,b.headX+b.headW-3,b.headY-5,3,5,col||"#f7d716"); px(ctx,b.headX,b.headY-2,b.headW,2,col||"#f7d716"); return;
     default: return;
   }
 }
@@ -649,7 +740,7 @@ function equipIconDataURL(name,color){
   ctx.fillStyle='#d9cba0'; ctx.fillRect(0,0,24,24); // 淺色底，避免白色系裝備看不見
   ctx.strokeStyle='#a5905f'; ctx.lineWidth=1; ctx.strokeRect(0.5,0.5,23,23);
   const b={torsoX:6,torsoY:4,torsoW:12,torsoH:14,headX:8,headY:2,headW:8,headH:6,armLX:2,armRX:18,armY:6,armW:4,armH:10,leg1X:7,leg2X:13,legY:16,legW:4,legH:7};
-  drawEquip(ctx,name,b);
+  drawEquip(ctx,name,b,color);
   return c.toDataURL();
 }
 function outlineAndComposite(art){
@@ -734,7 +825,8 @@ function buildCharacterCanvas(profile, cumulative){
   drawMouth(ctx, profile.mouthStyle, headX,headY,headW,headH);
   (profile.equippedItems||[]).forEach(amt=>{
     const item = EQUIPMENT_ITEMS.find(e=>e.amount===amt);
-    if (item) drawEquip(ctx,item.name,b);
+    const customCol = (profile.itemColors||{})[amt];
+    if (item) drawEquip(ctx,item.name,b,customCol);
   });
 
   const composited = outlineAndComposite(art);
@@ -991,6 +1083,7 @@ function renderCharacterStage(){
       <div class="rpg-frame avatar-panel">
         <span class="rpg-corner tl"></span><span class="rpg-corner tr"></span><span class="rpg-corner bl"></span><span class="rpg-corner br"></span>
         <div class="avatar-wrap"><img class="pixel" src="${avatarDataURL(p, cumulative, 'full')}" /></div>
+        <div class="char-pets">${(p.equippedPets||[]).map(name=>{ const pet=PET_ITEMS.find(x=>x.name===name); return pet?`<img class="pixel" src="${petIconDataURL(pet,20)}" />`:""; }).join("")}</div>
       </div>
       <div class="rpg-frame info-panel">
         <span class="rpg-corner tl"></span><span class="rpg-corner tr"></span><span class="rpg-corner bl"></span><span class="rpg-corner br"></span>
@@ -1003,7 +1096,7 @@ function renderCharacterStage(){
 function renderPlayerStrip(){
   const strip=document.getElementById("playerStrip");
   strip.innerHTML = profiles.map(p=>{
-    const cumulative=cumulativeContribution(p.name), outstanding=outstandingBalance(p.name);
+    const cumulative=cumulativeContribution(p.name), outstanding=outstandingBalance(p.name), repaid=repaidTotal(p.name);
     const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
     return `<div class="player-card" data-name="${p.name}" style="${themeStyle(p)}">
       <div class="player-title" style="color:${titleObj?titleObj.color:'rgba(255,255,255,0.6)'}">${titleObj?"「"+titleObj.name+"」":"尚無稱號"}</div>
@@ -1012,6 +1105,7 @@ function renderPlayerStrip(){
       <div class="player-lv">Lv.${levelFor(cumulative)}</div>
       <div class="player-amt">${fmt(outstanding)}</div>
       <div class="player-amt-label">貢獻總額(未歸還)</div>
+      <div class="player-repaid">已收還款 ${fmt(repaid)}</div>
     </div>`;
   }).join("");
   strip.querySelectorAll(".player-card").forEach(card=>{
@@ -1051,6 +1145,8 @@ async function submitExpense(){
   const item=document.getElementById("inputItem").value.trim(), amount=parseFloat(document.getElementById("inputAmount").value);
   const statusEl=document.getElementById("submitStatus");
   if (!person||!date||!item||isNaN(amount)){ statusEl.textContent="請完整填寫人員、日期、名目、金額"; statusEl.className="status error"; return; }
+  const dup = allRecords.some(r=>r.type==="expense" && toDateInputValue(r.timestamp)===date && r.item===item && r.amount===amount);
+  if (dup && !confirm(`已經有一筆「${date} ${item} $${amount}」的紀錄了，確定要再新增一筆嗎？`)) return;
   await postAndReload({action:"create",person,item,amount,date}, statusEl, ()=>{ document.getElementById("inputItem").value=""; document.getElementById("inputAmount").value=""; setDefaultDates(); });
 }
 async function submitRepay(){
@@ -1122,6 +1218,10 @@ function groupByMonth(){
   });
   return groups;
 }
+function personColor(name){
+  const p = profiles.find(x=>x.name===name);
+  return (p && p.themeColor) || "#8a7255";
+}
 function renderLedger(){
   const groups=groupByMonth(); const keys=Object.keys(groups).sort().reverse();
   const body=document.getElementById("ledgerBody");
@@ -1131,10 +1231,17 @@ function renderLedger(){
     const g=groups[key];
     const persons=Object.entries(g.byPerson).sort((a,b)=>b[1]-a[1]);
     const itemsHtml=g.items.slice().reverse().map(r=>{
-      const tag=r.type==="repayment"?'<span class="tag">還款</span>':"";
-      return `<li class="${r.type==="repayment"?"repayment":""}" data-id="${r.id}"><span><span class="date">${dateLabel(r.timestamp)}</span>${tag}${r.person} · ${r.item}</span><span>${fmt(r.amount)}</span></li>`;
+      const color = personColor(r.person);
+      if (r.type==="repayment"){
+        return `<li class="repayment" data-id="${r.id}" style="border-left-color:${color};">
+          <span><span class="date">${dateLabel(r.timestamp)}</span><span class="tag" style="background:${color};">🔁 還給 ${r.person}</span>${r.item}</span>
+          <span>${fmt(r.amount)}</span></li>`;
+      }
+      return `<li data-id="${r.id}" style="border-left-color:${color};">
+        <span><span class="date">${dateLabel(r.timestamp)}</span><b style="color:${color};">${r.person}</b> 墊付 · ${r.item}</span>
+        <span>${fmt(r.amount)}</span></li>`;
     }).join("");
-    html += `<div class="month-block"><div class="month-head"><span>${key} 月結(支出)</span><span class="amt">${fmt(g.total)}</span></div>${persons.map(([p,amt])=>`<div class="person-row"><span>${p}</span><span class="amt">${fmt(amt)}</span></div>`).join("")}<ul class="items">${itemsHtml}</ul></div>`;
+    html += `<div class="month-block"><div class="month-head"><span>${key} 月結(支出)</span><span class="amt">${fmt(g.total)}</span></div>${persons.map(([p,amt])=>`<div class="person-row"><span style="color:${personColor(p)};font-weight:700;">● ${p}</span><span class="amt">${fmt(amt)}</span></div>`).join("")}<ul class="items">${itemsHtml}</ul></div>`;
   });
   body.innerHTML=html;
   body.querySelectorAll(".items li").forEach(li=>li.addEventListener("click",()=>openEdit(li.dataset.id)));
@@ -1142,17 +1249,22 @@ function renderLedger(){
 
 function renderChart(){
   const type=document.getElementById("chartType").value;
+  const personSel=document.getElementById("chartPerson");
+  if (personSel.options.length<=1){
+    personSel.innerHTML = '<option value="__all__">👥 總計(不分人員)</option>' + personNames().map(n=>`<option value="${n}">${n}</option>`).join("");
+  }
+  const personFilter = personSel.value;
   const ctx=document.getElementById("mainChart").getContext("2d");
-  const expenseRecords=allRecords.filter(r=>r.type==="expense");
+  const expenseRecords=allRecords.filter(r=>r.type==="expense" && (personFilter==="__all__" || r.person===personFilter));
   const groups={}; expenseRecords.forEach(r=>{ const k=monthKeyOf(r.timestamp); groups[k]=(groups[k]||0)+r.amount; });
   const monthKeys=Object.keys(groups).sort();
   let data;
   if (type==="pie"){
-    const totals={}; expenseRecords.forEach(r=>{totals[r.person]=(totals[r.person]||0)+r.amount;});
+    const totals={}; allRecords.filter(r=>r.type==="expense").forEach(r=>{totals[r.person]=(totals[r.person]||0)+r.amount;});
     const labels=Object.keys(totals);
     data={ labels, datasets:[{ data:labels.map(l=>totals[l]), backgroundColor:["#c85a3f","#4d7c8a","#c9a15a","#6b4c7a","#8b2942","#2d3561"] }] };
   } else {
-    data={ labels:monthKeys, datasets:[{ label:"每月支出總額", data:monthKeys.map(k=>groups[k]), borderColor:"#8a6a3f", backgroundColor: type==="bar"?"#4d7c8a":"rgba(77,124,138,0.25)", fill:type==="line", tension:0.3, pointBackgroundColor:"#c85a3f", borderWidth:2 }] };
+    data={ labels:monthKeys, datasets:[{ label:(personFilter==="__all__"?"總計":personFilter)+" 每月支出總額", data:monthKeys.map(k=>groups[k]), borderColor:"#8a6a3f", backgroundColor: type==="bar"?"#4d7c8a":"rgba(77,124,138,0.25)", fill:type==="line", tension:0.3, pointBackgroundColor:"#c85a3f", borderWidth:2 }] };
   }
   if (chartInstance) chartInstance.destroy();
   chartInstance=new Chart(ctx,{ type: type==="pie"?"pie":type, data, options:{ responsive:true, plugins:{legend:{display:true,position:type==="pie"?"bottom":"top"}}, scales: type==="pie"?{}:{y:{beginAtZero:true}} } });
@@ -1167,7 +1279,33 @@ function currentProfile(){ return profiles.find(p=>p.name===achievePersonName); 
 function renderAchieveContent(){
   if (!achievePersonName) return;
   const cumulative=cumulativeContribution(achievePersonName);
-  renderTitleList(cumulative); renderLevelBox(cumulative); renderEquipGrid(cumulative);
+  renderTitleList(cumulative); renderLevelBox(cumulative); renderEquipGrid(cumulative); renderPetGrid(cumulative);
+}
+function renderPetGrid(cumulative){
+  const profile=currentProfile();
+  const unlocked=unlockedPetThresholds(cumulative), equippedPets=(profile&&profile.equippedPets)||[], nextItem=nextPetItem(cumulative);
+  let html = PET_ITEMS.filter(i=>unlocked.includes(i.amount)).map(pet=>{
+    const isEquipped=equippedPets.includes(pet.name);
+    return `<div class="pet-slot ${isEquipped?"equipped":""}" data-pet="${pet.name}">
+      <img class="pixel" src="${petIconDataURL(pet,34)}" />
+      <div class="pname">${pet.name}</div><div class="preq">滿 ${fmt(pet.amount)}</div>
+      ${isEquipped?'<div class="pcheck">✓</div>':""}
+    </div>`;
+  }).join("");
+  if (nextItem){ html += `<div class="pet-slot locked"><img class="pixel" src="${petIconDataURL({...nextItem,color:"#999"},34)}" /><div class="pname">${nextItem.name}</div><div class="preq">滿 ${fmt(nextItem.amount)} 解鎖</div></div>`; }
+  document.getElementById("petGrid").innerHTML = html;
+  document.querySelectorAll(".pet-slot[data-pet]").forEach(el=>el.addEventListener("click",()=>togglePet(el.dataset.pet)));
+}
+function togglePet(petName){
+  const profile=currentProfile(); if(!profile) return;
+  const current=profile.equippedPets||[];
+  let newList;
+  if (current.includes(petName)) newList = current.filter(p=>p!==petName);
+  else {
+    if (current.length>=3){ alert("最多只能同時攜帶 3 隻寵物，請先取消其他隻"); return; }
+    newList = [...current, petName];
+  }
+  patchProfileLocalThenSync(profile,{equippedPets:newList});
 }
 function renderTitleList(cumulative){
   const profile=currentProfile();
@@ -1198,18 +1336,36 @@ function renderLevelBox(cumulative){
 function renderEquipGrid(cumulative){
   const profile=currentProfile();
   const unlocked=unlockedEquipmentThresholds(cumulative), equipped=(profile&&profile.equippedItems)||[], nextItem=nextEquipmentItem(cumulative);
+  const itemColors = (profile&&profile.itemColors)||{};
   document.getElementById("equipPreviewAvatar").innerHTML = profile ? `<img class="pixel" src="${avatarDataURL(profile, cumulative, 'full')}" />` : "";
   let html = EQUIPMENT_ITEMS.filter(i=>unlocked.includes(i.amount)).map(item=>{
     const isEquipped=equipped.includes(item.amount);
-    return `<div class="equip-row-item ${isEquipped?"equipped":""}" data-threshold="${item.amount}">
-      <img class="equip-icon pixel" src="${equipIconDataURL(item.name, item.color)}" />
-      <div class="equip-name">${item.name}</div><div class="equip-req">滿 ${fmt(item.amount)}</div>
-      ${isEquipped?'<div class="equip-check">✓</div>':""}
+    const curColor = itemColors[item.amount] || item.color;
+    const colorRow = isEquipped ? `<div class="equip-color-row" data-color-for="${item.amount}">${EQUIP_COLOR_CHOICES.map(c=>`<div class="equip-color-dot ${curColor===c?"selected":""}" data-color="${c}" style="background:${c};"></div>`).join("")}</div>` : "";
+    return `<div>
+      <div class="equip-row-item ${isEquipped?"equipped":""}" data-threshold="${item.amount}">
+        <img class="equip-icon pixel" src="${equipIconDataURL(item.name, curColor)}" />
+        <div class="equip-name">${item.name}</div><div class="equip-req">滿 ${fmt(item.amount)}</div>
+        ${isEquipped?'<div class="equip-check">✓</div>':""}
+      </div>
+      ${colorRow}
     </div>`;
   }).join("");
   if (nextItem){ html += `<div class="equip-row-item locked"><img class="equip-icon pixel" src="${equipIconDataURL(nextItem.name,"#999")}" /><div class="equip-name">${nextItem.name}</div><div class="equip-req">滿 ${fmt(nextItem.amount)} 解鎖</div></div>`; }
   document.getElementById("equipGrid").innerHTML = html;
   document.querySelectorAll(".equip-row-item[data-threshold]").forEach(el=>el.addEventListener("click",()=>toggleEquip(Number(el.dataset.threshold))));
+  document.querySelectorAll(".equip-color-row").forEach(row=>{
+    row.querySelectorAll(".equip-color-dot").forEach(dot=>{
+      dot.addEventListener("click", e=>{
+        e.stopPropagation();
+        const amt = Number(row.dataset.colorFor);
+        const p = currentProfile(); if(!p) return;
+        const itemColors = {...(p.itemColors||{})};
+        itemColors[amt] = dot.dataset.color;
+        patchProfileLocalThenSync(p,{itemColors});
+      });
+    });
+  });
 }
 function toggleEquip(threshold){
   const profile=currentProfile(); if(!profile) return;
@@ -1238,7 +1394,8 @@ function patchProfileLocalThenSync(profile, patch){
       birthdate:updated.birthdate||"",gender:updated.gender||"",equippedItems:updated.equippedItems||[],
       activeTitle:updated.activeTitle||"",hairstyle:updated.hairstyle||"",eyeStyle:updated.eyeStyle||"",
       faceShape:updated.faceShape||"",mouthStyle:updated.mouthStyle||"",bodyType:updated.bodyType||"",skinTone:updated.skinTone||"",
-      themeColor:updated.themeColor||"",glowColors:updated.glowColors||[]})})
+      themeColor:updated.themeColor||"",glowColors:updated.glowColors||[],
+      equippedPets:updated.equippedPets||[],itemColors:updated.itemColors||{}})})
     .then(json=>{ if (json.status!=="success") throw new Error(json.message); })
     .catch(err=>{ alert("同步失敗，正在重新整理："+err.message); loadRecords(); });
 }
@@ -1257,9 +1414,37 @@ function selectHTML(cls, options, current, fallback){
   return `<select class="${cls}">` + options.map(([v,label])=>`<option value="${v}" ${ (current===v || (!current && v===fallback)) ?"selected":""}>${label}</option>`).join("") + `</select>`;
 }
 
+const APP_THEMES = [
+  {cls:"", name:"深色金", bg:"#171310", fg:"#d4af6a"},
+  {cls:"theme-parchment", name:"羊皮紙", bg:"#f0e6d2", fg:"#96733a"},
+  {cls:"theme-ocean", name:"深海藍", bg:"#0e181d", fg:"#7fc9d9"},
+  {cls:"theme-forest", name:"森林綠", bg:"#101a0d", fg:"#a8c46a"}
+];
+function applyAppTheme(cls){
+  APP_THEMES.forEach(t=>{ if(t.cls) document.body.classList.remove(t.cls); });
+  if (cls) document.body.classList.add(cls);
+  localStorage.setItem("app_theme", cls);
+}
+function initAppTheme(){
+  const saved = localStorage.getItem("app_theme") || "";
+  applyAppTheme(saved);
+}
+function renderAppThemeRow(){
+  const row = document.getElementById("appThemeRow");
+  const current = localStorage.getItem("app_theme") || "";
+  row.innerHTML = APP_THEMES.map(t=>`<div class="app-theme-swatch ${t.cls===current?"selected":""}" data-cls="${t.cls}" style="background:${t.bg};color:${t.fg};">${t.name}</div>`).join("");
+  row.querySelectorAll(".app-theme-swatch").forEach(sw=>{
+    sw.addEventListener("click", ()=>{
+      applyAppTheme(sw.dataset.cls);
+      row.querySelectorAll(".app-theme-swatch").forEach(s=>s.classList.remove("selected"));
+      sw.classList.add("selected");
+    });
+  });
+}
 function openSettings(){
+  renderAppThemeRow();
   settingsDrafts = {};
-  profiles.forEach(p=>{ settingsDrafts[p.slot] = { ...p, equippedItems:(p.equippedItems||[]).slice(), glowColors:(p.glowColors||[]).slice() }; });
+  profiles.forEach(p=>{ settingsDrafts[p.slot] = { ...p, equippedItems:(p.equippedItems||[]).slice(), glowColors:(p.glowColors||[]).slice(), equippedPets:(p.equippedPets||[]).slice(), itemColors:{...(p.itemColors||{})} }; });
   currentSettingsSlot = profiles.length ? profiles[0].slot : null;
 
   const row = document.getElementById("settingsPersonRow");
@@ -1386,7 +1571,8 @@ async function saveSettings(){
         hairstyle:draft.hairstyle||"", eyeStyle:draft.eyeStyle||"", faceShape:draft.faceShape||"",
         mouthStyle:draft.mouthStyle||"", bodyType:draft.bodyType||"", skinTone:draft.skinTone||"",
         themeColor:draft.themeColor||"", glowColors:draft.glowColors||[],
-        equippedItems:draft.equippedItems||[], activeTitle:draft.activeTitle||""
+        equippedItems:draft.equippedItems||[], activeTitle:draft.activeTitle||"",
+        equippedPets:draft.equippedPets||[], itemColors:draft.itemColors||{}
       };
       const json=await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
       if (json.status!=="success") throw new Error(json.message);
@@ -1512,8 +1698,10 @@ function boot(){
   setDefaultDates();
   document.getElementById("submitBtn").addEventListener("click", submitRecord);
   document.getElementById("chartType").addEventListener("change", renderChart);
+  document.getElementById("chartPerson").addEventListener("change", renderChart);
   loadRecords();
 }
+initAppTheme();
 initLogin();
 </script>
 </body>
