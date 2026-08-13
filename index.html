@@ -44,12 +44,14 @@
   .icon-btn{ width:42px; height:42px; background:var(--gold); color:var(--ink); border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; border-style:solid; border-width:3px; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; }
 
   .player-strip{ display:flex; gap:8px; margin-top:10px; }
-  .player-card{ flex:1; border-radius:6px; padding:8px 6px; text-align:center; border:3px solid var(--frame-color, rgba(255,255,255,0.3)); background:var(--frame-bg, rgba(0,0,0,0.25)); }
-  .player-title{ font-size:10px; margin-bottom:4px; min-height:13px; font-weight:700; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
-  .portrait-wrap{ width:54px; height:54px; margin:0 auto 4px; overflow:hidden; border-radius:6px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; }
+  .player-card{ flex:1; border-radius:6px; padding:10px 8px; text-align:center; border:3px solid var(--frame-color, rgba(255,255,255,0.3)); background:var(--frame-bg, rgba(0,0,0,0.25)); cursor:pointer; }
+  .player-card:active{ transform: scale(0.98); }
+  .player-title{ font-size:11px; margin-bottom:5px; min-height:14px; font-weight:700; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
+  .portrait-wrap{ width:80px; height:80px; margin:0 auto 6px; overflow:hidden; border-radius:8px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; }
   .portrait-wrap img{ width:100%; height:100%; object-fit:contain; }
-  .player-name{ font-size:13px; font-weight:700; margin-bottom:3px; }
-  .player-amt{ font-family:"Press Start 2P",monospace; font-size:12px; color:#fff3d6; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
+  .player-name{ font-size:15px; font-weight:700; margin-bottom:3px; }
+  .player-lv{ display:inline-block; font-family:"Press Start 2P",monospace; font-size:10px; background:rgba(0,0,0,0.3); color:var(--gold); padding:2px 6px; border-radius:3px; margin-bottom:4px; }
+  .player-amt{ font-family:"Press Start 2P",monospace; font-size:13px; color:#fff3d6; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
   .player-amt-label{ font-size:10px; opacity:0.9; margin-top:4px; }
 
   main{ max-width:480px; margin:0 auto; padding:16px 12px; }
@@ -59,13 +61,20 @@
 
   /* ---------- 人物頁籤：專屬銀行場景背景 ---------- */
   #view-character{ margin:-16px -12px 0; padding:0 0 16px; position:relative; overflow:hidden; }
-  .bank-scene{ position:relative; background:linear-gradient(180deg,#dcd0ae 0%, #cabb90 100%); padding:18px 12px 0; overflow:hidden; }
+  .bank-scene{ position:relative; background:linear-gradient(180deg,#dcd0ae 0%, #cabb90 100%); padding:18px 12px 0; overflow:hidden; padding-bottom:96px; }
   .bank-scene .bank-img{ display:block; width:100%; max-width:420px; margin:0 auto; image-rendering:pixelated; }
   .bank-scene .decor{ position:absolute; image-rendering:pixelated; }
+  .flag{ position:absolute; top:8%; left:50%; margin-left:-1px; width:2px; height:34px; background:#5c3a10; }
+  .flag::after{ content:""; position:absolute; top:0; left:2px; width:20px; height:14px; background:#c0392b;
+    clip-path: polygon(0 0, 100% 20%, 0 40%, 0 60%, 100% 80%, 0 100%);
+    transform-origin: left center; animation: wave 1.4s steps(4) infinite; }
+  @keyframes wave{ 0%{ transform: scaleX(1) skewY(0deg); } 25%{ transform: scaleX(0.94) skewY(4deg); } 50%{ transform: scaleX(1) skewY(0deg); } 75%{ transform: scaleX(0.94) skewY(-4deg); } 100%{ transform: scaleX(1) skewY(0deg); } }
+  .shine{ animation: shine-sweep 2.4s steps(3) infinite; }
+  @keyframes shine-sweep{ 0%,70%{ filter:brightness(1); } 78%{ filter:brightness(1.7); } 86%{ filter:brightness(1); } 100%{ filter:brightness(1); } }
   .sparkle{ animation: sparkle 1.8s steps(1) infinite; }
   @keyframes sparkle{ 0%,60%{opacity:1;} 30%{opacity:0.35;} 100%{opacity:1;} }
-  .character-stage{ position:relative; display:flex; gap:6px; justify-content:center; padding:10px 12px 6px; z-index:2; }
-  .character-slot{ flex:1; max-width:210px; display:flex; flex-direction:column; align-items:center; border-radius:10px; border:4px solid var(--frame-color, var(--gold)); background:var(--frame-bg, rgba(255,255,255,0.55)); padding:10px 6px 8px; }
+  .character-stage{ position:absolute; left:0; right:0; bottom:14px; display:flex; gap:6px; justify-content:center; padding:0 12px; z-index:3; }
+  .character-slot{ flex:1; max-width:210px; display:flex; flex-direction:column; align-items:center; border-radius:10px; border:4px solid var(--frame-color, var(--gold)); background:var(--frame-bg, rgba(255,255,255,0.72)); padding:10px 6px 8px; box-shadow:0 4px 10px rgba(0,0,0,0.25); }
   .character-slot .avatar-wrap{ width:100%; max-width:170px; animation: breathe 3.6s ease-in-out infinite; }
   .character-slot .avatar-wrap img{ width:100%; height:auto; display:block; }
   @keyframes breathe{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.035); } }
@@ -137,18 +146,23 @@
   .xp-bar-inner{ height:100%; background:repeating-linear-gradient(90deg,var(--gold) 0 8px,var(--gold-dark) 8px 16px); }
   .xp-label{ font-size:12.5px; color:var(--ink-soft); margin-top:8px; font-weight:700; }
 
-  .equip-preview{ text-align:center; margin-bottom:16px; }
-  .equip-preview .avatar-wrap{ width:150px; margin:0 auto; }
+  .equip-layout{ display:flex; gap:12px; align-items:flex-start; }
+  .equip-left{ flex:0 0 40%; position:sticky; top:8px; }
+  .equip-preview{ text-align:center; margin-bottom:10px; }
+  .equip-preview .avatar-wrap{ width:100%; max-width:130px; margin:0 auto; }
   .equip-preview .avatar-wrap img{ width:100%; height:auto; }
-  .equip-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-  .equip-slot{ background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:10px 4px; cursor:pointer; position:relative; }
-  .equip-slot.locked{ opacity:0.4; cursor:default; }
-  .equip-slot.equipped{ border-color:var(--gold); background:rgba(201,161,90,0.28); }
-  .equip-icon{ width:32px; height:32px; }
-  .equip-name{ font-size:12px; font-weight:700; }
-  .equip-req{ font-size:10.5px; color:var(--ink-soft); text-align:center; }
-  .equip-check{ position:absolute; top:3px; right:5px; font-size:13px; color:var(--teal-dark); }
-  .equip-all-btn{ width:100%; margin-bottom:14px; padding:12px; font-size:13.5px; font-weight:700; background:var(--gold); color:var(--ink); border-radius:4px; border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; border-style:solid; border-width:2px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .equip-btn-row{ display:flex; flex-direction:column; gap:6px; }
+  .equip-right{ flex:1; display:flex; flex-direction:column; gap:6px; max-height:420px; overflow-y:auto; }
+  .equip-row-item{ background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; display:flex; align-items:center; gap:8px; padding:7px 8px; cursor:pointer; position:relative; }
+  .equip-row-item.locked{ opacity:0.4; cursor:default; }
+  .equip-row-item.equipped{ border-color:var(--gold); background:rgba(201,161,90,0.28); }
+  .equip-row-item .equip-icon{ width:26px; height:26px; flex-shrink:0; }
+  .equip-row-item .equip-name{ font-size:12.5px; font-weight:700; flex:1; }
+  .equip-row-item .equip-req{ font-size:10px; color:var(--ink-soft); }
+  .equip-row-item .equip-check{ font-size:14px; color:var(--teal-dark); }
+  .equip-all-btn, .equip-none-btn{ width:100%; padding:11px; font-size:12.5px; font-weight:700; border-radius:4px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .equip-all-btn{ background:var(--gold); color:var(--ink); border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; border-style:solid; border-width:2px; }
+  .equip-none-btn{ background:var(--panel); color:var(--ink-soft); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
 
   .glow-check-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
   .glow-check{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 2px; border:2px solid var(--panel-dark); border-radius:4px; cursor:pointer; background:rgba(255,255,255,0.5); }
@@ -169,6 +183,13 @@
   .overlay{ position:fixed; inset:0; z-index:90; background:rgba(20,15,10,0.6); display:none; align-items:flex-end; justify-content:center; }
   .overlay.show{ display:flex; }
   .sheet{ background:var(--card); width:100%; max-width:480px; padding:20px 18px 26px; border-top:4px solid var(--panel-dark); border-radius:12px 12px 0 0; max-height:90vh; overflow-y:auto; }
+  .settings-sticky-head{ position:sticky; top:-20px; z-index:5; background:var(--card); margin:-20px -18px 12px; padding:20px 18px 12px; border-bottom:3px solid var(--panel-dark); }
+  .settings-preview{ display:flex; align-items:center; gap:14px; margin-top:10px; }
+  .settings-preview .avatar-wrap{ width:88px; height:118px; flex-shrink:0; }
+  .settings-preview .avatar-wrap img{ width:100%; height:100%; object-fit:contain; }
+  .settings-preview .info{ flex:1; }
+  .settings-preview .pname{ font-size:16px; font-weight:700; margin-bottom:4px; }
+  .settings-preview .zodiac-badge{ margin-top:0; }
   .sheet h3{ margin:0 0 14px; font-size:15px; }
   .edit-status{ font-size:13px; min-height:16px; margin-top:8px; font-weight:700; }
 
@@ -183,6 +204,30 @@
   .theme-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
   .theme-swatch{ height:36px; border-radius:4px; border:3px solid transparent; cursor:pointer; }
   .theme-swatch.selected{ border-color:var(--ink); }
+
+  .chat-fab{ position:fixed; right:14px; bottom:76px; z-index:20; width:52px; height:52px; border-radius:50%;
+    background:var(--teal); color:#fff; font-size:22px; border:3px solid #8fc0ab; box-shadow:0 4px 10px rgba(0,0,0,0.3); cursor:pointer; }
+  .chat-sheet{ display:flex; flex-direction:column; height:80vh; max-height:80vh; padding-bottom:14px; }
+  .chat-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .chat-speaker-row{ display:flex; gap:6px; margin-bottom:10px; }
+  .chat-speaker-row button{ flex:1; padding:8px; font-size:13px; font-weight:700; border-radius:4px; cursor:pointer;
+    background:var(--panel); color:var(--ink-soft); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; }
+  .chat-speaker-row button.active{ background:var(--gold); color:var(--ink); border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; }
+  .chat-messages{ flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding:8px 2px; }
+  .chat-bubble-row{ display:flex; flex-direction:column; max-width:78%; }
+  .chat-bubble-row.me{ align-self:flex-end; align-items:flex-end; }
+  .chat-bubble-row.them{ align-self:flex-start; align-items:flex-start; }
+  .chat-sender{ font-size:11px; color:var(--ink-soft); margin-bottom:2px; font-weight:700; }
+  .chat-bubble{ padding:9px 12px; border-radius:14px; font-size:14px; line-height:1.4; word-break:break-word; }
+  .chat-bubble-row.me .chat-bubble{ background:var(--teal); color:#fff; border-bottom-right-radius:3px; }
+  .chat-bubble-row.them .chat-bubble{ background:var(--panel); color:var(--ink); border-bottom-left-radius:3px; }
+  .chat-meta{ font-size:9.5px; color:var(--ink-soft); margin-top:2px; }
+  .chat-empty{ text-align:center; color:var(--ink-soft); font-size:13px; padding:30px 0; }
+  .chat-emoji-row{ display:flex; gap:6px; margin:8px 0; overflow-x:auto; padding-bottom:2px; }
+  .chat-emoji-row button{ flex-shrink:0; font-size:19px; background:none; border:none; cursor:pointer; padding:2px 4px; }
+  .chat-input-row{ display:flex; gap:8px; }
+  .chat-input-row input{ flex:1; }
+  .chat-send-btn{ padding:0 18px; background:var(--teal); color:#fff; border:none; border-radius:4px; font-weight:700; font-size:14px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -217,10 +262,11 @@
 
   <section id="view-character" class="view active">
     <div class="bank-scene">
-      <img class="bank-img" id="bankImg" alt="銀行" />
+      <div class="flag"></div>
+      <img class="bank-img shine" id="bankImg" alt="銀行" />
       <div id="bankDecor"></div>
+      <div class="character-stage" id="characterStage"></div>
     </div>
-    <div class="character-stage" id="characterStage"></div>
     <div class="character-ground"></div>
   </section>
 
@@ -279,9 +325,16 @@
     <div id="sub-level" class="sub-view card bevel-out"><h2><span class="idx">⭐</span>累積等級</h2><div class="level-box" id="levelBox"></div></div>
     <div id="sub-equip" class="sub-view card bevel-out">
       <h2><span class="idx">🛡</span>裝備收藏</h2>
-      <div class="equip-preview"><div class="avatar-wrap" id="equipPreviewAvatar"></div></div>
-      <button class="equip-all-btn" id="equipAllBtn">✨ 一鍵全部穿上</button>
-      <div class="equip-grid" id="equipGrid"></div>
+      <div class="equip-layout">
+        <div class="equip-left">
+          <div class="equip-preview"><div class="avatar-wrap" id="equipPreviewAvatar"></div></div>
+          <div class="equip-btn-row">
+            <button class="equip-all-btn" id="equipAllBtn">✨ 全穿上</button>
+            <button class="equip-none-btn" id="equipNoneBtn">🧺 全脫下</button>
+          </div>
+        </div>
+        <div class="equip-right" id="equipGrid"></div>
+      </div>
     </div>
   </section>
 </main>
@@ -309,12 +362,33 @@
   </div>
 </div>
 
+<button class="chat-fab" id="chatFabBtn">💬</button>
+<div id="chatOverlay" class="overlay">
+  <div class="sheet chat-sheet">
+    <div class="chat-head">
+      <h3 style="margin:0;">💬 悄悄話</h3>
+      <button class="ghost" id="chatCloseBtn" style="width:auto;margin:0;padding:6px 10px;">✕</button>
+    </div>
+    <div class="chat-speaker-row" id="chatSpeakerRow"></div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-emoji-row" id="chatEmojiRow"></div>
+    <div class="chat-input-row">
+      <input id="chatInput" placeholder="輸入訊息…" autocomplete="off" />
+      <button class="chat-send-btn" id="chatSendBtn">送出</button>
+    </div>
+  </div>
+</div>
+
 <div id="settingsOverlay" class="overlay">
   <div class="sheet">
-    <h3>⚙ 人員設定</h3>
+    <div class="settings-sticky-head">
+      <h3 style="margin-bottom:10px;">⚙ 人員設定</h3>
+      <div class="person-select-row" id="settingsPersonRow"></div>
+      <div class="settings-preview" id="settingsPreview"></div>
+    </div>
     <div id="profileForms"></div>
     <div class="edit-status" id="settingsStatus"></div>
-    <button class="primary" id="settingsSaveBtn">✔ 儲存設定</button>
+    <button class="primary" id="settingsSaveBtn">✔ 儲存全部設定</button>
     <button class="ghost" id="settingsCancelBtn">關閉</button>
     <button class="logout-in-menu" id="logoutBtn">🚪 登出</button>
   </div>
@@ -322,7 +396,7 @@
 
 <script>
 const CONFIG = {
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbw1kKXF9FN1fPQaxen7sSefvCanupjcS0vBV-KBqfLXUg_DU0OdAt393YZVGjL_ShdDyQ/exec",
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbxj_W8IxZTXt9NrfHrJ4OYLpC3CqkgDMuJNJrCdd7ygrpohQuaTq73Ii4-D-c-EOEZS6g/exec",
   APP_PASSWORD: "20210318",
   HEADER_IMAGE_URL: "",
   APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.jpg?raw=true",
@@ -373,50 +447,144 @@ const BODY_MULT = { slim:0.84, regular:1, broad:1.24, chubby:1.16, tall:1, short
 // ============================================================
 // 像素角色繪圖引擎(真正的低解析度點陣繪製，非平滑向量)
 // ============================================================
-const CW=36, CH=54;
+const CW=48, CH=72;
 function px(ctx,x,y,w,h,c){ ctx.fillStyle=c; ctx.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h))); }
 
 function drawHair(ctx, style, gender, hx,hy,hw,hh, color){
   let s = style; if (!s||s==="auto") s = gender==="female" ? "long" : "short";
-  const c=color;
+  const c=color, c2=shadeColor(color,-22);
   switch(s){
-    case "bald": return;
-    case "long": px(ctx,hx-1,hy-1,hw+2,hh*0.95,c); return;
-    case "ponytail": px(ctx,hx-1,hy-1,hw+2,hh*0.3,c); px(ctx,hx+hw-1,hy+hh*0.12,3,hh*0.65,c); return;
-    case "bob": px(ctx,hx-1,hy-1,hw+2,hh*0.58,c); return;
-    case "curly": px(ctx,hx-1,hy-2,hw+2,hh*0.28,c); px(ctx,hx-2,hy,3,3,c); px(ctx,hx+hw*0.25,hy-3,3,3,c); px(ctx,hx+hw*0.6,hy-3,3,3,c); px(ctx,hx+hw-1,hy,3,3,c); return;
-    case "mohawk": px(ctx,hx+hw*0.42,hy-6,hw*0.16,hh*0.4,c); return;
-    case "bun": px(ctx,hx-1,hy-1,hw+2,hh*0.26,c); px(ctx,hx+hw*0.4,hy-5,hw*0.2,4,c); return;
-    case "twintails": px(ctx,hx-1,hy-1,hw+2,hh*0.26,c); px(ctx,hx-3,hy+hh*0.06,3,hh*0.6,c); px(ctx,hx+hw,hy+hh*0.06,3,hh*0.6,c); return;
-    case "afro": ctx.fillStyle=c; ctx.beginPath(); ctx.ellipse(hx+hw/2,hy+1,hw*0.6,hh*0.3,0,0,Math.PI*2); ctx.fill(); ctx.strokeStyle="#241a10"; ctx.lineWidth=1; ctx.stroke(); return;
-    case "sidepart": px(ctx,hx-1,hy-1,hw*0.55,hh*0.3,c); px(ctx,hx+hw*0.5,hy-1,hw*0.52,hh*0.2,c); return;
-    case "buzzcut": px(ctx,hx,hy,hw,hh*0.14,c); return;
-    case "pixie": px(ctx,hx-1,hy-2,hw+2,hh*0.24,c); px(ctx,hx-2,hy+hh*0.05,3,4,c); px(ctx,hx+hw-1,hy+hh*0.05,3,4,c); return;
-    default: px(ctx,hx-1,hy-1,hw+2,hh*0.3,c); return;
+    case "bald":
+      return;
+    case "short":
+      px(ctx,hx-2,hy-3,hw+4,hh*0.38,c);
+      px(ctx,hx-2,hy-3,hw+4,3,c2);
+      return;
+    case "long":
+      px(ctx,hx-3,hy-3,hw+6,hh*0.4,c);
+      px(ctx,hx-3,hy+hh*0.15,4,hh*0.95,c);
+      px(ctx,hx+hw-1,hy+hh*0.15,4,hh*0.95,c);
+      px(ctx,hx-3,hy-3,hw+6,3,c2);
+      return;
+    case "ponytail":
+      px(ctx,hx-2,hy-3,hw+4,hh*0.35,c);
+      px(ctx,hx+hw-2,hy+hh*0.05,5,hh*1.05,c);
+      px(ctx,hx-2,hy-3,hw+4,3,c2);
+      return;
+    case "twintails":
+      px(ctx,hx-2,hy-3,hw+4,hh*0.32,c);
+      px(ctx,hx-6,hy+hh*0.1,5,hh*0.9,c);
+      px(ctx,hx+hw+1,hy+hh*0.1,5,hh*0.9,c);
+      px(ctx,hx-2,hy-3,hw+4,3,c2);
+      return;
+    case "bun":
+      px(ctx,hx-2,hy-3,hw+4,hh*0.3,c);
+      px(ctx,hx+hw*0.5-4,hy-11,8,8,c);
+      px(ctx,hx-2,hy-3,hw+4,3,c2);
+      return;
+    case "curly": {
+      ctx.fillStyle=c;
+      const cx=hx+hw/2, cy=hy+hh*0.06;
+      ctx.beginPath(); ctx.ellipse(cx,cy,hw*0.68,hh*0.42,0,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle="#241a10"; ctx.lineWidth=1.4; ctx.stroke();
+      // 捲髮質感：外緣一圈凸起小球
+      for (let a=0;a<Math.PI*2;a+=Math.PI/6){
+        px(ctx,cx+Math.cos(a)*hw*0.62-2,cy+Math.sin(a)*hh*0.38-2,4,4,c);
+      }
+      return;
+    }
+    case "mohawk":
+      px(ctx,hx-1,hy+hh*0.05,hw+2,hh*0.1,color==="#c7c2ba"?c:shadeColor(c,20));
+      px(ctx,hx+hw*0.5-3,hy-14,6,15,c);
+      px(ctx,hx+hw*0.5-3,hy-14,6,3,c2);
+      return;
+    default:
+      px(ctx,hx-2,hy-3,hw+4,hh*0.38,c);
+      return;
   }
+}
+function drawStar(ctx,cx,cy,r,color){
+  ctx.fillStyle=color;
+  ctx.beginPath();
+  for(let i=0;i<5;i++){
+    const a1=(-90+i*72)*Math.PI/180, a2=(-90+i*72+36)*Math.PI/180;
+    ctx[i===0?"moveTo":"lineTo"](cx+Math.cos(a1)*r, cy+Math.sin(a1)*r);
+    ctx.lineTo(cx+Math.cos(a2)*r*0.42, cy+Math.sin(a2)*r*0.42);
+  }
+  ctx.closePath(); ctx.fill();
 }
 function drawEyes(ctx, style, hx,hy,hw,hh){
   const cy=hy+hh*0.48, cx1=hx+hw*0.28, cx2=hx+hw*0.72;
   const ink="#241a10";
   switch(style){
-    case "happy": px(ctx,cx1-1.5,cy,3,1,ink); px(ctx,cx2-1.5,cy,3,1,ink); return;
-    case "sleepy": px(ctx,cx1-1.5,cy+1,3,1,ink); px(ctx,cx2-1.5,cy+1,3,1,ink); return;
-    case "wink": px(ctx,cx1-1,cy-1,2,2,ink); px(ctx,cx2-1.5,cy,3,1,ink); return;
-    case "angry": px(ctx,cx1-1,cy-1,2,2,ink); px(ctx,cx1-2,cy-2,3,1,'#8b3a2b'); px(ctx,cx2-1,cy-1,2,2,ink); px(ctx,cx2-1,cy-2,3,1,'#8b3a2b'); return;
-    case "star": ctx.fillStyle="#e8c04a"; px(ctx,cx1-1,cy-1,2,2,"#e8c04a"); px(ctx,cx2-1,cy-1,2,2,"#e8c04a"); return;
-    case "closed": px(ctx,cx1-1.5,cy,3,1,ink); px(ctx,cx2-1.5,cy,3,1,ink); return;
-    case "sparkle": px(ctx,cx1-1,cy-1,2,2,ink); px(ctx,cx1-1,cy-1,1,1,'#fff'); px(ctx,cx2-1,cy-1,2,2,ink); px(ctx,cx2-1,cy-1,1,1,'#fff'); return;
-    default: px(ctx,cx1-1,cy-1,2,2,ink); px(ctx,cx2-1,cy-1,2,2,ink); return;
+    case "round":
+      px(ctx,cx1-2,cy-2.5,4,5,ink); px(ctx,cx1-1.6,cy-2,1.6,1.6,'#fff');
+      px(ctx,cx2-2,cy-2.5,4,5,ink); px(ctx,cx2-1.6,cy-2,1.6,1.6,'#fff');
+      return;
+    case "happy":
+      // 上揚的弧形笑眼(不是一條線，是明顯的 ^ 形)
+      px(ctx,cx1-3,cy,2,1.6,ink); px(ctx,cx1-1,cy-1.6,2,1.6,ink); px(ctx,cx1+1,cy,2,1.6,ink);
+      px(ctx,cx2-3,cy,2,1.6,ink); px(ctx,cx2-1,cy-1.6,2,1.6,ink); px(ctx,cx2+1,cy,2,1.6,ink);
+      return;
+    case "sleepy":
+      px(ctx,cx1-3,cy+1,6,1.6,ink);
+      px(ctx,cx2-3,cy+1,6,1.6,ink);
+      return;
+    case "star":
+      drawStar(ctx,cx1,cy,3.2,"#e8c04a"); drawStar(ctx,cx2,cy,3.2,"#e8c04a");
+      return;
+    case "heart":
+      [cx1,cx2].forEach(cx=>{
+        ctx.fillStyle='#c85a3f';
+        px(ctx,cx-3,cy-2,2.4,2.4,'#c85a3f'); px(ctx,cx+0.6,cy-2,2.4,2.4,'#c85a3f');
+        ctx.beginPath(); ctx.moveTo(cx-3,cy); ctx.lineTo(cx,cy+3.4); ctx.lineTo(cx+3,cy); ctx.closePath(); ctx.fill();
+      });
+      return;
+    default:
+      px(ctx,cx1-2,cy-2.5,4,5,ink); px(ctx,cx2-2,cy-2.5,4,5,ink);
+      return;
   }
+}
+function shadeColor(hex, amt){
+  const n = parseInt(hex.slice(1),16);
+  let r=(n>>16)+amt, g=(n>>8&0xff)+amt, b=(n&0xff)+amt;
+  r=Math.max(0,Math.min(255,r)); g=Math.max(0,Math.min(255,g)); b=Math.max(0,Math.min(255,b));
+  return "#"+(r<<16|g<<8|b).toString(16).padStart(6,"0");
+}
+const BODY_SHAPE = {
+  regular:  {topW:1,    botW:1,    limbW:1,    hMul:1},
+  slim:     {topW:0.82, botW:0.82, limbW:0.78, hMul:1.08},
+  broad:    {topW:1.32, botW:0.96, limbW:1.18, hMul:1},
+  chubby:   {topW:1.08, botW:1.36, limbW:1.18, hMul:0.94},
+  athletic: {topW:1.18, botW:0.92, limbW:1.08, hMul:1.03},
+  petite:   {topW:0.8,  botW:0.8,  limbW:0.76, hMul:0.84},
+  curvy:    {topW:1.0,  botW:1.22, limbW:1,    hMul:1},
+  stocky:   {topW:1.24, botW:1.24, limbW:1.22, hMul:0.84}
+};
+function drawTorso(ctx, gender, tx,ty,tw,th, skin, skinShadow){
+  // 上下半身分開畫成梯形輪廓(體型差異已經反映在傳入的 tw 本身呈現的上下寬度)
+  px(ctx,tx,ty,tw,th*0.5,skin);
+  px(ctx,tx,ty+th*0.5,tw,th*0.5,skin);
+  const cx=tx+tw/2;
+  if (gender==="female"){
+    px(ctx,cx-tw*0.3,ty+th*0.2,tw*0.6,th*0.16,shadeColor(skin,10)); // 胸型
+    px(ctx,tx+tw*0.12,ty+th*0.5,tw*0.76,th*0.22,skinShadow); // 收腰
+  } else if (gender==="male"){
+    px(ctx,cx-0.6,ty+th*0.1,1.2,th*0.42,skinShadow); // 胸肌中線
+    px(ctx,tx+tw*0.14,ty+th*0.1,tw*0.3,th*0.24,shadeColor(skin,8));
+    px(ctx,tx+tw*0.56,ty+th*0.1,tw*0.3,th*0.24,shadeColor(skin,8));
+  }
+  px(ctx,tx,ty+th*0.82,tw,th*0.18,skinShadow);
 }
 function drawMouth(ctx, style, hx,hy,hw,hh){
   const cy=hy+hh*0.78, cx=hx+hw*0.5;
   switch(style){
-    case "open": px(ctx,cx-1.5,cy,3,2,'#8b3a2b'); return;
-    case "smile": px(ctx,cx-2,cy,4,1,'#a8503f'); return;
-    case "grin": px(ctx,cx-2.5,cy-1,5,2,'#fff'); ctx.strokeStyle='#8b3a2b'; ctx.strokeRect(cx-2.5,cy-1,5,2); return;
-    case "frown": px(ctx,cx-2,cy+1,4,1,'#8b3a2b'); return;
-    case "pout": px(ctx,cx-1,cy,2,1,'#c96b5a'); return;
+    case "open": px(ctx,cx-2.5,cy-1,5,4,'#8b3a2b'); px(ctx,cx-2.5,cy-1,5,1.4,'#5c2a1e'); return;
+    case "smile": px(ctx,cx-3.5,cy-1,2,2,'#8b3a2b'); px(ctx,cx-1.5,cy,3,1.6,'#8b3a2b'); px(ctx,cx+1.5,cy-1,2,2,'#8b3a2b'); return;
+    case "grin": px(ctx,cx-3.5,cy-1.5,7,3,'#fff'); ctx.strokeStyle='#8b3a2b'; ctx.lineWidth=1; ctx.strokeRect(cx-3.5,cy-1.5,7,3); px(ctx,cx-3.5,cy+1.5,7,1.4,'#c96b5a'); return;
+    case "frown": px(ctx,cx-3.5,cy+1.5,2,2,'#8b3a2b'); px(ctx,cx-1.5,cy,3,1.6,'#8b3a2b'); px(ctx,cx+1.5,cy+1.5,2,2,'#8b3a2b'); return;
+    case "pout": px(ctx,cx-1.6,cy-1,3.2,3.2,'#c96b5a'); return;
+    case "smirk": px(ctx,cx-3,cy,4,1.6,'#8b3a2b'); px(ctx,cx+1,cy-1.6,2,2,'#8b3a2b'); return;
     default: px(ctx,cx-1.5,cy,3,1,'#8b3a2b'); return;
   }
 }
@@ -481,44 +649,55 @@ function buildCharacterCanvas(profile, cumulative){
   const skin = SKIN_TONES[profile.skinTone]||SKIN_TONES.medium;
   const cheek = '#e8a687';
   const hairColor = stage==="elder" ? '#c7c2ba' : '#3a2818';
-  const bm = BODY_MULT[profile.bodyType]||1;
-  const faceW = {round:1,square:1,oval:0.94,heart:1,long:0.86,diamond:0.86,triangle:1.02,pear:1.02,chubby:1.1,sharp:0.84}[profile.faceShape]||1;
-  const faceH = {round:1,square:1,oval:1.08,heart:0.97,long:1.16,diamond:1.05,triangle:0.94,pear:1,chubby:0.95,sharp:1.1}[profile.faceShape]||1;
+  const bs = BODY_SHAPE[profile.bodyType] || BODY_SHAPE.regular;
+  const faceShape = profile.faceShape || "round";
+  const faceW = {round:1, square:1.02, long:0.82, sharp:0.86}[faceShape] || 1;
+  const faceH = {round:1, square:0.96, long:1.22, sharp:1.06}[faceShape] || 1;
+  const headRadiusRatio = {round:0.42, square:0.08, long:0.24, sharp:0.14}[faceShape] || 0.4;
 
-  const headW=Math.round(22*cfg.headScale*faceW), headH=Math.round(18*cfg.headScale*faceH);
-  const headX=Math.round((CW-headW)/2), headY=2;
-  const torsoW=Math.round(14*bm), torsoH=Math.round(18*cfg.bodyScale);
+  const headW=Math.round(29*cfg.headScale*faceW), headH=Math.round(24*cfg.headScale*faceH);
+  const headX=Math.round((CW-headW)/2), headY=3;
+  const torsoBaseW=19*cfg.headScale*0+19, torsoH=Math.round(24*cfg.bodyScale*bs.hMul);
+  const torsoTopW=Math.round(torsoBaseW*bs.topW), torsoBotW=Math.round(torsoBaseW*bs.botW);
+  const torsoW=Math.max(torsoTopW,torsoBotW);
   const torsoX=Math.round((CW-torsoW)/2), torsoY=headY+headH-1;
-  const armW=4, armH=Math.round(15*cfg.bodyScale), armY=torsoY+3;
+  const armW=Math.round(5*bs.limbW), armH=Math.round(20*cfg.bodyScale*bs.hMul), armY=torsoY+4;
   const armLX=torsoX-armW, armRX=torsoX+torsoW;
-  const legW=4, legH=Math.max(4,Math.round(9*cfg.bodyScale)), legY=torsoY+torsoH-2;
-  const leg1X=torsoX+2, leg2X=torsoX+torsoW-2-legW;
+  const legW=Math.round(5*bs.limbW), legH=Math.max(5,Math.round(12*cfg.bodyScale*bs.hMul)), legY=torsoY+torsoH-3;
+  const leg1X=torsoX+3, leg2X=torsoX+torsoW-3-legW;
   const b={torsoX,torsoY,torsoW,torsoH,headX,headY,headW,headH,armLX,armRX,armY,armW,armH,leg1X,leg2X,legY,legW,legH};
 
-  // 光環(貼身輪廓向外擴散)
-  const level=levelFor(cumulative);
-  const maxUnlocked=Math.min(RAINBOW.length, Math.floor(level/3));
-  const activeGlow=(profile.glowColors||[]).filter(i=>i<maxUnlocked);
-  activeGlow.forEach((idx,i)=>{
-    const pad=2+i*2.6;
-    ctx.strokeStyle=RAINBOW[idx].c; ctx.lineWidth=1.4; ctx.globalAlpha=0.55-i*0.06;
-    ctx.strokeRect(leg1X-pad,legY-pad,legW+pad*2,legH+pad*2);
-    ctx.strokeRect(leg2X-pad,legY-pad,legW+pad*2,legH+pad*2);
-    ctx.strokeRect(armLX-pad,armY-pad,armW+pad*2,armH+pad*2);
-    ctx.strokeRect(armRX-pad,armY-pad,armW+pad*2,armH+pad*2);
-    ctx.strokeRect(torsoX-pad,torsoY-pad,torsoW+pad*2,torsoH+pad*2);
-    ctx.strokeRect(headX-pad,headY-pad,headW+pad*2,headH+pad*2);
-    ctx.globalAlpha=1;
-  });
-
-  px(ctx,leg1X,legY,legW,legH,'#5a4a3a'); px(ctx,leg2X,legY,legW,legH,'#5a4a3a');
-  px(ctx,leg1X,legY+legH-2,legW,2,'#2e2018'); px(ctx,leg2X,legY+legH-2,legW,2,'#2e2018');
-  px(ctx,armLX,armY,armW,armH,'#b8ada0'); px(ctx,armRX,armY,armW,armH,'#b8ada0');
-  px(ctx,armLX,armY+armH-3,armW,3,skin); px(ctx,armRX,armY+armH-3,armW,3,skin);
-  px(ctx,torsoX,torsoY,torsoW,torsoH,'#b8ada0');
-  px(ctx,torsoX,torsoY+torsoH*0.55,torsoW,torsoH*0.2,'#948a7e');
+  const skinShadow = shadeColor(skin, -18);
+  px(ctx,leg1X,legY,legW,legH,skin); px(ctx,leg2X,legY,legW,legH,skin);
+  px(ctx,leg1X,legY+legH-3,legW,3,skinShadow); px(ctx,leg2X,legY+legH-3,legW,3,skinShadow);
+  px(ctx,armLX,armY,armW,armH,skin); px(ctx,armRX,armY,armW,armH,skin);
+  drawTorso(ctx, profile.gender, torsoX,torsoY,torsoW,torsoH, skin, skinShadow);
+  // 頭型：方臉不做圓角、尖臉在下巴兩側切角、其餘用圓角
   px(ctx,headX,headY,headW,headH,skin);
-  px(ctx,headX+headW-3,headY+headH*0.4,2,headH*0.2,cheek); px(ctx,headX+1,headY+headH*0.4,2,headH*0.2,cheek);
+  const hr = headW*headRadiusRatio;
+  if (faceShape==="square"){
+    // 方臉：直角，不額外處理
+  } else if (faceShape==="sharp"){
+    // 尖臉：下巴兩側切角，做出 V 形下巴
+    ctx.fillStyle = "#00000000";
+    ctx.globalCompositeOperation = "destination-out";
+    const cut = headW*0.22;
+    ctx.beginPath(); ctx.moveTo(headX,headY+headH-cut); ctx.lineTo(headX,headY+headH); ctx.lineTo(headX+cut,headY+headH); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(headX+headW,headY+headH-cut); ctx.lineTo(headX+headW,headY+headH); ctx.lineTo(headX+headW-cut,headY+headH); ctx.closePath(); ctx.fill();
+    ctx.globalCompositeOperation = "source-over";
+  } else {
+    // 圓臉/長臉：四角做圓角切除
+    ctx.globalCompositeOperation = "destination-out";
+    [[headX,headY],[headX+headW-hr,headY],[headX,headY+headH-hr],[headX+headW-hr,headY+headH-hr]].forEach(([cx,cy])=>{
+      ctx.fillRect(cx,cy,hr,hr);
+    });
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = skin;
+    [[headX,headY],[headX+headW,headY],[headX,headY+headH],[headX+headW,headY+headH]].forEach(([cx,cy])=>{
+      ctx.beginPath(); ctx.arc(cx,cy,hr,0,Math.PI*2); ctx.fill();
+    });
+  }
+  px(ctx,headX+headW-4,headY+headH*0.42,3,headH*0.18,cheek); px(ctx,headX+1,headY+headH*0.42,3,headH*0.18,cheek);
   drawHair(ctx, profile.hairstyle, profile.gender, headX,headY,headW,headH, hairColor);
   drawEyes(ctx, profile.eyeStyle, headX,headY,headW,headH);
   drawMouth(ctx, profile.mouthStyle, headX,headY,headW,headH);
@@ -528,7 +707,35 @@ function buildCharacterCanvas(profile, cumulative){
   });
 
   const composited = outlineAndComposite(art);
-  return { canvas: composited, head:{headX,headY,headW,headH} };
+
+  // 光環：真正的暈光效果(獨立圖層 + 模糊濾鏡)，畫在角色下方，最多顯示 2 色
+  const level=levelFor(cumulative);
+  const maxUnlocked=Math.min(RAINBOW.length, Math.floor(level/3));
+  const activeGlow=(profile.glowColors||[]).filter(i=>i<maxUnlocked).slice(0,2);
+  let finalOut = composited;
+  if (activeGlow.length){
+    const gc = document.createElement('canvas'); gc.width=CW; gc.height=CH;
+    const gctx = gc.getContext('2d'); gctx.imageSmoothingEnabled=true;
+    const headRadius = headW*({round:0.42,square:0.08,long:0.24,sharp:0.14}[profile.faceShape]||0.42);
+    activeGlow.forEach((idx,i)=>{
+      gctx.save();
+      gctx.filter = `blur(${2.2+i*1.6}px)`;
+      gctx.fillStyle = RAINBOW[idx].c;
+      gctx.globalAlpha = 0.85 - i*0.2;
+      [[leg1X,legY,legW,legH,3],[leg2X,legY,legW,legH,3],[armLX,armY,armW,armH,3],[armRX,armY,armW,armH,3],
+       [torsoX,torsoY,torsoW,torsoH,4],[headX,headY,headW,headH,headRadius]].forEach(([x,y,w,h,r])=>{
+        gctx.beginPath();
+        if (gctx.roundRect) gctx.roundRect(x,y,w,h,r); else gctx.rect(x,y,w,h);
+        gctx.fill();
+      });
+      gctx.restore();
+    });
+    const merged = document.createElement('canvas'); merged.width=CW; merged.height=CH;
+    const mctx = merged.getContext('2d'); mctx.imageSmoothingEnabled=false;
+    mctx.drawImage(gc,0,0); mctx.drawImage(composited,0,0);
+    finalOut = merged;
+  }
+  return { canvas: finalOut, head:{headX,headY,headW,headH} };
 }
 function avatarDataURL(profile, cumulative, mode){
   const { canvas, head } = buildCharacterCanvas(profile, cumulative);
@@ -637,6 +844,7 @@ function buildBillDataURL(){
 // 全域狀態與既有邏輯(記帳 / 月結 / 圖表 / 成就 / 設定)
 // ============================================================
 let allRecords=[], profiles=[], chartInstance=null, sessionKey=null, editingId=null, achievePersonName=null;
+let allMessages=[], chatSpeaker=null;
 function safeDate(v){ if (v instanceof Date && !isNaN(v.getTime())) return v; const d=v?new Date(v):null; return (d&&!isNaN(d.getTime()))?d:new Date(); }
 function toDateInputValue(v){ return safeDate(v).toISOString().slice(0,10); }
 
@@ -694,8 +902,10 @@ async function loadRecords(){
     if (json.status!=="success") throw new Error(json.message||"讀取失敗");
     allRecords=json.data.map(r=>({id:r.id,timestamp:safeDate(r.timestamp),person:r.person,item:r.item,amount:Number(r.amount)||0,type:r.type||"expense"})).sort((a,b)=>a.timestamp-b.timestamp);
     profiles=json.profiles||[];
+    allMessages=(json.messages||[]).map(m=>({id:m.id,timestamp:safeDate(m.timestamp),sender:m.sender,text:m.text,readBy:m.readBy||[]})).sort((a,b)=>a.timestamp-b.timestamp);
     if (!achievePersonName && profiles.length) achievePersonName=profiles[0].name;
     renderAll();
+    if (document.getElementById("chatOverlay").classList.contains("show")) renderChatMessages();
   } catch(err){ document.getElementById("ledgerBody").innerHTML=`<div class="empty">讀取失敗：${err.message}</div>`; }
 }
 function renderAll(){
@@ -749,14 +959,25 @@ function renderPlayerStrip(){
   strip.innerHTML = profiles.map(p=>{
     const cumulative=cumulativeContribution(p.name), outstanding=outstandingBalance(p.name);
     const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
-    return `<div class="player-card" style="${themeStyle(p)}">
+    return `<div class="player-card" data-name="${p.name}" style="${themeStyle(p)}">
       <div class="player-title" style="color:${titleObj?titleObj.color:'rgba(255,255,255,0.6)'}">${titleObj?"「"+titleObj.name+"」":"尚無稱號"}</div>
       <div class="portrait-wrap"><img class="pixel" src="${avatarDataURL(p, cumulative, 'portrait')}" /></div>
       <div class="player-name">${p.name}</div>
+      <div class="player-lv">Lv.${levelFor(cumulative)}</div>
       <div class="player-amt">${fmt(outstanding)}</div>
       <div class="player-amt-label">貢獻總額(未歸還)</div>
     </div>`;
   }).join("");
+  strip.querySelectorAll(".player-card").forEach(card=>{
+    card.addEventListener("click", ()=>{
+      achievePersonName = card.dataset.name;
+      renderAchievePersonRow(); renderAchieveContent();
+      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+      document.querySelector('.tab-btn[data-view="view-achieve"]').classList.add("active");
+      document.getElementById("view-achieve").classList.add("active");
+    });
+  });
 }
 
 let currentMode="expense";
@@ -934,15 +1155,15 @@ function renderEquipGrid(cumulative){
   document.getElementById("equipPreviewAvatar").innerHTML = profile ? `<img class="pixel" src="${avatarDataURL(profile, cumulative, 'full')}" />` : "";
   let html = EQUIPMENT_ITEMS.filter(i=>unlocked.includes(i.amount)).map(item=>{
     const isEquipped=equipped.includes(item.amount);
-    return `<div class="equip-slot ${isEquipped?"equipped":""}" data-threshold="${item.amount}">
+    return `<div class="equip-row-item ${isEquipped?"equipped":""}" data-threshold="${item.amount}">
       <img class="equip-icon pixel" src="${equipIconDataURL(item.name, item.color)}" />
       <div class="equip-name">${item.name}</div><div class="equip-req">滿 ${fmt(item.amount)}</div>
       ${isEquipped?'<div class="equip-check">✓</div>':""}
     </div>`;
   }).join("");
-  if (nextItem){ html += `<div class="equip-slot locked"><img class="equip-icon pixel" src="${equipIconDataURL(nextItem.name,"#999")}" /><div class="equip-name">${nextItem.name}</div><div class="equip-req">滿 ${fmt(nextItem.amount)} 解鎖</div></div>`; }
+  if (nextItem){ html += `<div class="equip-row-item locked"><img class="equip-icon pixel" src="${equipIconDataURL(nextItem.name,"#999")}" /><div class="equip-name">${nextItem.name}</div><div class="equip-req">滿 ${fmt(nextItem.amount)} 解鎖</div></div>`; }
   document.getElementById("equipGrid").innerHTML = html;
-  document.querySelectorAll(".equip-slot[data-threshold]").forEach(el=>el.addEventListener("click",()=>toggleEquip(Number(el.dataset.threshold))));
+  document.querySelectorAll(".equip-row-item[data-threshold]").forEach(el=>el.addEventListener("click",()=>toggleEquip(Number(el.dataset.threshold))));
 }
 function toggleEquip(threshold){
   const profile=currentProfile(); if(!profile) return;
@@ -954,6 +1175,10 @@ document.getElementById("equipAllBtn").addEventListener("click", ()=>{
   const profile=currentProfile(); if(!profile) return;
   const cumulative=cumulativeContribution(achievePersonName);
   patchProfileLocalThenSync(profile,{equippedItems:unlockedEquipmentThresholds(cumulative)});
+});
+document.getElementById("equipNoneBtn").addEventListener("click", ()=>{
+  const profile=currentProfile(); if(!profile) return;
+  patchProfileLocalThenSync(profile,{equippedItems:[]});
 });
 
 function patchProfileLocalThenSync(profile, patch){
@@ -972,165 +1197,151 @@ function patchProfileLocalThenSync(profile, patch){
     .catch(err=>{ alert("同步失敗，正在重新整理："+err.message); loadRecords(); });
 }
 
+let settingsDrafts = {};
+let currentSettingsSlot = null;
+
+const HAIRSTYLE_OPTIONS = [["auto","依性別預設"],["short","短髮"],["long","長髮"],["ponytail","馬尾"],["twintails","雙馬尾"],["bun","丸子頭"],["curly","捲髮"],["mohawk","龐克頭"],["bald","光頭"]];
+const EYE_OPTIONS = [["round","圓眼"],["happy","笑眼(彎彎眼)"],["sleepy","瞇眼"],["star","星星眼"],["heart","愛心眼"]];
+const FACE_OPTIONS = [["round","圓臉"],["square","方臉"],["long","長臉"],["sharp","尖下巴"]];
+const MOUTH_OPTIONS = [["smile","微笑"],["open","開心大笑"],["grin","露齒笑"],["frown","皺眉"],["pout","嘟嘴"],["smirk","壞笑"]];
+const BODY_OPTIONS = [["regular","標準"],["slim","纖細"],["broad","寬肩壯碩"],["chubby","圓潤"],["athletic","健壯"],["petite","嬌小"],["curvy","豐腴"],["stocky","矮壯敦實"]];
+const SKIN_OPTIONS = [["porcelain","瓷白"],["light","白皙"],["ivory","象牙白"],["medium","自然"],["rosy","紅潤"],["olive","橄欖"],["tan","小麥"],["bronze","古銅"],["dark","深膚"],["deep","深邃"]];
+
+function selectHTML(cls, options, current, fallback){
+  return `<select class="${cls}">` + options.map(([v,label])=>`<option value="${v}" ${ (current===v || (!current && v===fallback)) ?"selected":""}>${label}</option>`).join("") + `</select>`;
+}
+
 function openSettings(){
-  const container=document.getElementById("profileForms");
-  container.innerHTML = profiles.map(p=>{
-    const cumulative=cumulativeContribution(p.name);
-    const level=levelFor(cumulative);
-    const maxUnlocked=Math.min(RAINBOW.length, Math.floor(level/3));
-    const activeGlow=p.glowColors||[];
-    const glowGrid = RAINBOW.map((r,i)=>{
-      const unlocked=i<maxUnlocked, on=activeGlow.includes(i);
-      return `<div class="glow-check ${unlocked?"":"locked"} ${on?"on":""}" data-idx="${i}" ${unlocked?"":"style='pointer-events:none'"}>
-        <div class="dot" style="background:${r.c}"></div><div class="lbl">${on?"✓":""}${r.n}</div>
-      </div>`;
-    }).join("");
-    const themeSwatches = THEME_COLORS.map(c=>`<div class="theme-swatch ${p.themeColor===c?"selected":""}" data-color="${c}" style="background:${c}"></div>`).join("");
-    return `
-    <div class="profile-block" data-slot="${p.slot}">
-      <div class="profile-head"><div class="avatar-wrap" id="settingsAvatar-${p.slot}"><img class="pixel" src="${avatarDataURL(p, cumulative, 'full')}" /></div><div class="ptitle">${p.name}</div></div>
-      <label>🙋 名字</label><input class="f-name" value="${p.name}" />
-      <div class="field-grid">
-        <div><label>🎂 生日</label><input class="f-birthdate" type="date" value="${p.birthdate||""}" /></div>
-        <div><label>⚧ 性別</label><select class="f-gender"><option value="">不指定</option><option value="male" ${p.gender==="male"?"selected":""}>男</option><option value="female" ${p.gender==="female"?"selected":""}>女</option><option value="other" ${p.gender==="other"?"selected":""}>其他</option></select></div>
-      </div>
-      <div class="zodiac-preview"></div>
-      <div class="field-grid">
-        <div><label>💇 髮型</label><select class="f-hairstyle">
-          <option value="auto" ${!p.hairstyle||p.hairstyle==="auto"?"selected":""}>依性別預設</option>
-          <option value="short" ${p.hairstyle==="short"?"selected":""}>短髮</option><option value="long" ${p.hairstyle==="long"?"selected":""}>長髮</option>
-          <option value="ponytail" ${p.hairstyle==="ponytail"?"selected":""}>馬尾</option><option value="bald" ${p.hairstyle==="bald"?"selected":""}>光頭</option>
-          <option value="bob" ${p.hairstyle==="bob"?"selected":""}>妹妹頭</option><option value="curly" ${p.hairstyle==="curly"?"selected":""}>捲髮</option>
-          <option value="mohawk" ${p.hairstyle==="mohawk"?"selected":""}>龐克頭</option><option value="bun" ${p.hairstyle==="bun"?"selected":""}>丸子頭</option>
-          <option value="twintails" ${p.hairstyle==="twintails"?"selected":""}>雙馬尾</option><option value="afro" ${p.hairstyle==="afro"?"selected":""}>爆炸頭</option>
-          <option value="sidepart" ${p.hairstyle==="sidepart"?"selected":""}>旁分</option><option value="buzzcut" ${p.hairstyle==="buzzcut"?"selected":""}>平頭</option>
-          <option value="pixie" ${p.hairstyle==="pixie"?"selected":""}>精靈短髮</option>
-        </select></div>
-        <div><label>👀 眼睛</label><select class="f-eyeStyle">
-          <option value="round" ${(!p.eyeStyle||p.eyeStyle==="round")?"selected":""}>圓眼</option><option value="happy" ${p.eyeStyle==="happy"?"selected":""}>笑眼</option>
-          <option value="sleepy" ${p.eyeStyle==="sleepy"?"selected":""}>瞇眼</option><option value="wink" ${p.eyeStyle==="wink"?"selected":""}>眨眼</option>
-          <option value="star" ${p.eyeStyle==="star"?"selected":""}>星星眼</option><option value="angry" ${p.eyeStyle==="angry"?"selected":""}>生氣眼</option>
-          <option value="closed" ${p.eyeStyle==="closed"?"selected":""}>閉眼</option><option value="sparkle" ${p.eyeStyle==="sparkle"?"selected":""}>閃亮眼</option>
-        </select></div>
-      </div>
-      <div class="field-grid">
-        <div><label>😊 臉型</label><select class="f-faceShape">
-          <option value="round" ${(!p.faceShape||p.faceShape==="round")?"selected":""}>圓臉</option><option value="square" ${p.faceShape==="square"?"selected":""}>方臉</option>
-          <option value="oval" ${p.faceShape==="oval"?"selected":""}>鵝蛋臉</option><option value="heart" ${p.faceShape==="heart"?"selected":""}>心形臉</option>
-          <option value="long" ${p.faceShape==="long"?"selected":""}>長臉</option><option value="diamond" ${p.faceShape==="diamond"?"selected":""}>鑽石臉</option>
-          <option value="triangle" ${p.faceShape==="triangle"?"selected":""}>三角臉</option><option value="pear" ${p.faceShape==="pear"?"selected":""}>西洋梨臉</option>
-          <option value="chubby" ${p.faceShape==="chubby"?"selected":""}>圓潤臉</option><option value="sharp" ${p.faceShape==="sharp"?"selected":""}>尖臉</option>
-        </select></div>
-        <div><label>👄 嘴型</label><select class="f-mouthStyle">
-          <option value="smile" ${(!p.mouthStyle||p.mouthStyle==="smile")?"selected":""}>微笑</option><option value="neutral" ${p.mouthStyle==="neutral"?"selected":""}>平靜</option>
-          <option value="open" ${p.mouthStyle==="open"?"selected":""}>驚訝</option><option value="grin" ${p.mouthStyle==="grin"?"selected":""}>露齒笑</option>
-          <option value="frown" ${p.mouthStyle==="frown"?"selected":""}>皺眉</option><option value="pout" ${p.mouthStyle==="pout"?"selected":""}>嘟嘴</option>
-        </select></div>
-      </div>
-      <div class="field-grid">
-        <div><label>💪 體型</label><select class="f-bodyType">
-          <option value="regular" ${(!p.bodyType||p.bodyType==="regular")?"selected":""}>標準</option><option value="slim" ${p.bodyType==="slim"?"selected":""}>纖細</option>
-          <option value="broad" ${p.bodyType==="broad"?"selected":""}>壯碩</option><option value="chubby" ${p.bodyType==="chubby"?"selected":""}>圓潤</option>
-          <option value="athletic" ${p.bodyType==="athletic"?"selected":""}>健壯</option><option value="petite" ${p.bodyType==="petite"?"selected":""}>嬌小</option>
-          <option value="curvy" ${p.bodyType==="curvy"?"selected":""}>豐腴</option><option value="stocky" ${p.bodyType==="stocky"?"selected":""}>敦實</option>
-        </select></div>
-        <div><label>🎨 膚色</label><select class="f-skinTone">
-          <option value="porcelain" ${p.skinTone==="porcelain"?"selected":""}>瓷白</option><option value="light" ${p.skinTone==="light"?"selected":""}>白皙</option>
-          <option value="ivory" ${p.skinTone==="ivory"?"selected":""}>象牙白</option><option value="medium" ${(!p.skinTone||p.skinTone==="medium")?"selected":""}>自然</option>
-          <option value="rosy" ${p.skinTone==="rosy"?"selected":""}>紅潤</option><option value="olive" ${p.skinTone==="olive"?"selected":""}>橄欖</option>
-          <option value="tan" ${p.skinTone==="tan"?"selected":""}>小麥</option><option value="bronze" ${p.skinTone==="bronze"?"selected":""}>古銅</option>
-          <option value="dark" ${p.skinTone==="dark"?"selected":""}>深膚</option><option value="deep" ${p.skinTone==="deep"?"selected":""}>深邃</option>
-        </select></div>
-      </div>
-      <label>🖼 專屬主題色(邊框/底色)</label>
-      <div class="theme-grid">${themeSwatches}</div>
-      <label>🌈 身體光環(每 3 級解鎖一色，可複選)</label>
-      ${maxUnlocked===0 ? '<p style="font-size:12px;color:var(--ink-soft);margin:4px 0;">尚未解鎖任何顏色，累積貢獻滿 30000 解鎖第一色</p>' : ''}
-      <div class="glow-check-grid">${glowGrid}</div>
-    </div>`;
-  }).join("");
+  settingsDrafts = {};
+  profiles.forEach(p=>{ settingsDrafts[p.slot] = { ...p, equippedItems:(p.equippedItems||[]).slice(), glowColors:(p.glowColors||[]).slice() }; });
+  currentSettingsSlot = profiles.length ? profiles[0].slot : null;
 
-  container.querySelectorAll(".profile-block").forEach(block=>{
-    const slot=block.dataset.slot;
-    const profile=profiles.find(p=>p.slot.toString()===slot.toString());
-    const dateInput=block.querySelector(".f-birthdate");
-    const zodiacEl=block.querySelector(".zodiac-preview");
-    function updateZodiac(){
-      if (!dateInput.value){ zodiacEl.innerHTML=""; return; }
-      const d=new Date(dateInput.value+"T12:00:00");
-      if (isNaN(d.getTime())){ zodiacEl.innerHTML=""; return; }
-      zodiacEl.innerHTML=`<span class="zodiac-badge">${zodiacOf(d.getMonth()+1, d.getDate())}</span>`;
-    }
-    dateInput.addEventListener("change", updateZodiac); updateZodiac();
-
-    let draftTheme = profile.themeColor;
-    let draftGlow = (profile.glowColors||[]).slice();
-
-    function refreshPreview(){
-      const draft={...profile,
-        gender:block.querySelector(".f-gender").value, hairstyle:block.querySelector(".f-hairstyle").value,
-        eyeStyle:block.querySelector(".f-eyeStyle").value, faceShape:block.querySelector(".f-faceShape").value,
-        mouthStyle:block.querySelector(".f-mouthStyle").value, bodyType:block.querySelector(".f-bodyType").value,
-        skinTone:block.querySelector(".f-skinTone").value, glowColors:draftGlow
-      };
-      document.getElementById("settingsAvatar-"+slot).innerHTML = `<img class="pixel" src="${avatarDataURL(draft, cumulativeContribution(profile.name), 'full')}" />`;
-    }
-    block.querySelectorAll("select").forEach(sel=>sel.addEventListener("change", refreshPreview));
-
-    block.querySelectorAll(".theme-swatch").forEach(sw=>{
-      sw.addEventListener("click", ()=>{
-        draftTheme = sw.dataset.color;
-        block.querySelectorAll(".theme-swatch").forEach(s=>s.classList.remove("selected"));
-        sw.classList.add("selected");
-        block.dataset.theme = draftTheme;
-      });
+  const row = document.getElementById("settingsPersonRow");
+  row.innerHTML = profiles.map(p=>`<button class="${p.slot===currentSettingsSlot?"active":""}" data-slot="${p.slot}">${p.name}</button>`).join("");
+  row.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      currentSettingsSlot = btn.dataset.slot;
+      row.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      renderSettingsPreview(); renderSettingsForm();
     });
-    block.dataset.theme = draftTheme || "";
-
-    block.querySelectorAll(".glow-check:not(.locked)").forEach(gc=>{
-      gc.addEventListener("click", ()=>{
-        const idx = Number(gc.dataset.idx);
-        if (draftGlow.includes(idx)) draftGlow = draftGlow.filter(i=>i!==idx);
-        else draftGlow.push(idx);
-        gc.classList.toggle("on", draftGlow.includes(idx));
-        gc.querySelector(".lbl").textContent = (draftGlow.includes(idx)?"✓":"") + RAINBOW[idx].n;
-        block.dataset.glow = draftGlow.join(",");
-        refreshPreview();
-      });
-    });
-    block.dataset.glow = draftGlow.join(",");
   });
 
+  renderSettingsPreview();
+  renderSettingsForm();
   document.getElementById("settingsStatus").textContent = "";
   document.getElementById("settingsOverlay").classList.add("show");
 }
+
+function renderSettingsPreview(){
+  const draft = settingsDrafts[currentSettingsSlot];
+  if (!draft) return;
+  const cumulative = cumulativeContribution(draft.name);
+  document.getElementById("settingsPreview").innerHTML = `
+    <div class="avatar-wrap"><img class="pixel" src="${avatarDataURL(draft, cumulative, 'full')}" /></div>
+    <div class="info">
+      <div class="pname">${draft.name}</div>
+      <div class="player-lv" style="background:rgba(0,0,0,0.08);color:var(--gold-dark);">Lv.${levelFor(cumulative)}</div>
+      <div id="settingsZodiac"></div>
+    </div>`;
+  updateSettingsZodiac();
+}
+function updateSettingsZodiac(){
+  const draft = settingsDrafts[currentSettingsSlot];
+  const el = document.getElementById("settingsZodiac");
+  if (!el) return;
+  if (!draft.birthdate){ el.innerHTML=""; return; }
+  const d = new Date(draft.birthdate+"T12:00:00");
+  if (isNaN(d.getTime())){ el.innerHTML=""; return; }
+  el.innerHTML = `<span class="zodiac-badge">${zodiacOf(d.getMonth()+1, d.getDate())}</span>`;
+}
+
+function renderSettingsForm(){
+  const draft = settingsDrafts[currentSettingsSlot];
+  if (!draft) return;
+  const container = document.getElementById("profileForms");
+  const level = levelFor(cumulativeContribution(draft.name));
+  const maxUnlocked = Math.min(RAINBOW.length, Math.floor(level/3));
+  const glowGrid = RAINBOW.map((r,i)=>{
+    const unlocked=i<maxUnlocked, on=(draft.glowColors||[]).includes(i);
+    return `<div class="glow-check ${unlocked?"":"locked"} ${on?"on":""}" data-idx="${i}" ${unlocked?"":"style='pointer-events:none'"}>
+      <div class="dot" style="background:${r.c}"></div><div class="lbl">${on?"✓":""}${r.n}</div>
+    </div>`;
+  }).join("");
+  const themeSwatches = THEME_COLORS.map(c=>`<div class="theme-swatch ${draft.themeColor===c?"selected":""}" data-color="${c}" style="background:${c}"></div>`).join("");
+
+  container.innerHTML = `
+    <label>🙋 名字</label><input class="f-name" value="${draft.name}" />
+    <div class="field-grid">
+      <div><label>🎂 生日</label><input class="f-birthdate" type="date" value="${draft.birthdate||""}" /></div>
+      <div><label>⚧ 性別</label><select class="f-gender"><option value="">不指定</option><option value="male" ${draft.gender==="male"?"selected":""}>男</option><option value="female" ${draft.gender==="female"?"selected":""}>女</option><option value="other" ${draft.gender==="other"?"selected":""}>其他</option></select></div>
+    </div>
+    <div class="field-grid">
+      <div><label>💇 髮型</label>${selectHTML("f-hairstyle", HAIRSTYLE_OPTIONS, draft.hairstyle, "auto")}</div>
+      <div><label>👀 眼睛</label>${selectHTML("f-eyeStyle", EYE_OPTIONS, draft.eyeStyle, "round")}</div>
+    </div>
+    <div class="field-grid">
+      <div><label>😊 臉型</label>${selectHTML("f-faceShape", FACE_OPTIONS, draft.faceShape, "round")}</div>
+      <div><label>👄 嘴型</label>${selectHTML("f-mouthStyle", MOUTH_OPTIONS, draft.mouthStyle, "smile")}</div>
+    </div>
+    <div class="field-grid">
+      <div><label>💪 體型</label>${selectHTML("f-bodyType", BODY_OPTIONS, draft.bodyType, "regular")}</div>
+      <div><label>🎨 膚色</label>${selectHTML("f-skinTone", SKIN_OPTIONS, draft.skinTone, "medium")}</div>
+    </div>
+    <label>🖼 專屬主題色(邊框/底色)</label>
+    <div class="theme-grid">${themeSwatches}</div>
+    <label>🌈 身體光環(每 3 級解鎖一色，最多選 2 色同時顯示)</label>
+    ${maxUnlocked===0 ? '<p style="font-size:12px;color:var(--ink-soft);margin:4px 0;">尚未解鎖任何顏色，累積貢獻滿 30000 解鎖第一色</p>' : ''}
+    <div class="glow-check-grid">${glowGrid}</div>
+  `;
+
+  container.querySelector(".f-name").addEventListener("input", e=>{ draft.name = e.target.value; });
+  container.querySelector(".f-birthdate").addEventListener("change", e=>{ draft.birthdate = e.target.value; updateSettingsZodiac(); });
+  container.querySelector(".f-gender").addEventListener("change", e=>{ draft.gender = e.target.value; refreshAllPreviews(); });
+  ["hairstyle","eyeStyle","faceShape","mouthStyle","bodyType","skinTone"].forEach(field=>{
+    container.querySelector(".f-"+field).addEventListener("change", e=>{ draft[field] = e.target.value; refreshAllPreviews(); });
+  });
+  container.querySelectorAll(".theme-swatch").forEach(sw=>{
+    sw.addEventListener("click", ()=>{
+      draft.themeColor = sw.dataset.color;
+      container.querySelectorAll(".theme-swatch").forEach(s=>s.classList.remove("selected"));
+      sw.classList.add("selected");
+    });
+  });
+  container.querySelectorAll(".glow-check:not(.locked)").forEach(gc=>{
+    gc.addEventListener("click", ()=>{
+      const idx = Number(gc.dataset.idx);
+      draft.glowColors = draft.glowColors || [];
+      if (draft.glowColors.includes(idx)) draft.glowColors = draft.glowColors.filter(i=>i!==idx);
+      else { if (draft.glowColors.length>=2) draft.glowColors.shift(); draft.glowColors.push(idx); }
+      container.querySelectorAll(".glow-check").forEach(el=>{
+        const i2=Number(el.dataset.idx);
+        el.classList.toggle("on", draft.glowColors.includes(i2));
+        const lbl = el.querySelector(".lbl");
+        if (lbl) lbl.textContent = (draft.glowColors.includes(i2)?"✓":"") + RAINBOW[i2].n;
+      });
+      refreshAllPreviews();
+    });
+  });
+}
+function refreshAllPreviews(){ renderSettingsPreview(); }
+
 function closeSettings(){ document.getElementById("settingsOverlay").classList.remove("show"); }
 async function saveSettings(){
   const statusEl=document.getElementById("settingsStatus");
   statusEl.textContent="儲存中…"; statusEl.className="edit-status";
-  const blocks=document.querySelectorAll("#profileForms .profile-block");
   try{
-    for (const block of blocks){
-      const slot=block.dataset.slot;
-      const profile=profiles.find(p=>p.slot.toString()===slot.toString());
-      const glowColors = (block.dataset.glow||"").split(",").filter(s=>s!=="").map(Number);
+    for (const slot of Object.keys(settingsDrafts)){
+      const draft = settingsDrafts[slot];
+      if (!draft.name || !draft.name.trim()) throw new Error("名字不能空白");
       const payload={
         key:sessionKey, action:"updateProfile", slot,
-        name:block.querySelector(".f-name").value.trim(),
-        birthdate:block.querySelector(".f-birthdate").value,
-        gender:block.querySelector(".f-gender").value,
-        hairstyle:block.querySelector(".f-hairstyle").value,
-        eyeStyle:block.querySelector(".f-eyeStyle").value,
-        faceShape:block.querySelector(".f-faceShape").value,
-        mouthStyle:block.querySelector(".f-mouthStyle").value,
-        bodyType:block.querySelector(".f-bodyType").value,
-        skinTone:block.querySelector(".f-skinTone").value,
-        themeColor: block.dataset.theme || profile.themeColor || "",
-        glowColors: glowColors,
-        equippedItems:profile.equippedItems||[],
-        activeTitle:profile.activeTitle||""
+        name:draft.name.trim(), birthdate:draft.birthdate||"", gender:draft.gender||"",
+        hairstyle:draft.hairstyle||"", eyeStyle:draft.eyeStyle||"", faceShape:draft.faceShape||"",
+        mouthStyle:draft.mouthStyle||"", bodyType:draft.bodyType||"", skinTone:draft.skinTone||"",
+        themeColor:draft.themeColor||"", glowColors:draft.glowColors||[],
+        equippedItems:draft.equippedItems||[], activeTitle:draft.activeTitle||""
       };
-      if (!payload.name) throw new Error("名字不能空白");
       const json=await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
       if (json.status!=="success") throw new Error(json.message);
     }
@@ -1139,6 +1350,92 @@ async function saveSettings(){
     setTimeout(closeSettings, 500);
   } catch(err){ statusEl.textContent="儲存失敗："+err.message; statusEl.className="edit-status error"; }
 }
+
+// ============================================================
+// 悄悄話留言板
+// ============================================================
+const EMOJI_LIST = ["😀","😂","😍","😭","😡","👍","❤️","🎉","💰","🙏","😴","🤔"];
+
+function initChatSpeaker(){
+  chatSpeaker = localStorage.getItem("chat_speaker") || null;
+  if (chatSpeaker && !personNames().includes(chatSpeaker)) chatSpeaker = null;
+  if (!chatSpeaker && profiles.length) chatSpeaker = profiles[0].name;
+}
+function renderChatSpeakerRow(){
+  const row = document.getElementById("chatSpeakerRow");
+  row.innerHTML = personNames().map(name=>`<button class="${name===chatSpeaker?"active":""}" data-name="${name}">我是 ${name}</button>`).join("");
+  row.querySelectorAll("button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      chatSpeaker = btn.dataset.name;
+      localStorage.setItem("chat_speaker", chatSpeaker);
+      renderChatSpeakerRow(); renderChatMessages();
+    });
+  });
+}
+function renderChatMessages(){
+  const box = document.getElementById("chatMessages");
+  if (!allMessages.length){ box.innerHTML = '<div class="chat-empty">還沒有任何悄悄話，說點什麼吧！</div>'; return; }
+  box.innerHTML = allMessages.map(m=>{
+    const isMe = m.sender===chatSpeaker;
+    const time = m.timestamp.toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+    const readMark = isMe ? (m.readBy && m.readBy.some(r=>r!==m.sender) ? "已讀" : "已送出") : "";
+    return `<div class="chat-bubble-row ${isMe?"me":"them"}">
+      <div class="chat-sender">${isMe?"":m.sender}</div>
+      <div class="chat-bubble">${escapeHtml(m.text)}</div>
+      <div class="chat-meta">${time}${readMark?" · "+readMark:""}</div>
+    </div>`;
+  }).join("");
+  box.scrollTop = box.scrollHeight;
+
+  // 開啟時自動把對方傳的、我還沒讀過的訊息標記已讀
+  if (chatSpeaker){
+    const unreadIds = allMessages.filter(m=>m.sender!==chatSpeaker && !(m.readBy||[]).includes(chatSpeaker)).map(m=>m.id);
+    if (unreadIds.length){
+      unreadIds.forEach(id=>{ const m=allMessages.find(x=>x.id===id); if(m){ m.readBy=m.readBy||[]; m.readBy.push(chatSpeaker); } });
+      fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify({key:sessionKey,action:"markRead",reader:chatSpeaker,ids:unreadIds})}).catch(()=>{});
+    }
+  }
+}
+function escapeHtml(s){ const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+function renderChatEmojiRow(){
+  document.getElementById("chatEmojiRow").innerHTML = EMOJI_LIST.map(e=>`<button data-e="${e}">${e}</button>`).join("");
+  document.querySelectorAll("#chatEmojiRow button").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const input = document.getElementById("chatInput");
+      input.value += btn.dataset.e; input.focus();
+    });
+  });
+}
+async function sendChatMessage(){
+  const input = document.getElementById("chatInput");
+  const text = input.value.trim();
+  if (!text || !chatSpeaker) return;
+  input.value = "";
+  const tempId = "temp-"+Date.now();
+  allMessages.push({id:tempId, timestamp:new Date(), sender:chatSpeaker, text, readBy:[chatSpeaker]});
+  renderChatMessages();
+  try{
+    const json = await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({key:sessionKey,action:"sendMessage",sender:chatSpeaker,text})});
+    if (json.status!=="success") throw new Error(json.message);
+    await loadRecords();
+  } catch(err){
+    allMessages = allMessages.filter(m=>m.id!==tempId);
+    renderChatMessages();
+    alert("送出失敗："+err.message);
+  }
+}
+
+document.getElementById("chatFabBtn").addEventListener("click", ()=>{
+  initChatSpeaker();
+  renderChatSpeakerRow(); renderChatEmojiRow(); renderChatMessages();
+  document.getElementById("chatOverlay").classList.add("show");
+});
+document.getElementById("chatCloseBtn").addEventListener("click", ()=>{ document.getElementById("chatOverlay").classList.remove("show"); });
+document.getElementById("chatOverlay").addEventListener("click", e=>{ if(e.target.id==="chatOverlay") document.getElementById("chatOverlay").classList.remove("show"); });
+document.getElementById("chatSendBtn").addEventListener("click", sendChatMessage);
+document.getElementById("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter") sendChatMessage(); });
 
 document.querySelectorAll(".tab-btn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
