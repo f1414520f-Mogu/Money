@@ -6,55 +6,27 @@
 <title>錢莊</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#241a10">
+<meta name="theme-color" content="#c9a15a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root{
-    --vault-dark:#241a10; --vault-mid:#3b2a1a; --vault-line:#4a3620;
-    --gold:#e8c06a; --gold-dark:#a67c3d; --bronze:#8a6a3f;
-    --parchment:#f3e6c8; --parchment-dark:#dfc99a; --parchment-light:#faf1dc;
-    --ink:#2b2015; --ink-soft:#6b5738;
-    --teal:#5b8a72; --teal-dark:#3d6650;
-    --danger:#c0392b; --danger-dark:#8a281c;
+    --gold:#c9a15a; --gold-dark:#96733a; --cream:#f0e6d2; --cream-dark:#d9c9a3; --cream-light:#faf3e2;
+    --ink:#2b2620; --ink-soft:#6b5c44; --teal:#5b8a72; --teal-dark:#3d6650;
+    --danger:#b33f32; --danger-dark:#7d2c22;
     --card:#f6ecd4; --panel:#e9d8ae; --panel-dark:#c2a565; --panel-light:#faf1dc;
   }
-  *{ box-sizing:border-box; image-rendering:pixelated; }
+  *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; }
-  body{ color:var(--ink); font-family:"DotGothic16","Noto Sans TC",sans-serif; font-size:16px; -webkit-tap-highlight-color:transparent; min-height:100vh; padding-bottom:92px; background:var(--vault-dark); overflow-x:hidden; }
+  body{ color:var(--ink); font-family:"DotGothic16","Noto Sans TC",sans-serif; font-size:16px; -webkit-tap-highlight-color:transparent; min-height:100vh; padding-bottom:92px; background:var(--cream); overflow-x:hidden; }
   h1,h2,h3{ font-family:"DotGothic16",sans-serif; letter-spacing:0.5px; }
+  img.pixel{ image-rendering: pixelated; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges; }
 
-  #bgScene{ position:fixed; inset:0; z-index:-2; overflow:hidden; background:
-    repeating-linear-gradient(0deg, var(--vault-mid) 0 26px, var(--vault-dark) 26px 28px),
-    repeating-linear-gradient(90deg, transparent 0 54px, rgba(0,0,0,0.18) 54px 56px); }
-  #bgScene .door{ position:absolute; width:78vmin; height:78vmin; border-radius:50%; top:46%; left:50%; transform:translate(-50%,-50%);
-    background: repeating-conic-gradient(var(--bronze) 0deg 15deg, var(--gold-dark) 15deg 30deg);
-    border:10px solid var(--vault-line); box-shadow:0 0 0 5px var(--vault-dark), 0 0 40px rgba(0,0,0,0.5) inset; }
-  #bgScene .door::before{ content:""; position:absolute; inset:16%; border-radius:50%; background:var(--vault-dark); border:7px solid var(--gold); }
-  #bgScene .door::after{ content:""; position:absolute; inset:38%; border-radius:50%; background:var(--vault-line); border:5px solid var(--gold-dark); }
-  #bgScene .handle{ position:absolute; top:46%; left:50%; width:34%; height:34%; transform:translate(-50%,-50%); }
-  #bgScene .handle i{ position:absolute; background:var(--gold); border:2px solid var(--vault-line); }
-  #bgScene .handle .bar1{ top:46%; left:0; width:100%; height:8%; }
-  #bgScene .handle .bar2{ top:0; left:46%; width:8%; height:100%; }
-  #bgScene .handle .knob{ position:absolute; top:38%; left:38%; width:24%; height:24%; border-radius:50%; background:var(--gold); border:2px solid var(--vault-line); }
-  #bgScene .bolt{ position:absolute; width:14px; height:14px; background:var(--gold-dark); border:2px solid var(--vault-line); box-shadow:0 0 0 2px var(--gold) inset; }
-  #bgScene .b1{ top:9%; left:50%; margin-left:-7px; }
-  #bgScene .b2{ top:23%; left:78%; }
-  #bgScene .b3{ top:50%; left:89%; margin-top:-7px; }
-  #bgScene .b4{ top:77%; left:78%; }
-  #bgScene .b5{ bottom:9%; left:50%; margin-left:-7px; }
-  #bgScene .b6{ top:77%; left:14%; }
-  #bgScene .b7{ top:50%; left:3%; margin-top:-7px; }
-  #bgScene .b8{ top:23%; left:14%; }
-  #bgScene .stack{ position:absolute; bottom:4%; width:44px; }
-  #bgScene .stack .bar{ height:9px; background:var(--gold); border:2px solid var(--gold-dark); margin-bottom:2px; }
-  #bgScene .stack.left{ left:6%; } #bgScene .stack.right{ right:6%; }
+  .bevel-out{ border-style:solid; border-width:3px; border-top-color:rgba(255,255,255,0.6); border-left-color:rgba(255,255,255,0.6); border-right-color:rgba(0,0,0,0.35); border-bottom-color:rgba(0,0,0,0.35); box-shadow:0 3px 0 rgba(0,0,0,0.22); }
 
-  .bevel-out{ border-style:solid; border-width:3px; border-top-color:rgba(255,255,255,0.55); border-left-color:rgba(255,255,255,0.55); border-right-color:rgba(0,0,0,0.4); border-bottom-color:rgba(0,0,0,0.4); box-shadow:0 3px 0 rgba(0,0,0,0.3); }
-
-  #lockScreen{ position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:radial-gradient(circle at 50% 40%, var(--vault-mid), var(--vault-dark)); }
+  #lockScreen{ position:fixed; inset:0; z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; background:linear-gradient(180deg,#f7e0b8,#c9a15a); }
   .lock-card{ background:var(--card); border-radius:4px; padding:30px 22px; width:100%; max-width:320px; text-align:center; }
   .lock-mark{ width:60px; height:60px; margin:0 auto 16px; background:var(--gold); border:3px solid var(--gold-dark); display:flex; align-items:center; justify-content:center; color:var(--ink); font-size:26px; }
   .lock-card h2{ margin:0 0 16px; font-size:16px; line-height:1.9; }
@@ -63,35 +35,43 @@
 
   #app{ display:none; } #app.unlocked{ display:block; }
 
-  header{ position:sticky; top:0; z-index:10; background:linear-gradient(180deg,rgba(59,42,26,0.96),rgba(36,26,16,0.98)),var(--header-photo,none); background-size:cover; background-position:center; color:var(--parchment); padding:12px; border-bottom:4px solid var(--gold-dark); }
+  header{ position:sticky; top:0; z-index:10; background:linear-gradient(180deg,rgba(150,115,58,0.96),rgba(107,82,42,0.98)),var(--header-photo,none); background-size:cover; background-position:center; color:var(--cream); padding:12px; border-bottom:4px solid var(--gold-dark); }
   .header-top{ display:flex; justify-content:space-between; align-items:center; }
   .brand{ display:flex; align-items:center; gap:8px; }
   .coin-icon{ width:30px; height:30px; flex-shrink:0; }
-  header .eyebrow{ font-size:22px; letter-spacing:2px; opacity:0.98; margin-bottom:4px; font-family:"Press Start 2P",monospace; color:var(--gold); text-shadow:2px 2px 0 rgba(0,0,0,0.4); }
-  header h1{ margin:0; font-size:14px; line-height:1.5; color:var(--parchment-dark); }
+  header .eyebrow{ font-size:22px; letter-spacing:2px; opacity:0.98; margin-bottom:4px; font-family:"Press Start 2P",monospace; color:#fff3d6; text-shadow:2px 2px 0 rgba(0,0,0,0.35); }
+  header h1{ margin:0; font-size:14px; line-height:1.5; color:var(--cream-dark); }
   .icon-btn{ width:42px; height:42px; background:var(--gold); color:var(--ink); border-color:#fbe6ae var(--gold-dark) var(--gold-dark) #fbe6ae; border-style:solid; border-width:3px; border-radius:4px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:19px; }
 
   .player-strip{ display:flex; gap:8px; margin-top:10px; }
-  .player-card{ flex:1; border-radius:6px; padding:8px 6px; text-align:center; border:3px solid var(--frame-color, rgba(255,255,255,0.3)); background:var(--frame-bg, rgba(0,0,0,0.3)); }
+  .player-card{ flex:1; border-radius:6px; padding:8px 6px; text-align:center; border:3px solid var(--frame-color, rgba(255,255,255,0.3)); background:var(--frame-bg, rgba(0,0,0,0.25)); }
   .player-title{ font-size:10px; margin-bottom:4px; min-height:13px; font-weight:700; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
-  .portrait-wrap{ width:54px; height:54px; margin:0 auto 4px; overflow:hidden; border-radius:6px; background:rgba(255,255,255,0.1); }
-  .portrait-wrap svg{ width:100%; height:100%; overflow:visible; }
+  .portrait-wrap{ width:54px; height:54px; margin:0 auto 4px; overflow:hidden; border-radius:6px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; }
+  .portrait-wrap img{ width:100%; height:100%; object-fit:contain; }
   .player-name{ font-size:13px; font-weight:700; margin-bottom:3px; }
-  .player-amt{ font-family:"Press Start 2P",monospace; font-size:12px; color:var(--gold); text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
+  .player-amt{ font-family:"Press Start 2P",monospace; font-size:12px; color:#fff3d6; text-shadow:1px 1px 0 rgba(0,0,0,0.6); }
   .player-amt-label{ font-size:10px; opacity:0.9; margin-top:4px; }
 
   main{ max-width:480px; margin:0 auto; padding:16px 12px; }
   .card{ background:var(--card); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:3px; border-radius:4px; padding:16px; margin-bottom:14px; }
   .card h2{ margin:0 0 14px; font-size:15px; display:flex; align-items:center; gap:9px; }
-  .card h2 .idx{ font-size:16px; background:var(--vault-mid); color:var(--gold); width:28px; height:28px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .card h2 .idx{ font-size:16px; background:var(--gold-dark); color:#fff; width:28px; height:28px; border-radius:5px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 
-  .character-stage{ display:flex; gap:10px; justify-content:center; padding:12px 0 6px; }
-  .character-slot{ flex:1; max-width:220px; display:flex; flex-direction:column; align-items:center; border-radius:10px; border:4px solid var(--frame-color, var(--gold)); background:var(--frame-bg, rgba(255,255,255,0.15)); padding:14px 6px 10px; }
-  .character-slot .avatar-wrap{ width:100%; max-width:200px; }
-  .character-slot .avatar-wrap svg{ width:100%; height:auto; overflow:visible; }
+  /* ---------- 人物頁籤：專屬銀行場景背景 ---------- */
+  #view-character{ margin:-16px -12px 0; padding:0 0 16px; position:relative; overflow:hidden; }
+  .bank-scene{ position:relative; background:linear-gradient(180deg,#dcd0ae 0%, #cabb90 100%); padding:18px 12px 0; overflow:hidden; }
+  .bank-scene .bank-img{ display:block; width:100%; max-width:420px; margin:0 auto; image-rendering:pixelated; }
+  .bank-scene .decor{ position:absolute; image-rendering:pixelated; }
+  .sparkle{ animation: sparkle 1.8s steps(1) infinite; }
+  @keyframes sparkle{ 0%,60%{opacity:1;} 30%{opacity:0.35;} 100%{opacity:1;} }
+  .character-stage{ position:relative; display:flex; gap:6px; justify-content:center; padding:10px 12px 6px; z-index:2; }
+  .character-slot{ flex:1; max-width:210px; display:flex; flex-direction:column; align-items:center; border-radius:10px; border:4px solid var(--frame-color, var(--gold)); background:var(--frame-bg, rgba(255,255,255,0.55)); padding:10px 6px 8px; }
+  .character-slot .avatar-wrap{ width:100%; max-width:170px; animation: breathe 3.6s ease-in-out infinite; }
+  .character-slot .avatar-wrap img{ width:100%; height:auto; display:block; }
+  @keyframes breathe{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.035); } }
   .character-slot .cname{ margin-top:6px; font-size:16px; font-weight:700; color:var(--ink); }
   .character-slot .ctitle{ margin-top:3px; font-size:19px; font-weight:700; text-align:center; line-height:1.3; }
-  .character-ground{ height:18px; margin:10px -12px 0; background:repeating-linear-gradient(90deg,var(--vault-mid) 0 10px,var(--vault-dark) 10px 20px); border-top:3px solid var(--gold-dark); }
+  .character-ground{ height:14px; background:linear-gradient(180deg,#b3a074,#8f7d54); position:relative; z-index:2; }
 
   .mode-switch{ display:flex; gap:6px; margin-bottom:16px; }
   .mode-switch button{ flex:1; padding:12px 4px; font-size:14px; font-weight:700; cursor:pointer; background:var(--panel); color:var(--ink-soft); border-radius:4px; border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; font-family:"DotGothic16",sans-serif; display:flex; align-items:center; justify-content:center; gap:6px; }
@@ -131,11 +111,11 @@
   .skeleton-line{ height:14px; margin-bottom:10px; border-radius:3px; background:linear-gradient(90deg,var(--panel-dark) 25%,var(--panel-light) 37%,var(--panel-dark) 63%); background-size:400% 100%; animation:shimmer 1.4s ease infinite; }
   @keyframes shimmer{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
 
-  canvas{ max-height:280px; }
+  canvas.chart{ max-height:280px; }
 
   .sub-tabs{ display:flex; gap:6px; margin-bottom:16px; }
   .sub-tabs button{ flex:1; padding:11px 2px; font-size:13px; font-weight:700; cursor:pointer; border-radius:4px; background:var(--panel); color:var(--ink-soft); border-color:var(--panel-light) var(--panel-dark) var(--panel-dark) var(--panel-light); border-style:solid; border-width:2px; font-family:"DotGothic16",sans-serif; }
-  .sub-tabs button.active{ background:var(--vault-mid); color:var(--gold); }
+  .sub-tabs button.active{ background:var(--gold-dark); color:#fff; }
   .sub-view{ display:none; } .sub-view.active{ display:block; }
 
   .person-select-row{ display:flex; gap:6px; margin-bottom:14px; }
@@ -159,11 +139,11 @@
 
   .equip-preview{ text-align:center; margin-bottom:16px; }
   .equip-preview .avatar-wrap{ width:150px; margin:0 auto; }
-  .equip-preview .avatar-wrap svg{ width:100%; height:auto; overflow:visible; }
+  .equip-preview .avatar-wrap img{ width:100%; height:auto; }
   .equip-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
   .equip-slot{ background:rgba(255,255,255,0.55); border:2px solid var(--panel-dark); border-radius:4px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:10px 4px; cursor:pointer; position:relative; }
   .equip-slot.locked{ opacity:0.4; cursor:default; }
-  .equip-slot.equipped{ border-color:var(--gold); background:rgba(232,192,106,0.28); }
+  .equip-slot.equipped{ border-color:var(--gold); background:rgba(201,161,90,0.28); }
   .equip-icon{ width:32px; height:32px; }
   .equip-name{ font-size:12px; font-weight:700; }
   .equip-req{ font-size:10.5px; color:var(--ink-soft); text-align:center; }
@@ -197,7 +177,7 @@
   .profile-block:last-of-type{ border-bottom:none; }
   .profile-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
   .profile-head .avatar-wrap{ width:64px; height:86px; flex-shrink:0; }
-  .profile-head .avatar-wrap svg{ width:100%; height:100%; overflow:visible; }
+  .profile-head .avatar-wrap img{ width:100%; height:100%; object-fit:contain; }
   .profile-head .ptitle{ font-size:15px; font-weight:700; }
   .field-grid{ display:grid; grid-template-columns:1fr 1fr; gap:0 10px; }
   .theme-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
@@ -206,15 +186,6 @@
 </style>
 </head>
 <body>
-
-<div id="bgScene">
-  <div class="door"></div>
-  <div class="bolt b1"></div><div class="bolt b2"></div><div class="bolt b3"></div><div class="bolt b4"></div>
-  <div class="bolt b5"></div><div class="bolt b6"></div><div class="bolt b7"></div><div class="bolt b8"></div>
-  <div class="handle"><i class="bar1"></i><i class="bar2"></i><div class="knob"></div></div>
-  <div class="stack left"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-  <div class="stack right"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
-</div>
 
 <div id="lockScreen">
   <div class="lock-card bevel-out">
@@ -245,6 +216,10 @@
   <div id="setupWarning" class="setup-warning" style="display:none;">⚠️ 尚未設定 Apps Script 網址，請把 CONFIG.WEB_APP_URL 換成你部署後的網址。</div>
 
   <section id="view-character" class="view active">
+    <div class="bank-scene">
+      <img class="bank-img" id="bankImg" alt="銀行" />
+      <div id="bankDecor"></div>
+    </div>
     <div class="character-stage" id="characterStage"></div>
     <div class="character-ground"></div>
   </section>
@@ -289,7 +264,7 @@
         <option value="bar">📊 長條圖(每月總額趨勢)</option>
         <option value="pie">🥧 圓餅圖(各人員佔比)</option>
       </select>
-      <canvas id="mainChart"></canvas>
+      <canvas class="chart" id="mainChart"></canvas>
     </div>
   </section>
 
@@ -347,7 +322,7 @@
 
 <script>
 const CONFIG = {
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbykk4UT8vUKBDP1KSJdvakm9Rt1kKXrYPelafDMSNvAzrG0Szrmrp30qgExsmgOBhmgxA/exec",
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbw1kKXF9FN1fPQaxen7sSefvCanupjcS0vBV-KBqfLXUg_DU0OdAt393YZVGjL_ShdDyQ/exec",
   APP_PASSWORD: "20210318",
   HEADER_IMAGE_URL: "",
   APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.jpg?raw=true",
@@ -388,162 +363,279 @@ function levelFor(c){ return Math.floor(c/10000); }
 function ageFor(c){ return Math.round(levelFor(c)*1.5); }
 function stageFor(age){ if(age<=2) return "baby"; if(age<=11) return "child"; if(age<=17) return "teen"; if(age<=59) return "adult"; return "elder"; }
 const STAGE_LABEL = { baby:"寶寶", child:"孩童", teen:"青少年", adult:"成人", elder:"長者" };
-const STAGE_PROPORTIONS = {
-  baby:{ headW:58,headH:54,headY:10,torsoW:24,torsoH:13,torsoY:54,legW:10,legH:9,legY:66,armW:9,armH:11,armY:55 },
-  child:{ headW:54,headH:50,headY:7,torsoW:25,torsoH:18,torsoY:48,legW:10,legH:16,legY:65,armW:9,armH:16,armY:49 },
-  teen:{ headW:50,headH:46,headY:6,torsoW:26,torsoH:22,torsoY:44,legW:11,legH:22,legY:66,armW:9,armH:21,armY:45 },
-  adult:{ headW:48,headH:44,headY:5,torsoW:27,torsoH:25,torsoY:41,legW:11,legH:26,legY:67,armW:9,armH:24,armY:42 },
-  elder:{ headW:48,headH:44,headY:7,torsoW:25,torsoH:23,torsoY:43,legW:11,legH:24,legY:68,armW:9,armH:22,armY:44 }
+const STAGE_CFG = {
+  baby:{headScale:1.32, bodyScale:0.5}, child:{headScale:1.18, bodyScale:0.68},
+  teen:{headScale:1.06, bodyScale:0.85}, adult:{headScale:1.0, bodyScale:1.0}, elder:{headScale:1.0, bodyScale:0.92}
 };
 const SKIN_TONES = { porcelain:"#fbe8d3", light:"#f6dcb8", ivory:"#f2d9b6", medium:"#f0c090", rosy:"#eebfa8", olive:"#c9a96b", tan:"#d99f6c", bronze:"#b97f4a", dark:"#a2714a", deep:"#7a5636" };
-const BODY_MULT = { slim:{w:0.85,h:1}, regular:{w:1,h:1}, broad:{w:1.22,h:1}, chubby:{w:1.15,h:1.06}, tall:{w:1,h:1.12}, short:{w:1,h:0.88}, athletic:{w:1.08,h:1.04}, petite:{w:0.88,h:0.88}, curvy:{w:1.06,h:1.02}, stocky:{w:1.18,h:0.92} };
-const FACE_SHAPE = { round:{rx:0.42,w:1,h:1}, square:{rx:0.14,w:1,h:1}, oval:{rx:0.32,w:0.94,h:1.06}, heart:{rx:0.38,w:1,h:0.97}, long:{rx:0.28,w:0.88,h:1.14}, diamond:{rx:0.2,w:0.88,h:1.03}, triangle:{rx:0.16,w:1.03,h:0.95}, pear:{rx:0.32,w:1.03,h:1}, chubby:{rx:0.46,w:1.1,h:0.96}, sharp:{rx:0.12,w:0.85,h:1.08} };
+const BODY_MULT = { slim:0.84, regular:1, broad:1.24, chubby:1.16, tall:1, short:1, athletic:1.1, petite:0.86, curvy:1.08, stocky:1.2 };
 
-function rectTag(x,y,w,h,fill,extra){ return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#241a10" stroke-width="2.4" shape-rendering="crispEdges" rx="2" ${extra||""}/>`; }
-function pxTag(x,y,s,fill){ return `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${fill}" stroke="#241a10" stroke-width="1.6" shape-rendering="crispEdges" rx="1"/>`; }
+// ============================================================
+// 像素角色繪圖引擎(真正的低解析度點陣繪製，非平滑向量)
+// ============================================================
+const CW=36, CH=54;
+function px(ctx,x,y,w,h,c){ ctx.fillStyle=c; ctx.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h))); }
 
-function hairSVG(profile, hx, hy, hw, hh){
-  let style = profile.hairstyle;
-  if (!style || style==="auto") style = profile.gender==="female" ? "long" : "short";
-  const c = "#4a3222", c2="#3a2818";
-  switch(style){
-    case "bald": return "";
-    case "long": return rectTag(hx-2, hy-2, hw+4, hh*0.98, c);
-    case "ponytail": return rectTag(hx-1, hy-2, hw+2, hh*0.3, c) + rectTag(hx+hw-2, hy+hh*0.1, 5, hh*0.75, c);
-    case "bob": return rectTag(hx-2, hy-2, hw+4, hh*0.6, c);
-    case "curly": return rectTag(hx-2, hy-4, hw+4, hh*0.3, c) + pxTag(hx-3,hy-2,6,c) + pxTag(hx+hw*0.2,hy-5,6,c) + pxTag(hx+hw*0.5,hy-5,6,c) + pxTag(hx+hw*0.8,hy-5,6,c) + pxTag(hx+hw-3,hy-2,6,c);
-    case "mohawk": return rectTag(hx+hw*0.4, hy-9, hw*0.2, hh*0.4, c);
-    case "bun": return rectTag(hx-1, hy-2, hw+2, hh*0.28, c) + pxTag(hx+hw*0.4, hy-9, hw*0.18, c);
-    case "twintails": return rectTag(hx-1, hy-2, hw+2, hh*0.28, c) + rectTag(hx-5, hy+hh*0.08, 5, hh*0.65, c) + rectTag(hx+hw, hy+hh*0.08, 5, hh*0.65, c);
-    case "afro": return `<ellipse cx="${hx+hw/2}" cy="${hy+hh*0.02}" rx="${hw*0.58}" ry="${hh*0.32}" fill="${c}" stroke="#241a10" stroke-width="2.4"/>`;
-    case "sidepart": return rectTag(hx-1, hy-2, hw*0.55, hh*0.32, c) + rectTag(hx+hw*0.5, hy-2, hw*0.52, hh*0.22, c);
-    case "buzzcut": return rectTag(hx, hy-1, hw, hh*0.14, c);
-    case "pixie": return rectTag(hx-1, hy-3, hw+2, hh*0.26, c) + pxTag(hx-3,hy+hh*0.05,5,c) + pxTag(hx+hw-2,hy+hh*0.05,5,c);
-    default: return rectTag(hx-1, hy-2, hw+2, hh*0.32, c);
+function drawHair(ctx, style, gender, hx,hy,hw,hh, color){
+  let s = style; if (!s||s==="auto") s = gender==="female" ? "long" : "short";
+  const c=color;
+  switch(s){
+    case "bald": return;
+    case "long": px(ctx,hx-1,hy-1,hw+2,hh*0.95,c); return;
+    case "ponytail": px(ctx,hx-1,hy-1,hw+2,hh*0.3,c); px(ctx,hx+hw-1,hy+hh*0.12,3,hh*0.65,c); return;
+    case "bob": px(ctx,hx-1,hy-1,hw+2,hh*0.58,c); return;
+    case "curly": px(ctx,hx-1,hy-2,hw+2,hh*0.28,c); px(ctx,hx-2,hy,3,3,c); px(ctx,hx+hw*0.25,hy-3,3,3,c); px(ctx,hx+hw*0.6,hy-3,3,3,c); px(ctx,hx+hw-1,hy,3,3,c); return;
+    case "mohawk": px(ctx,hx+hw*0.42,hy-6,hw*0.16,hh*0.4,c); return;
+    case "bun": px(ctx,hx-1,hy-1,hw+2,hh*0.26,c); px(ctx,hx+hw*0.4,hy-5,hw*0.2,4,c); return;
+    case "twintails": px(ctx,hx-1,hy-1,hw+2,hh*0.26,c); px(ctx,hx-3,hy+hh*0.06,3,hh*0.6,c); px(ctx,hx+hw,hy+hh*0.06,3,hh*0.6,c); return;
+    case "afro": ctx.fillStyle=c; ctx.beginPath(); ctx.ellipse(hx+hw/2,hy+1,hw*0.6,hh*0.3,0,0,Math.PI*2); ctx.fill(); ctx.strokeStyle="#241a10"; ctx.lineWidth=1; ctx.stroke(); return;
+    case "sidepart": px(ctx,hx-1,hy-1,hw*0.55,hh*0.3,c); px(ctx,hx+hw*0.5,hy-1,hw*0.52,hh*0.2,c); return;
+    case "buzzcut": px(ctx,hx,hy,hw,hh*0.14,c); return;
+    case "pixie": px(ctx,hx-1,hy-2,hw+2,hh*0.24,c); px(ctx,hx-2,hy+hh*0.05,3,4,c); px(ctx,hx+hw-1,hy+hh*0.05,3,4,c); return;
+    default: px(ctx,hx-1,hy-1,hw+2,hh*0.3,c); return;
   }
 }
-function eyesSVG(style, hx, hy, hw, hh){
-  const cy=hy+hh*0.5, r=Math.max(2.2,hw*0.075), cx1=hx+hw*0.3, cx2=hx+hw*0.7;
+function drawEyes(ctx, style, hx,hy,hw,hh){
+  const cy=hy+hh*0.48, cx1=hx+hw*0.28, cx2=hx+hw*0.72;
+  const ink="#241a10";
   switch(style){
-    case "happy": return `<path d="M${cx1-3},${cy} q3,-4 6,0" stroke="#241a10" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M${cx2-3},${cy} q3,-4 6,0" stroke="#241a10" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-    case "sleepy": return `<rect x="${cx1-3}" y="${cy}" width="6" height="2" fill="#241a10"/><rect x="${cx2-3}" y="${cy}" width="6" height="2" fill="#241a10"/>`;
-    case "wink": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#241a10"/><path d="M${cx2-3},${cy} q3,-3.5 6,0" stroke="#241a10" stroke-width="2" fill="none" stroke-linecap="round"/>`;
-    case "star": return [cx1,cx2].map(cx=>`<polygon points="${cx},${cy-3} ${cx+1},${cy-0.6} ${cx+3},${cy-0.6} ${cx+1.3},${cy+1} ${cx+2},${cy+3} ${cx},${cy+1.6} ${cx-2},${cy+3} ${cx-1.3},${cy+1} ${cx-3},${cy-0.6} ${cx-1},${cy-0.6}" fill="#e8c04a"/>`).join("");
-    case "angry": return `<path d="M${cx1-3.5},${cy-2} l7,2" stroke="#241a10" stroke-width="2"/><circle cx="${cx1}" cy="${cy+1}" r="${r*0.85}" fill="#241a10"/><path d="M${cx2+3.5},${cy-2} l-7,2" stroke="#241a10" stroke-width="2"/><circle cx="${cx2}" cy="${cy+1}" r="${r*0.85}" fill="#241a10"/>`;
-    case "teary": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#241a10"/><ellipse cx="${cx2+2.5}" cy="${cy+5}" rx="1.6" ry="2.2" fill="#7ec8e3"/>`;
-    case "heart": return [cx1,cx2].map(cx=>`<path d="M${cx},${cy+2.5} q-3.5,-4.5 -1.7,-6.2 q1.7,-1 1.7,1 q0,-2 1.7,-1 q1.8,1.7 -1.7,6.2 z" fill="#c85a3f"/>`).join("");
-    case "sharp": return `<rect x="${cx1-3}" y="${cy}" width="6" height="1.8" fill="#241a10" transform="rotate(-6 ${cx1} ${cy})"/><rect x="${cx2-3}" y="${cy}" width="6" height="1.8" fill="#241a10" transform="rotate(6 ${cx2} ${cy})"/>`;
-    case "closed": return `<rect x="${cx1-3}" y="${cy+1}" width="6" height="1.6" fill="#241a10" rx="0.8"/><rect x="${cx2-3}" y="${cy+1}" width="6" height="1.6" fill="#241a10" rx="0.8"/>`;
-    case "sparkle": return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.35}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.35}" fill="#fff"/>`;
-    default: return `<circle cx="${cx1}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx1-r*0.4}" cy="${cy-r*0.4}" r="${r*0.32}" fill="#fff"/><circle cx="${cx2}" cy="${cy}" r="${r}" fill="#241a10"/><circle cx="${cx2-r*0.4}" cy="${cy-r*0.4}" r="${r*0.32}" fill="#fff"/>`;
+    case "happy": px(ctx,cx1-1.5,cy,3,1,ink); px(ctx,cx2-1.5,cy,3,1,ink); return;
+    case "sleepy": px(ctx,cx1-1.5,cy+1,3,1,ink); px(ctx,cx2-1.5,cy+1,3,1,ink); return;
+    case "wink": px(ctx,cx1-1,cy-1,2,2,ink); px(ctx,cx2-1.5,cy,3,1,ink); return;
+    case "angry": px(ctx,cx1-1,cy-1,2,2,ink); px(ctx,cx1-2,cy-2,3,1,'#8b3a2b'); px(ctx,cx2-1,cy-1,2,2,ink); px(ctx,cx2-1,cy-2,3,1,'#8b3a2b'); return;
+    case "star": ctx.fillStyle="#e8c04a"; px(ctx,cx1-1,cy-1,2,2,"#e8c04a"); px(ctx,cx2-1,cy-1,2,2,"#e8c04a"); return;
+    case "closed": px(ctx,cx1-1.5,cy,3,1,ink); px(ctx,cx2-1.5,cy,3,1,ink); return;
+    case "sparkle": px(ctx,cx1-1,cy-1,2,2,ink); px(ctx,cx1-1,cy-1,1,1,'#fff'); px(ctx,cx2-1,cy-1,2,2,ink); px(ctx,cx2-1,cy-1,1,1,'#fff'); return;
+    default: px(ctx,cx1-1,cy-1,2,2,ink); px(ctx,cx2-1,cy-1,2,2,ink); return;
   }
 }
-function mouthSVG(style, hx, hy, hw, hh){
-  const cy=hy+hh*0.76, cx=hx+hw*0.5;
+function drawMouth(ctx, style, hx,hy,hw,hh){
+  const cy=hy+hh*0.78, cx=hx+hw*0.5;
   switch(style){
-    case "open": return `<ellipse cx="${cx}" cy="${cy}" rx="3.6" ry="2.6" fill="#8b3a2b"/>`;
-    case "neutral": return `<rect x="${cx-3.6}" y="${cy}" width="7.2" height="1.7" fill="#8b3a2b"/>`;
-    case "smirk": return `<path d="M${cx-4},${cy} q4,2.8 6.8,-0.6" stroke="#8b3a2b" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
-    case "pout": return `<ellipse cx="${cx}" cy="${cy}" rx="1.8" ry="1.6" fill="#c96b5a"/>`;
-    case "grin": return `<path d="M${cx-4.5},${cy-1} q4.5,4.5 9,0 z" fill="#fff" stroke="#8b3a2b" stroke-width="1.2"/>`;
-    case "frown": return `<path d="M${cx-4},${cy+2.2} q4,-4 8,0" stroke="#8b3a2b" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
-    case "tongue": return `<ellipse cx="${cx}" cy="${cy}" rx="3.2" ry="2.2" fill="#8b3a2b"/><rect x="${cx-1.6}" y="${cy+0.6}" width="3.2" height="2.4" fill="#e0847a" rx="1.2"/>`;
-    case "kiss": return `<ellipse cx="${cx}" cy="${cy}" rx="2" ry="1.8" fill="#c96b5a"/>`;
-    case "whistle": return `<circle cx="${cx+1.2}" cy="${cy}" r="1.6" fill="#8b3a2b"/>`;
-    case "surprised": return `<ellipse cx="${cx}" cy="${cy}" rx="2.6" ry="3.3" fill="#8b3a2b"/>`;
-    default: return `<path d="M${cx-4.2},${cy} q4.2,4.2 8.4,0" stroke="#8b3a2b" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+    case "open": px(ctx,cx-1.5,cy,3,2,'#8b3a2b'); return;
+    case "smile": px(ctx,cx-2,cy,4,1,'#a8503f'); return;
+    case "grin": px(ctx,cx-2.5,cy-1,5,2,'#fff'); ctx.strokeStyle='#8b3a2b'; ctx.strokeRect(cx-2.5,cy-1,5,2); return;
+    case "frown": px(ctx,cx-2,cy+1,4,1,'#8b3a2b'); return;
+    case "pout": px(ctx,cx-1,cy,2,1,'#c96b5a'); return;
+    default: px(ctx,cx-1.5,cy,3,1,'#8b3a2b'); return;
   }
 }
-
-function equipIconSVG(name, color){
-  const s = `<svg class="equip-icon" viewBox="0 0 24 24">`;
-  const e = `</svg>`;
+function drawEquip(ctx,name,b){
+  const ink="#241a10";
   switch(name){
-    case "內褲": return s+`<path d="M4,7 h16 v4 q0,6 -6,7 q-2,1 -4,0 q-6,-1 -6,-7 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "襪子": return s+`<path d="M9,3 h6 v11 q0,3 4,3 v4 h-14 v-4 h4 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "內衣": return s+`<path d="M6,6 l3,-2 h6 l3,2 v3 l-2,1 v10 h-8 v-10 l-2,-1 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "手套": return s+`<path d="M8,10 v-4 q0,-2 2,-2 q2,0 2,2 v4 h1 v-3 q0,-2 2,-2 q2,0 2,2 v3 h1 v10 h-10 v-8 q0,-2 2,-2 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "長褲": return s+`<path d="M6,3 h12 v6 l1,12 h-5 l-1,-9 -1,9 h-5 l1,-12 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "T恤": return s+`<path d="M8,4 l4,-1 4,1 4,3 -2,3 -2,-1 v11 h-8 v-11 l-2,1 -2,-3 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "鞋子": return s+`<path d="M6,4 h6 v9 q4,0 8,3 v3 h-16 v-6 q0,-3 2,-5 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "外套": return s+`<path d="M7,4 l3,-1 2,2 2,-2 3,1 4,3 -2,3 -2,-1 v12 h-10 v-12 l-2,1 -2,-3 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/><path d="M11,5 v14 M13,5 v14" stroke="#241a10" stroke-width="0.8"/>`+e;
-    case "帽子": return s+`<path d="M3,16 q1,-10 9,-10 q9,0 9,10 z" fill="${color}" stroke="#241a10" stroke-width="1.5"/><rect x="2" y="15" width="20" height="3" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "兔耳帽": return s+`<path d="M8,10 q-2,-8 1,-9 q2,1 1,9 z" fill="${color}" stroke="#241a10" stroke-width="1.2"/><path d="M15,10 q2,-8 -1,-9 q-2,1 -1,9 z" fill="${color}" stroke="#241a10" stroke-width="1.2"/><ellipse cx="12" cy="15" rx="8" ry="6" fill="${color}" stroke="#241a10" stroke-width="1.5"/>`+e;
-    case "魔法手杖": return s+`<rect x="11" y="7" width="2" height="15" fill="${color}" stroke="#241a10" stroke-width="1"/><circle cx="12" cy="4" r="3.2" fill="#fdf3c8" stroke="#a5822a" stroke-width="1.2"/>`+e;
-    case "皇冠": return s+`<polygon points="4,18 4,10 8,13 12,7 16,13 20,10 20,18" fill="${color}" stroke="#241a10" stroke-width="1.5"/><circle cx="12" cy="14" r="1.4" fill="#c85a3f"/>`+e;
-    default: return s+`<rect x="4" y="4" width="16" height="16" fill="${color}" stroke="#241a10" stroke-width="2"/>`+e;
+    case "內褲": px(ctx,b.torsoX,b.torsoY+b.torsoH*0.62,b.torsoW,b.torsoH*0.3,"#f7f7f7"); return;
+    case "襪子": px(ctx,b.leg1X,b.legY+b.legH*0.5,b.legW,b.legH*0.5,"#eeeeee"); px(ctx,b.leg2X,b.legY+b.legH*0.5,b.legW,b.legH*0.5,"#eeeeee"); return;
+    case "內衣": px(ctx,b.torsoX,b.torsoY,b.torsoW,b.torsoH*0.45,"#fdf6d8"); return;
+    case "手套": px(ctx,b.armLX,b.armY+b.armH*0.68,b.armW,b.armH*0.32,"#c0392b"); px(ctx,b.armRX,b.armY+b.armH*0.68,b.armW,b.armH*0.32,"#c0392b"); return;
+    case "長褲": px(ctx,b.leg1X,b.legY,b.legW,b.legH*0.85,"#34495e"); px(ctx,b.leg2X,b.legY,b.legW,b.legH*0.85,"#34495e"); px(ctx,b.torsoX,b.torsoY+b.torsoH*0.8,b.torsoW,b.torsoH*0.2,"#34495e"); return;
+    case "T恤": px(ctx,b.torsoX-1,b.torsoY,b.torsoW+2,b.torsoH*0.78,"#2980b9"); px(ctx,b.armLX-1,b.armY,b.armW+2,b.armH*0.25,"#2980b9"); px(ctx,b.armRX-1,b.armY,b.armW+2,b.armH*0.25,"#2980b9"); return;
+    case "鞋子": px(ctx,b.leg1X-1,b.legY+b.legH-3,b.legW+2,3,"#5a3a22"); px(ctx,b.leg2X-1,b.legY+b.legH-3,b.legW+2,3,"#5a3a22"); return;
+    case "外套": px(ctx,b.torsoX-2,b.torsoY-1,b.torsoW+4,b.torsoH*0.88,"#6b4c7a"); px(ctx,b.armLX-1,b.armY-1,b.armW+2,b.armH*0.5,"#6b4c7a"); px(ctx,b.armRX-1,b.armY-1,b.armW+2,b.armH*0.5,"#6b4c7a"); return;
+    case "帽子": px(ctx,b.headX-1,b.headY-4,b.headW+2,4,"#16a085"); px(ctx,b.headX-2,b.headY-1,b.headW+4,2,"#0e6655"); return;
+    case "兔耳帽": px(ctx,b.headX+2,b.headY-9,2,9,"#e39aa0"); px(ctx,b.headX+b.headW-4,b.headY-9,2,9,"#e39aa0"); return;
+    case "魔法手杖": px(ctx,b.armRX+b.armW+1,b.armY-4,2,b.armH+6,"#c9a15a"); ctx.fillStyle="#fdf3c8"; ctx.beginPath(); ctx.arc(b.armRX+b.armW+2,b.armY-5,2.4,0,Math.PI*2); ctx.fill(); ctx.strokeStyle=ink; ctx.lineWidth=0.6; ctx.stroke(); return;
+    case "皇冠": px(ctx,b.headX,b.headY-5,3,5,"#f7d716"); px(ctx,b.headX+b.headW*0.4,b.headY-6,3,6,"#f7d716"); px(ctx,b.headX+b.headW-3,b.headY-5,3,5,"#f7d716"); px(ctx,b.headX,b.headY-2,b.headW,2,"#f7d716"); return;
+    default: return;
   }
 }
-function equipmentOnBodySVG(name, b){
-  switch(name){
-    case "內褲": return rectTag(b.torsoX, b.torsoY+b.torsoH*0.64, b.torsoW, b.torsoH*0.3, "#f7f7f7");
-    case "襪子": return rectTag(b.leg1X, b.legY+b.legH*0.55, b.legW, b.legH*0.45, "#eeeeee") + rectTag(b.leg2X, b.legY+b.legH*0.55, b.legW, b.legH*0.45, "#eeeeee");
-    case "內衣": return rectTag(b.torsoX, b.torsoY, b.torsoW, b.torsoH*0.48, "#fdf6d8");
-    case "手套": return rectTag(b.armLX, b.armY+b.armH*0.7, b.armW, b.armH*0.3, "#c0392b") + rectTag(b.armRX, b.armY+b.armH*0.7, b.armW, b.armH*0.3, "#c0392b");
-    case "長褲": return rectTag(b.leg1X, b.legY, b.legW, b.legH*0.75, "#34495e") + rectTag(b.leg2X, b.legY, b.legW, b.legH*0.75, "#34495e") + rectTag(b.torsoX, b.torsoY+b.torsoH*0.78, b.torsoW, b.torsoH*0.22, "#34495e");
-    case "T恤": return rectTag(b.torsoX-1, b.torsoY-1, b.torsoW+2, b.torsoH*0.75, "#2980b9") + rectTag(b.armLX-1, b.armY-1, b.armW+2, b.armH*0.22, "#2980b9") + rectTag(b.armRX-1, b.armY-1, b.armW+2, b.armH*0.22, "#2980b9");
-    case "鞋子": return rectTag(b.leg1X-1, b.legY+b.legH-6, b.legW+2, 7, "#5a3a22") + rectTag(b.leg2X-1, b.legY+b.legH-6, b.legW+2, 7, "#5a3a22");
-    case "外套": return rectTag(b.torsoX-3, b.torsoY-2, b.torsoW+6, b.torsoH*0.85, "#6b4c7a", 'fill-opacity="0.94"') + rectTag(b.armLX-2, b.armY-2, b.armW+3, b.armH*0.55, "#6b4c7a") + rectTag(b.armRX-1, b.armY-2, b.armW+3, b.armH*0.55, "#6b4c7a");
-    case "帽子": return `<path d="M${b.headX-2},${b.headY-1} q${b.headW*0.5},-10 ${b.headW+4},0 z" fill="#16a085" stroke="#241a10" stroke-width="2"/>` + rectTag(b.headX-4, b.headY-2, b.headW+8, 3, "#0e6655");
-    case "兔耳帽": return `<path d="M${b.headX+b.headW*0.18},${b.headY-2} q-2,-13 1.5,-16 q3.5,3 1.5,16 z" fill="#e39aa0" stroke="#241a10" stroke-width="1.6"/><path d="M${b.headX+b.headW*0.62},${b.headY-2} q-2,-13 1.5,-16 q3.5,3 1.5,16 z" fill="#e39aa0" stroke="#241a10" stroke-width="1.6"/>`;
-    case "魔法手杖": return `<rect x="${b.armRX+b.armW+1}" y="${b.armY-6}" width="2.4" height="${b.armH+10}" fill="#c9a15a" stroke="#241a10" stroke-width="1.6"/><circle cx="${b.armRX+b.armW+2.2}" cy="${b.armY-8}" r="3" fill="#fdf3c8" stroke="#241a10" stroke-width="1.6"/>`;
-    case "皇冠": return `<polygon points="${b.headX-1},${b.headY-2} ${b.headX+b.headW*0.2},${b.headY-10} ${b.headX+b.headW*0.4},${b.headY-3} ${b.headX+b.headW*0.5},${b.headY-11} ${b.headX+b.headW*0.6},${b.headY-3} ${b.headX+b.headW*0.8},${b.headY-10} ${b.headX+b.headW+1},${b.headY-2}" fill="#f7d716" stroke="#241a10" stroke-width="1.6"/><circle cx="${b.headX+b.headW*0.5}" cy="${b.headY-7}" r="1.8" fill="#c85a3f"/>`;
-    default: return "";
+function equipIconDataURL(name,color){
+  const c=document.createElement('canvas'); c.width=24; c.height=24;
+  const ctx=c.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  ctx.fillStyle='#d9cba0'; ctx.fillRect(0,0,24,24); // 淺色底，避免白色系裝備看不見
+  ctx.strokeStyle='#a5905f'; ctx.lineWidth=1; ctx.strokeRect(0.5,0.5,23,23);
+  const b={torsoX:6,torsoY:4,torsoW:12,torsoH:14,headX:8,headY:2,headW:8,headH:6,armLX:2,armRX:18,armY:6,armW:4,armH:10,leg1X:7,leg2X:13,legY:16,legW:4,legH:7};
+  drawEquip(ctx,name,b);
+  return c.toDataURL();
+}
+function outlineAndComposite(art){
+  const w=art.width, h=art.height;
+  const actx = art.getContext('2d');
+  const img = actx.getImageData(0,0,w,h);
+  const outCanvas = document.createElement('canvas'); outCanvas.width=w; outCanvas.height=h;
+  const outCtx = outCanvas.getContext('2d');
+  const outImg = outCtx.createImageData(w,h);
+  for (let y=0;y<h;y++) for (let x=0;x<w;x++){
+    const i=(y*w+x)*4;
+    if (img.data[i+3]===0){
+      let hit=false;
+      for (const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){
+        const nx=x+dx, ny=y+dy;
+        if (nx<0||ny<0||nx>=w||ny>=h) continue;
+        if (img.data[(ny*w+nx)*4+3]>0){ hit=true; break; }
+      }
+      if (hit){ outImg.data[i]=0x24; outImg.data[i+1]=0x1a; outImg.data[i+2]=0x10; outImg.data[i+3]=255; }
+    }
   }
+  outCtx.putImageData(outImg,0,0);
+  const finalC = document.createElement('canvas'); finalC.width=w; finalC.height=h;
+  const fctx = finalC.getContext('2d'); fctx.imageSmoothingEnabled=false;
+  fctx.drawImage(outCanvas,0,0); fctx.drawImage(art,0,0);
+  return finalC;
 }
-let uidSeq = 0;
-function bodyShapes(b, headRadius, pad){
-  pad = pad || 0;
-  return [
-    `<rect x="${b.leg1X-pad}" y="${b.legY-pad}" width="${b.legW+pad*2}" height="${b.legH+pad*2}" rx="${5+pad}"/>`,
-    `<rect x="${b.leg2X-pad}" y="${b.legY-pad}" width="${b.legW+pad*2}" height="${b.legH+pad*2}" rx="${5+pad}"/>`,
-    `<rect x="${b.armLX-pad}" y="${b.armY-pad}" width="${b.armW+pad*2}" height="${b.armH+pad*2}" rx="${5+pad}"/>`,
-    `<rect x="${b.armRX-pad}" y="${b.armY-pad}" width="${b.armW+pad*2}" height="${b.armH+pad*2}" rx="${5+pad}"/>`,
-    `<rect x="${b.torsoX-pad}" y="${b.torsoY-pad}" width="${b.torsoW+pad*2}" height="${b.torsoH+pad*2}" rx="${8+pad}"/>`,
-    `<rect x="${b.headX-pad}" y="${b.headY-pad}" width="${b.headW+pad*2}" height="${b.headH+pad*2}" rx="${headRadius+pad}"/>`
-  ].join("");
-}
-function renderAvatarSVG(profile, cumulative, mode){
+function buildCharacterCanvas(profile, cumulative){
   const stage = stageFor(ageFor(cumulative));
-  const p = STAGE_PROPORTIONS[stage];
-  const bm = BODY_MULT[profile.bodyType] || BODY_MULT.regular;
-  const torsoW=p.torsoW*bm.w, armW=p.armW*bm.w, legH=p.legH*bm.h, torsoH=p.torsoH*bm.h;
-  const centerX=50, torsoX=centerX-torsoW/2;
-  const legGap=2, leg1X=centerX-p.legW-legGap/2, leg2X=centerX+legGap/2;
-  const armLX=torsoX-armW-1, armRX=torsoX+torsoW+1;
-  const fs = FACE_SHAPE[profile.faceShape] || FACE_SHAPE.round;
-  const headW=p.headW*fs.w, headH=p.headH*fs.h;
-  const headX=centerX-headW/2, headY=p.headY;
-  const skin = SKIN_TONES[profile.skinTone] || SKIN_TONES.medium;
-  const b = { torsoX,torsoY:p.torsoY,torsoW,torsoH, headX,headY,headW,headH, leg1X,leg2X,legY:p.legY,legW:p.legW,legH, armLX,armRX,armY:p.armY,armW,armH:p.armH };
-  const headRadius = headW*fs.rx;
+  const cfg = STAGE_CFG[stage];
+  const art = document.createElement('canvas'); art.width=CW; art.height=CH;
+  const ctx = art.getContext('2d'); ctx.imageSmoothingEnabled=false;
 
-  const level = levelFor(cumulative);
-  const maxUnlocked = Math.min(RAINBOW.length, Math.floor(level/3));
-  const activeGlow = (profile.glowColors||[]).filter(i=>i<maxUnlocked);
+  const skin = SKIN_TONES[profile.skinTone]||SKIN_TONES.medium;
+  const cheek = '#e8a687';
+  const hairColor = stage==="elder" ? '#c7c2ba' : '#3a2818';
+  const bm = BODY_MULT[profile.bodyType]||1;
+  const faceW = {round:1,square:1,oval:0.94,heart:1,long:0.86,diamond:0.86,triangle:1.02,pear:1.02,chubby:1.1,sharp:0.84}[profile.faceShape]||1;
+  const faceH = {round:1,square:1,oval:1.08,heart:0.97,long:1.16,diamond:1.05,triangle:0.94,pear:1,chubby:0.95,sharp:1.1}[profile.faceShape]||1;
 
-  // 光環：貼合身形外緣、往外一層一層擴散(不靠濾鏡，直接畫放大輪廓)
-  let aura = "";
+  const headW=Math.round(22*cfg.headScale*faceW), headH=Math.round(18*cfg.headScale*faceH);
+  const headX=Math.round((CW-headW)/2), headY=2;
+  const torsoW=Math.round(14*bm), torsoH=Math.round(18*cfg.bodyScale);
+  const torsoX=Math.round((CW-torsoW)/2), torsoY=headY+headH-1;
+  const armW=4, armH=Math.round(15*cfg.bodyScale), armY=torsoY+3;
+  const armLX=torsoX-armW, armRX=torsoX+torsoW;
+  const legW=4, legH=Math.max(4,Math.round(9*cfg.bodyScale)), legY=torsoY+torsoH-2;
+  const leg1X=torsoX+2, leg2X=torsoX+torsoW-2-legW;
+  const b={torsoX,torsoY,torsoW,torsoH,headX,headY,headW,headH,armLX,armRX,armY,armW,armH,leg1X,leg2X,legY,legW,legH};
+
+  // 光環(貼身輪廓向外擴散)
+  const level=levelFor(cumulative);
+  const maxUnlocked=Math.min(RAINBOW.length, Math.floor(level/3));
+  const activeGlow=(profile.glowColors||[]).filter(i=>i<maxUnlocked);
   activeGlow.forEach((idx,i)=>{
-    const pad = 3 + i*3.4;
-    aura += `<g fill="none" stroke="${RAINBOW[idx].c}" stroke-width="2.6" opacity="${0.55 - i*0.06}">${bodyShapes(b, headRadius, pad)}</g>`;
+    const pad=2+i*2.6;
+    ctx.strokeStyle=RAINBOW[idx].c; ctx.lineWidth=1.4; ctx.globalAlpha=0.55-i*0.06;
+    ctx.strokeRect(leg1X-pad,legY-pad,legW+pad*2,legH+pad*2);
+    ctx.strokeRect(leg2X-pad,legY-pad,legW+pad*2,legH+pad*2);
+    ctx.strokeRect(armLX-pad,armY-pad,armW+pad*2,armH+pad*2);
+    ctx.strokeRect(armRX-pad,armY-pad,armW+pad*2,armH+pad*2);
+    ctx.strokeRect(torsoX-pad,torsoY-pad,torsoW+pad*2,torsoH+pad*2);
+    ctx.strokeRect(headX-pad,headY-pad,headW+pad*2,headH+pad*2);
+    ctx.globalAlpha=1;
   });
 
-  // 貼紙感：先畫一層深色外緣、再畫一層放大的白色描邊，最後疊上實際角色(不依賴瀏覽器濾鏡，任何裝置都會顯示)
-  const sticker = `<g fill="#241a10">${bodyShapes(b, headRadius, 4.5)}</g><g fill="#fffaf0">${bodyShapes(b, headRadius, 2.6)}</g>`;
+  px(ctx,leg1X,legY,legW,legH,'#5a4a3a'); px(ctx,leg2X,legY,legW,legH,'#5a4a3a');
+  px(ctx,leg1X,legY+legH-2,legW,2,'#2e2018'); px(ctx,leg2X,legY+legH-2,legW,2,'#2e2018');
+  px(ctx,armLX,armY,armW,armH,'#b8ada0'); px(ctx,armRX,armY,armW,armH,'#b8ada0');
+  px(ctx,armLX,armY+armH-3,armW,3,skin); px(ctx,armRX,armY+armH-3,armW,3,skin);
+  px(ctx,torsoX,torsoY,torsoW,torsoH,'#b8ada0');
+  px(ctx,torsoX,torsoY+torsoH*0.55,torsoW,torsoH*0.2,'#948a7e');
+  px(ctx,headX,headY,headW,headH,skin);
+  px(ctx,headX+headW-3,headY+headH*0.4,2,headH*0.2,cheek); px(ctx,headX+1,headY+headH*0.4,2,headH*0.2,cheek);
+  drawHair(ctx, profile.hairstyle, profile.gender, headX,headY,headW,headH, hairColor);
+  drawEyes(ctx, profile.eyeStyle, headX,headY,headW,headH);
+  drawMouth(ctx, profile.mouthStyle, headX,headY,headW,headH);
+  (profile.equippedItems||[]).forEach(amt=>{
+    const item = EQUIPMENT_ITEMS.find(e=>e.amount===amt);
+    if (item) drawEquip(ctx,item.name,b);
+  });
 
-  let body = `<g fill="${skin}" stroke="#241a10" stroke-width="2.6">${bodyShapes(b, headRadius)}</g>`;
-  body += hairSVG(profile, headX, headY, headW, headH);
-  body += eyesSVG(profile.eyeStyle, headX, headY, headW, headH);
-  body += mouthSVG(profile.mouthStyle, headX, headY, headW, headH);
-  const equipped = profile.equippedItems || [];
-  EQUIPMENT_ITEMS.forEach(item => { if (equipped.includes(item.amount)) body += equipmentOnBodySVG(item.name, b); });
-
-  const inner = aura + sticker + body;
-  const viewBox = mode==="portrait" ? `${headX-12} ${headY-18} ${headW+24} ${headH+30}` : "-20 -12 140 122";
-  return `<svg viewBox="${viewBox}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+  const composited = outlineAndComposite(art);
+  return { canvas: composited, head:{headX,headY,headW,headH} };
+}
+function avatarDataURL(profile, cumulative, mode){
+  const { canvas, head } = buildCharacterCanvas(profile, cumulative);
+  if (mode==="portrait"){
+    // 固定裁切畫布最上方一段(涵蓋所有年齡階段的頭髮+頭部+一點肩膀)，避免負座標裁切問題
+    const cropH = Math.min(CH, Math.round(head.headY + head.headH + 8));
+    const out = document.createElement('canvas'); out.width=CW; out.height=cropH;
+    const octx = out.getContext('2d'); octx.imageSmoothingEnabled=false;
+    octx.drawImage(canvas, 0, 0, CW, cropH, 0, 0, CW, cropH);
+    return out.toDataURL();
+  }
+  return canvas.toDataURL();
 }
 
+// ============================================================
+// 銀行場景(僅人物頁籤) + BANK 像素字
+// ============================================================
+const PIXEL_FONT = {
+  B:["11110","10001","10001","11110","10001","10001","11110"],
+  A:["01110","10001","10001","11111","10001","10001","10001"],
+  N:["10001","11001","10101","10011","10001","10001","10001"],
+  K:["10001","10010","10100","11000","10100","10010","10001"]
+};
+function drawPixelText(ctx, text, x, y, scale, color){
+  let cx = x;
+  for (const ch of text){
+    const bmp = PIXEL_FONT[ch];
+    if (bmp){
+      for (let ry=0; ry<bmp.length; ry++){
+        for (let rx=0; rx<bmp[ry].length; rx++){
+          if (bmp[ry][rx]==="1") px(ctx, cx+rx*scale, y+ry*scale, scale, scale, color);
+        }
+      }
+    }
+    cx += 6*scale;
+  }
+}
+function buildBankCanvas(){
+  const W=64,H=64;
+  const canvas=document.createElement('canvas'); canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  const stone='#b8c4c8', stoneDark='#8a9ba0', stoneLight='#e8eef0';
+  const gold='#e8c878', goldDark='#c8a050';
+  const blue='#5a9fd4', blueLight='#8fc4e8', blueDark='#3d7ab0';
+  const wood='#8a5a3a', woodDark='#5c3a24';
+  const bx=6, by=4, bw=52;
+
+  const roofSteps=[2,5,8,11,14,17,20,23,26];
+  roofSteps.forEach((halfW,i)=>{ px(ctx,bx+26-halfW, by+i, halfW*2, 1, stone); });
+  px(ctx,bx+8, by+9, bw-16, 3, stone);
+  px(ctx,bx+8, by+9, bw-16, 1, stoneLight);
+  px(ctx,bx+4, by+12, bw-8, 2, stoneDark);
+  px(ctx,bx+9, by+14, bw-18, 9, gold);
+  px(ctx,bx+9, by+14, bw-18, 2, '#f5deA0');
+  px(ctx,bx+9, by+21, bw-18, 2, goldDark);
+  drawPixelText(ctx, "BANK", bx+13, by+16, 1, '#5c3a10');
+  px(ctx,bx+2, by+25, bw-4, 3, stone);
+  px(ctx,bx+2, by+25, bw-4, 1, stoneLight);
+  const cols=[bx+3, bx+11, bx+bw-16, bx+bw-8];
+  cols.forEach(cx=>{
+    px(ctx,cx, by+28, 5, 20, stone);
+    px(ctx,cx, by+28, 2, 20, stoneLight);
+    px(ctx,cx+3, by+28, 2, 20, stoneDark);
+    px(ctx,cx-1, by+28, 7, 2, stoneDark);
+    px(ctx,cx-1, by+46, 7, 2, stoneDark);
+  });
+  [bx+14, bx+bw-22].forEach(wx=>{
+    px(ctx,wx, by+31, 8, 10, blueDark);
+    px(ctx,wx+1, by+32, 6, 8, blue);
+    px(ctx,wx+1, by+32, 3, 3, blueLight);
+  });
+  const doorCx=bx+Math.round(bw/2);
+  px(ctx,doorCx-6, by+29, 12, 3, stone);
+  px(ctx,doorCx-7, by+32, 14, 16, woodDark);
+  px(ctx,doorCx-5, by+34, 10, 13, wood);
+  px(ctx,doorCx-1, by+40, 2, 3, gold);
+  px(ctx,doorCx-5, by+34, 1, 13, woodDark); px(ctx,doorCx+4, by+34, 1, 13, woodDark);
+  px(ctx,bx-2, by+48, bw+4, 3, stone);
+  px(ctx,bx-2, by+48, bw+4, 1, stoneLight);
+  px(ctx,bx-4, by+51, bw+8, 3, stoneDark);
+  return canvas;
+}
+function buildCoinDataURL(){
+  const c=document.createElement('canvas'); c.width=16; c.height=16;
+  const ctx=c.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  const gold='#e8c878', goldDark='#c8a050';
+  const rows=[4,6,7,8,8,8,7,6,4];
+  rows.forEach((w,i)=>px(ctx,8-w/2,2+i,w,1,gold));
+  px(ctx,7,4,2,8,goldDark);
+  px(ctx,5,4,4,1,goldDark); px(ctx,5,7,4,1,goldDark); px(ctx,5,10,4,1,goldDark);
+  ctx.strokeStyle='#241a10'; ctx.lineWidth=1; ctx.strokeRect(4.5,3.5,8,9);
+  return c.toDataURL();
+}
+function buildBillDataURL(){
+  const c=document.createElement('canvas'); c.width=24; c.height=14;
+  const ctx=c.getContext('2d'); ctx.imageSmoothingEnabled=false;
+  px(ctx,0,0,24,14,'#8fc47a');
+  px(ctx,1,1,22,12,'#a9d896');
+  ctx.strokeStyle='#3d6650'; ctx.lineWidth=1; ctx.strokeRect(0.5,0.5,23,13);
+  px(ctx,9,4,6,6,'#e8c878');
+  ctx.strokeStyle='#5c3a10'; ctx.strokeRect(9.5,4.5,5,5);
+  return c.toDataURL();
+}
+
+// ============================================================
+// 全域狀態與既有邏輯(記帳 / 月結 / 圖表 / 成就 / 設定)
+// ============================================================
 let allRecords=[], profiles=[], chartInstance=null, sessionKey=null, editingId=null, achievePersonName=null;
 function safeDate(v){ if (v instanceof Date && !isNaN(v.getTime())) return v; const d=v?new Date(v):null; return (d&&!isNaN(d.getTime()))?d:new Date(); }
 function toDateInputValue(v){ return safeDate(v).toISOString().slice(0,10); }
@@ -606,7 +698,11 @@ async function loadRecords(){
     renderAll();
   } catch(err){ document.getElementById("ledgerBody").innerHTML=`<div class="empty">讀取失敗：${err.message}</div>`; }
 }
-function renderAll(){ renderPersonSelects(); renderPlayerStrip(); renderCharacterStage(); renderLedger(); renderChart(); renderAchievePersonRow(); renderAchieveContent(); }
+function renderAll(){
+  renderPersonSelects(); renderPlayerStrip(); renderCharacterStage(); renderLedger();
+  renderAchievePersonRow(); renderAchieveContent();
+  try{ renderChart(); }catch(e){ console.warn("圖表渲染延後:", e); }
+}
 function renderPersonSelects(){ populateSelect(document.getElementById("inputPerson"),false); populateSelect(document.getElementById("repayPerson"),true); populateSelect(document.getElementById("editPerson"),false); }
 
 function cumulativeContribution(name){ return allRecords.filter(r=>r.person===name && r.type==="expense").reduce((s,r)=>s+r.amount,0); }
@@ -617,13 +713,32 @@ function themeStyle(profile){
   return `--frame-color:${c}; --frame-bg:${c}cc;`;
 }
 
+let bankInited=false;
+function initBankScene(){
+  if (bankInited) return; bankInited=true;
+  const bankCanvas = buildBankCanvas();
+  document.getElementById('bankImg').src = bankCanvas.toDataURL();
+  const decor = document.getElementById('bankDecor');
+  const coin = buildCoinDataURL(), bill = buildBillDataURL();
+  const items = [
+    {src:coin, style:'width:26px; left:8%; top:58%;', delay:'0s'},
+    {src:coin, style:'width:20px; left:18%; top:75%;', delay:'0.4s'},
+    {src:bill, style:'width:40px; left:2%; top:82%; transform:rotate(-8deg);', delay:'0.9s'},
+    {src:coin, style:'width:24px; right:10%; top:60%;', delay:'0.2s'},
+    {src:bill, style:'width:38px; right:4%; top:80%; transform:rotate(6deg);', delay:'0.6s'},
+    {src:coin, style:'width:18px; right:20%; top:76%;', delay:'1.1s'},
+  ];
+  decor.innerHTML = items.map(it=>`<img class="decor sparkle pixel" src="${it.src}" style="${it.style} animation-delay:${it.delay};" />`).join("");
+}
+
 function renderCharacterStage(){
+  initBankScene();
   const stage=document.getElementById("characterStage");
   stage.innerHTML = profiles.map(p=>{
     const cumulative=cumulativeContribution(p.name);
     const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
     return `<div class="character-slot" style="${themeStyle(p)}">
-      <div class="avatar-wrap">${renderAvatarSVG(p, cumulative, "full")}</div>
+      <div class="avatar-wrap"><img class="pixel" src="${avatarDataURL(p, cumulative, 'full')}" /></div>
       <div class="ctitle" style="color:${titleObj?titleObj.color:'var(--ink-soft)'}">${titleObj?"「"+titleObj.name+"」":""}</div>
       <div class="cname">${p.name}</div>
     </div>`;
@@ -635,8 +750,8 @@ function renderPlayerStrip(){
     const cumulative=cumulativeContribution(p.name), outstanding=outstandingBalance(p.name);
     const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
     return `<div class="player-card" style="${themeStyle(p)}">
-      <div class="player-title" style="color:${titleObj?titleObj.color:'rgba(255,255,255,0.5)'}">${titleObj?"「"+titleObj.name+"」":"尚無稱號"}</div>
-      <div class="portrait-wrap">${renderAvatarSVG(p, cumulative, "portrait")}</div>
+      <div class="player-title" style="color:${titleObj?titleObj.color:'rgba(255,255,255,0.6)'}">${titleObj?"「"+titleObj.name+"」":"尚無稱號"}</div>
+      <div class="portrait-wrap"><img class="pixel" src="${avatarDataURL(p, cumulative, 'portrait')}" /></div>
       <div class="player-name">${p.name}</div>
       <div class="player-amt">${fmt(outstanding)}</div>
       <div class="player-amt-label">貢獻總額(未歸還)</div>
@@ -770,7 +885,7 @@ function renderChart(){
     const labels=Object.keys(totals);
     data={ labels, datasets:[{ data:labels.map(l=>totals[l]), backgroundColor:["#c85a3f","#4d7c8a","#c9a15a","#6b4c7a","#8b2942","#2d3561"] }] };
   } else {
-    data={ labels:monthKeys, datasets:[{ label:"每月支出總額", data:monthKeys.map(k=>groups[k]), borderColor:"#2d3561", backgroundColor: type==="bar"?"#4d7c8a":"rgba(77,124,138,0.25)", fill:type==="line", tension:0.3, pointBackgroundColor:"#c85a3f", borderWidth:2 }] };
+    data={ labels:monthKeys, datasets:[{ label:"每月支出總額", data:monthKeys.map(k=>groups[k]), borderColor:"#8a6a3f", backgroundColor: type==="bar"?"#4d7c8a":"rgba(77,124,138,0.25)", fill:type==="line", tension:0.3, pointBackgroundColor:"#c85a3f", borderWidth:2 }] };
   }
   if (chartInstance) chartInstance.destroy();
   chartInstance=new Chart(ctx,{ type: type==="pie"?"pie":type, data, options:{ responsive:true, plugins:{legend:{display:true,position:type==="pie"?"bottom":"top"}}, scales: type==="pie"?{}:{y:{beginAtZero:true}} } });
@@ -816,16 +931,16 @@ function renderLevelBox(cumulative){
 function renderEquipGrid(cumulative){
   const profile=currentProfile();
   const unlocked=unlockedEquipmentThresholds(cumulative), equipped=(profile&&profile.equippedItems)||[], nextItem=nextEquipmentItem(cumulative);
-  document.getElementById("equipPreviewAvatar").innerHTML = profile ? renderAvatarSVG(profile, cumulative, "full") : "";
+  document.getElementById("equipPreviewAvatar").innerHTML = profile ? `<img class="pixel" src="${avatarDataURL(profile, cumulative, 'full')}" />` : "";
   let html = EQUIPMENT_ITEMS.filter(i=>unlocked.includes(i.amount)).map(item=>{
     const isEquipped=equipped.includes(item.amount);
     return `<div class="equip-slot ${isEquipped?"equipped":""}" data-threshold="${item.amount}">
-      ${equipIconSVG(item.name, item.color)}
+      <img class="equip-icon pixel" src="${equipIconDataURL(item.name, item.color)}" />
       <div class="equip-name">${item.name}</div><div class="equip-req">滿 ${fmt(item.amount)}</div>
       ${isEquipped?'<div class="equip-check">✓</div>':""}
     </div>`;
   }).join("");
-  if (nextItem){ html += `<div class="equip-slot locked">${equipIconSVG(nextItem.name,"#999")}<div class="equip-name">${nextItem.name}</div><div class="equip-req">滿 ${fmt(nextItem.amount)} 解鎖</div></div>`; }
+  if (nextItem){ html += `<div class="equip-slot locked"><img class="equip-icon pixel" src="${equipIconDataURL(nextItem.name,"#999")}" /><div class="equip-name">${nextItem.name}</div><div class="equip-req">滿 ${fmt(nextItem.amount)} 解鎖</div></div>`; }
   document.getElementById("equipGrid").innerHTML = html;
   document.querySelectorAll(".equip-slot[data-threshold]").forEach(el=>el.addEventListener("click",()=>toggleEquip(Number(el.dataset.threshold))));
 }
@@ -873,7 +988,7 @@ function openSettings(){
     const themeSwatches = THEME_COLORS.map(c=>`<div class="theme-swatch ${p.themeColor===c?"selected":""}" data-color="${c}" style="background:${c}"></div>`).join("");
     return `
     <div class="profile-block" data-slot="${p.slot}">
-      <div class="profile-head"><div class="avatar-wrap" id="settingsAvatar-${p.slot}">${renderAvatarSVG(p, cumulative, "full")}</div><div class="ptitle">${p.name}</div></div>
+      <div class="profile-head"><div class="avatar-wrap" id="settingsAvatar-${p.slot}"><img class="pixel" src="${avatarDataURL(p, cumulative, 'full')}" /></div><div class="ptitle">${p.name}</div></div>
       <label>🙋 名字</label><input class="f-name" value="${p.name}" />
       <div class="field-grid">
         <div><label>🎂 生日</label><input class="f-birthdate" type="date" value="${p.birthdate||""}" /></div>
@@ -895,9 +1010,7 @@ function openSettings(){
           <option value="round" ${(!p.eyeStyle||p.eyeStyle==="round")?"selected":""}>圓眼</option><option value="happy" ${p.eyeStyle==="happy"?"selected":""}>笑眼</option>
           <option value="sleepy" ${p.eyeStyle==="sleepy"?"selected":""}>瞇眼</option><option value="wink" ${p.eyeStyle==="wink"?"selected":""}>眨眼</option>
           <option value="star" ${p.eyeStyle==="star"?"selected":""}>星星眼</option><option value="angry" ${p.eyeStyle==="angry"?"selected":""}>生氣眼</option>
-          <option value="teary" ${p.eyeStyle==="teary"?"selected":""}>淚眼</option><option value="heart" ${p.eyeStyle==="heart"?"selected":""}>愛心眼</option>
-          <option value="sharp" ${p.eyeStyle==="sharp"?"selected":""}>銳利眼</option><option value="closed" ${p.eyeStyle==="closed"?"selected":""}>閉眼</option>
-          <option value="sparkle" ${p.eyeStyle==="sparkle"?"selected":""}>閃亮眼</option>
+          <option value="closed" ${p.eyeStyle==="closed"?"selected":""}>閉眼</option><option value="sparkle" ${p.eyeStyle==="sparkle"?"selected":""}>閃亮眼</option>
         </select></div>
       </div>
       <div class="field-grid">
@@ -910,18 +1023,14 @@ function openSettings(){
         </select></div>
         <div><label>👄 嘴型</label><select class="f-mouthStyle">
           <option value="smile" ${(!p.mouthStyle||p.mouthStyle==="smile")?"selected":""}>微笑</option><option value="neutral" ${p.mouthStyle==="neutral"?"selected":""}>平靜</option>
-          <option value="open" ${p.mouthStyle==="open"?"selected":""}>驚訝</option><option value="smirk" ${p.mouthStyle==="smirk"?"selected":""}>壞笑</option>
-          <option value="pout" ${p.mouthStyle==="pout"?"selected":""}>嘟嘴</option><option value="grin" ${p.mouthStyle==="grin"?"selected":""}>露齒笑</option>
-          <option value="frown" ${p.mouthStyle==="frown"?"selected":""}>皺眉</option><option value="tongue" ${p.mouthStyle==="tongue"?"selected":""}>吐舌</option>
-          <option value="kiss" ${p.mouthStyle==="kiss"?"selected":""}>親親嘴</option><option value="whistle" ${p.mouthStyle==="whistle"?"selected":""}>吹口哨</option>
-          <option value="surprised" ${p.mouthStyle==="surprised"?"selected":""}>大驚訝</option>
+          <option value="open" ${p.mouthStyle==="open"?"selected":""}>驚訝</option><option value="grin" ${p.mouthStyle==="grin"?"selected":""}>露齒笑</option>
+          <option value="frown" ${p.mouthStyle==="frown"?"selected":""}>皺眉</option><option value="pout" ${p.mouthStyle==="pout"?"selected":""}>嘟嘴</option>
         </select></div>
       </div>
       <div class="field-grid">
         <div><label>💪 體型</label><select class="f-bodyType">
           <option value="regular" ${(!p.bodyType||p.bodyType==="regular")?"selected":""}>標準</option><option value="slim" ${p.bodyType==="slim"?"selected":""}>纖細</option>
           <option value="broad" ${p.bodyType==="broad"?"selected":""}>壯碩</option><option value="chubby" ${p.bodyType==="chubby"?"selected":""}>圓潤</option>
-          <option value="tall" ${p.bodyType==="tall"?"selected":""}>高瘦</option><option value="short" ${p.bodyType==="short"?"selected":""}>矮壯</option>
           <option value="athletic" ${p.bodyType==="athletic"?"selected":""}>健壯</option><option value="petite" ${p.bodyType==="petite"?"selected":""}>嬌小</option>
           <option value="curvy" ${p.bodyType==="curvy"?"selected":""}>豐腴</option><option value="stocky" ${p.bodyType==="stocky"?"selected":""}>敦實</option>
         </select></div>
@@ -964,7 +1073,7 @@ function openSettings(){
         mouthStyle:block.querySelector(".f-mouthStyle").value, bodyType:block.querySelector(".f-bodyType").value,
         skinTone:block.querySelector(".f-skinTone").value, glowColors:draftGlow
       };
-      document.getElementById("settingsAvatar-"+slot).innerHTML = renderAvatarSVG(draft, cumulativeContribution(profile.name), "full");
+      document.getElementById("settingsAvatar-"+slot).innerHTML = `<img class="pixel" src="${avatarDataURL(draft, cumulativeContribution(profile.name), 'full')}" />`;
     }
     block.querySelectorAll("select").forEach(sel=>sel.addEventListener("change", refreshPreview));
 
