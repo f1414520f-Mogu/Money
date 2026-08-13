@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root{
     --gold:#d4af6a; --gold-dark:#a97f3e; --cream:#e8dcc0; --cream-dark:#c9b78e; --cream-light:#f2e8d0;
@@ -90,7 +91,7 @@
       radial-gradient(ellipse 70px 24px at 82% 12%, rgba(255,255,255,0.5), transparent),
       radial-gradient(ellipse 50px 18px at 65% 28%, rgba(255,255,255,0.4), transparent),
       linear-gradient(180deg,#a9d4e8 0%, #cfe3c8 55%, #cabb90 100%);
-    padding:22px 12px 0; overflow:hidden; padding-bottom:70px; }
+    padding:8px 12px 0; overflow:hidden; padding-bottom:70px; }
   .bank-scene .bank-img{ display:block; width:100%; max-width:420px; margin:0 auto; image-rendering:pixelated; position:relative; z-index:1; }
   .bank-scene .decor{ position:absolute; image-rendering:pixelated; }
   .flag{ position:absolute; top:8px; left:50%; margin-left:-1px; width:2px; height:26px; background:#5c3a10; z-index:2; }
@@ -361,6 +362,7 @@
   <section id="view-ledger" class="view">
     <div class="card bevel-out">
       <h2><span class="idx">📖</span>月結明細</h2>
+      <button class="secondary" id="exportExcelBtn" style="margin:-4px 0 12px;color:var(--teal-dark);">📥 匯出 Excel 表</button>
       <p style="font-size:13px;color:var(--ink-soft);margin:-6px 0 12px;font-weight:700;">點任一筆紀錄可以修改或刪除</p>
       <div id="ledgerBody"><div class="skeleton-line" style="width:60%"></div><div class="skeleton-line" style="width:90%"></div><div class="skeleton-line" style="width:75%"></div></div>
     </div>
@@ -373,9 +375,12 @@
         <option value="line">📈 折線圖(每月總額趨勢)</option>
         <option value="bar">📊 長條圖(每月總額趨勢)</option>
         <option value="pie">🥧 圓餅圖(各人員佔比)</option>
+        <option value="bubble">🫧 泡泡圖(單筆金額大小)</option>
+        <option value="radar">🕸 雷達圖(月份分佈比較)</option>
       </select>
       <select id="chartPerson" style="margin-bottom:14px;">
         <option value="__all__">👥 總計(不分人員)</option>
+        <option value="__compare__">🆚 兩人比較(同時顯示)</option>
       </select>
       <canvas class="chart" id="mainChart"></canvas>
     </div>
@@ -500,41 +505,82 @@ const EQUIP_COLOR_CHOICES = ["#c0392b","#2980b9","#16a085","#6b4c7a","#c9a15a","
 
 // ---------- 寵物系統(十二生肖，解鎖門檻比照裝備) ----------
 const PET_ITEMS = [
-  { amount:10000, name:"鼠", color:"#8a7a6b", ear:"round" },
-  { amount:30000, name:"牛", color:"#6b5642", ear:"horn" },
-  { amount:50000, name:"虎", color:"#e8a23d", ear:"round" },
-  { amount:100000, name:"兔", color:"#f2ede0", ear:"long" },
-  { amount:150000, name:"龍", color:"#3d8a5c", ear:"horn" },
-  { amount:160000, name:"蛇", color:"#5c8a6b", ear:"none" },
-  { amount:170000, name:"馬", color:"#8a5a3a", ear:"mane" },
-  { amount:180000, name:"羊", color:"#f0ebe0", ear:"round" },
-  { amount:190000, name:"猴", color:"#a8734a", ear:"round" },
-  { amount:200000, name:"雞", color:"#d1554a", ear:"comb" },
-  { amount:210000, name:"狗", color:"#c9a15a", ear:"floppy" },
-  { amount:220000, name:"豬", color:"#e8b8b0", ear:"round" }
+  { amount:10000, name:"鼠", color:"#8a7a6b", ear:"round", tail:"thin", legs:true },
+  { amount:30000, name:"牛", color:"#6b5642", ear:"horn", tail:"tuft", legs:true },
+  { amount:50000, name:"虎", color:"#e8a23d", ear:"round", tail:"thick", legs:true, stripes:true },
+  { amount:100000, name:"兔", color:"#f2ede0", ear:"long", tail:"puff", legs:true },
+  { amount:150000, name:"龍", color:"#3d8a5c", ear:"horn", tail:"long", legs:true },
+  { amount:160000, name:"蛇", color:"#5c8a6b", ear:"none", tail:"none", legs:false, elongated:true },
+  { amount:170000, name:"馬", color:"#8a5a3a", ear:"mane", tail:"flow", legs:true },
+  { amount:180000, name:"羊", color:"#f0ebe0", ear:"round", tail:"tuft", legs:true },
+  { amount:190000, name:"猴", color:"#a8734a", ear:"round", tail:"curl", legs:true },
+  { amount:200000, name:"雞", color:"#d1554a", ear:"comb", tail:"fan", legs:true },
+  { amount:210000, name:"狗", color:"#c9a15a", ear:"floppy", tail:"wag", legs:true },
+  { amount:220000, name:"豬", color:"#e8b8b0", ear:"round", tail:"curly", legs:true }
 ];
 function unlockedPetThresholds(cumulative){ return PET_ITEMS.filter(i=>cumulative>=i.amount).map(i=>i.amount); }
 function nextPetItem(cumulative){ return PET_ITEMS.find(i=>cumulative<i.amount) || null; }
 function petIconDataURL(pet, size){
   size = size || 24;
-  const c=document.createElement('canvas'); c.width=size; c.height=size;
+  const c=document.createElement('canvas'); c.width=size; c.height=size*1.1;
   const ctx=c.getContext('2d'); ctx.imageSmoothingEnabled=false;
-  const mid=size/2, bodyR=size*0.34;
-  ctx.fillStyle=pet.color; ctx.strokeStyle="#241a10"; ctx.lineWidth=Math.max(1,size*0.06);
-  // 耳朵/特徵
+  const mid=size/2;
+  const headR = pet.elongated ? size*0.16 : size*0.22;
+  const headCY = size*0.34;
+  const bodyCY = pet.elongated ? size*0.55 : size*0.68;
+  const bodyRX = pet.elongated ? size*0.16 : size*0.26;
+  const bodyRY = pet.elongated ? size*0.34 : size*0.24;
+  ctx.strokeStyle="#241a10"; ctx.lineWidth=Math.max(1,size*0.055);
+
+  // 尾巴(畫在身體後面，較底層)
+  ctx.fillStyle = pet.color;
+  const tx = mid+bodyRX*0.8, ty = bodyCY+bodyRY*0.2;
   ctx.beginPath();
-  if (pet.ear==="round"){ ctx.arc(mid-bodyR*0.6,mid-bodyR*0.9,bodyR*0.35,0,Math.PI*2); ctx.arc(mid+bodyR*0.6,mid-bodyR*0.9,bodyR*0.35,0,Math.PI*2); }
-  else if (pet.ear==="long"){ ctx.ellipse(mid-bodyR*0.4,mid-bodyR*1.3,bodyR*0.22,bodyR*0.6,0,0,Math.PI*2); ctx.ellipse(mid+bodyR*0.4,mid-bodyR*1.3,bodyR*0.22,bodyR*0.6,0,0,Math.PI*2); }
-  else if (pet.ear==="horn"){ ctx.moveTo(mid-bodyR*0.5,mid-bodyR*0.7); ctx.lineTo(mid-bodyR*0.7,mid-bodyR*1.4); ctx.lineTo(mid-bodyR*0.2,mid-bodyR*0.7); ctx.moveTo(mid+bodyR*0.5,mid-bodyR*0.7); ctx.lineTo(mid+bodyR*0.7,mid-bodyR*1.4); ctx.lineTo(mid+bodyR*0.2,mid-bodyR*0.7); }
-  else if (pet.ear==="mane"){ ctx.fillStyle=shadeColor(pet.color,-25); ctx.fillRect(mid-bodyR,mid-bodyR*1.2,bodyR*2,bodyR*0.6); ctx.fillStyle=pet.color; }
-  else if (pet.ear==="comb"){ ctx.fillStyle="#c0392b"; ctx.fillRect(mid-bodyR*0.3,mid-bodyR*1.4,bodyR*0.6,bodyR*0.5); ctx.fillStyle=pet.color; }
-  else if (pet.ear==="floppy"){ ctx.ellipse(mid-bodyR*0.75,mid-bodyR*0.5,bodyR*0.3,bodyR*0.55,0.3,0,Math.PI*2); ctx.ellipse(mid+bodyR*0.75,mid-bodyR*0.5,bodyR*0.3,bodyR*0.55,-0.3,0,Math.PI*2); }
-  ctx.fill(); ctx.stroke();
+  switch(pet.tail){
+    case "thin": ctx.moveTo(tx,ty); ctx.quadraticCurveTo(tx+size*0.22,ty-size*0.05,tx+size*0.26,ty+size*0.1); ctx.lineWidth=size*0.05; ctx.strokeStyle=pet.color; ctx.stroke(); ctx.strokeStyle="#241a10"; break;
+    case "tuft": ctx.rect(tx,ty-size*0.03,size*0.16,size*0.06); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.arc(tx+size*0.16,ty,size*0.06,0,Math.PI*2); ctx.fillStyle=shadeColor(pet.color,-20); ctx.fill(); ctx.stroke(); break;
+    case "thick": ctx.rect(tx,ty-size*0.05,size*0.2,size*0.1); ctx.fill(); ctx.stroke(); break;
+    case "puff": ctx.arc(tx+size*0.08,ty,size*0.09,0,Math.PI*2); ctx.fill(); ctx.stroke(); break;
+    case "long": ctx.moveTo(tx,ty); ctx.quadraticCurveTo(tx+size*0.3,ty+size*0.1,tx+size*0.24,ty+size*0.28); ctx.lineWidth=size*0.07; ctx.strokeStyle=pet.color; ctx.stroke(); ctx.strokeStyle="#241a10"; break;
+    case "flow": ctx.moveTo(tx,ty-size*0.05); ctx.quadraticCurveTo(tx+size*0.2,ty+size*0.15,tx+size*0.1,ty+size*0.32); ctx.lineWidth=size*0.08; ctx.strokeStyle=pet.color; ctx.stroke(); ctx.strokeStyle="#241a10"; break;
+    case "curl": ctx.arc(tx+size*0.14,ty,size*0.11,0,Math.PI*1.5); ctx.lineWidth=size*0.05; ctx.strokeStyle=pet.color; ctx.stroke(); ctx.strokeStyle="#241a10"; break;
+    case "fan": for(let i=-1;i<=1;i++){ ctx.moveTo(tx,ty); ctx.lineTo(tx+size*0.2,ty+i*size*0.12); } ctx.lineWidth=size*0.05; ctx.strokeStyle="#c0392b"; ctx.stroke(); ctx.strokeStyle="#241a10"; break;
+    case "wag": ctx.moveTo(tx,ty); ctx.quadraticCurveTo(tx+size*0.18,ty-size*0.15,tx+size*0.1,ty-size*0.26); ctx.lineWidth=size*0.06; ctx.strokeStyle=pet.color; ctx.stroke(); ctx.strokeStyle="#241a10"; break;
+    case "curly": ctx.arc(tx+size*0.08,ty,size*0.07,0,Math.PI*2.4); ctx.lineWidth=size*0.045; ctx.strokeStyle=pet.color; ctx.stroke(); ctx.strokeStyle="#241a10"; break;
+    default: break;
+  }
+
+  // 四肢(蛇沒有腳)
+  if (pet.legs){
+    ctx.fillStyle = shadeColor(pet.color,-15);
+    const legY = bodyCY+bodyRY*0.75, legH = size*0.14;
+    [mid-bodyRX*0.55, mid+bodyRX*0.15].forEach(lx=>{
+      ctx.fillRect(lx, legY, size*0.09, legH);
+      ctx.strokeRect(lx, legY, size*0.09, legH);
+    });
+  }
+
   // 身體
-  ctx.beginPath(); ctx.arc(mid,mid+bodyR*0.15,bodyR,0,Math.PI*2); ctx.fillStyle=pet.color; ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(mid,bodyCY,bodyRX,bodyRY,0,0,Math.PI*2); ctx.fillStyle=pet.color; ctx.fill(); ctx.stroke();
+  if (pet.stripes){
+    ctx.strokeStyle="#5c3a10"; ctx.lineWidth=size*0.035;
+    for(let i=-1;i<=1;i++){ ctx.beginPath(); ctx.moveTo(mid+i*bodyRX*0.4, bodyCY-bodyRY*0.7); ctx.lineTo(mid+i*bodyRX*0.4, bodyCY+bodyRY*0.7); ctx.stroke(); }
+    ctx.strokeStyle="#241a10";
+  }
+
+  // 頭 + 耳朵/特徵
+  ctx.beginPath();
+  if (pet.ear==="round"){ ctx.arc(mid-headR*0.9,headCY-headR*0.9,headR*0.42,0,Math.PI*2); ctx.arc(mid+headR*0.9,headCY-headR*0.9,headR*0.42,0,Math.PI*2); }
+  else if (pet.ear==="long"){ ctx.ellipse(mid-headR*0.5,headCY-headR*1.7,headR*0.24,headR*0.75,0,0,Math.PI*2); ctx.ellipse(mid+headR*0.5,headCY-headR*1.7,headR*0.24,headR*0.75,0,0,Math.PI*2); }
+  else if (pet.ear==="horn"){ ctx.moveTo(mid-headR*0.7,headCY-headR*0.7); ctx.lineTo(mid-headR*0.9,headCY-headR*1.7); ctx.lineTo(mid-headR*0.25,headCY-headR*0.8); ctx.moveTo(mid+headR*0.7,headCY-headR*0.7); ctx.lineTo(mid+headR*0.9,headCY-headR*1.7); ctx.lineTo(mid+headR*0.25,headCY-headR*0.8); }
+  else if (pet.ear==="mane"){ ctx.fillStyle=shadeColor(pet.color,-25); ctx.fillRect(mid-headR*1.15,headCY-headR*1.3,headR*2.3,headR*0.7); ctx.fillStyle=pet.color; }
+  else if (pet.ear==="comb"){ ctx.fillStyle="#c0392b"; ctx.fillRect(mid-headR*0.35,headCY-headR*1.7,headR*0.7,headR*0.6); ctx.fillStyle=pet.color; }
+  else if (pet.ear==="floppy"){ ctx.ellipse(mid-headR*0.95,headCY-headR*0.5,headR*0.34,headR*0.7,0.3,0,Math.PI*2); ctx.ellipse(mid+headR*0.95,headCY-headR*0.5,headR*0.34,headR*0.7,-0.3,0,Math.PI*2); }
+  ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(mid,headCY,headR,0,Math.PI*2); ctx.fillStyle=pet.color; ctx.fill(); ctx.stroke();
   // 眼睛
   ctx.fillStyle="#241a10";
-  ctx.beginPath(); ctx.arc(mid-bodyR*0.35,mid,bodyR*0.13,0,Math.PI*2); ctx.arc(mid+bodyR*0.35,mid,bodyR*0.13,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(mid-headR*0.4,headCY,headR*0.16,0,Math.PI*2); ctx.arc(mid+headR*0.4,headCY,headR*0.16,0,Math.PI*2); ctx.fill();
   return c.toDataURL();
 }
 const RAINBOW = [
@@ -1222,6 +1268,13 @@ function personColor(name){
   const p = profiles.find(x=>x.name===name);
   return (p && p.themeColor) || "#8a7255";
 }
+function personColorText(name){
+  const c = personColor(name);
+  const n = parseInt(c.slice(1),16);
+  const r=(n>>16)&0xff, g=(n>>8)&0xff, b=n&0xff;
+  const brightness = (r*299+g*587+b*114)/1000;
+  return brightness < 150 ? shadeColor(c, 95) : c;
+}
 function renderLedger(){
   const groups=groupByMonth(); const keys=Object.keys(groups).sort().reverse();
   const body=document.getElementById("ledgerBody");
@@ -1231,17 +1284,17 @@ function renderLedger(){
     const g=groups[key];
     const persons=Object.entries(g.byPerson).sort((a,b)=>b[1]-a[1]);
     const itemsHtml=g.items.slice().reverse().map(r=>{
-      const color = personColor(r.person);
+      const color = personColor(r.person), textColor = personColorText(r.person);
       if (r.type==="repayment"){
         return `<li class="repayment" data-id="${r.id}" style="border-left-color:${color};">
-          <span><span class="date">${dateLabel(r.timestamp)}</span><span class="tag" style="background:${color};">🔁 還給 ${r.person}</span>${r.item}</span>
+          <span><span class="date">${dateLabel(r.timestamp)}</span><span class="tag" style="background:${color};color:#1a1410;">🔁 還給 ${r.person}</span>${r.item}</span>
           <span>${fmt(r.amount)}</span></li>`;
       }
       return `<li data-id="${r.id}" style="border-left-color:${color};">
-        <span><span class="date">${dateLabel(r.timestamp)}</span><b style="color:${color};">${r.person}</b> 墊付 · ${r.item}</span>
+        <span><span class="date">${dateLabel(r.timestamp)}</span><b style="color:${textColor};">${r.person}</b> 墊付 · ${r.item}</span>
         <span>${fmt(r.amount)}</span></li>`;
     }).join("");
-    html += `<div class="month-block"><div class="month-head"><span>${key} 月結(支出)</span><span class="amt">${fmt(g.total)}</span></div>${persons.map(([p,amt])=>`<div class="person-row"><span style="color:${personColor(p)};font-weight:700;">● ${p}</span><span class="amt">${fmt(amt)}</span></div>`).join("")}<ul class="items">${itemsHtml}</ul></div>`;
+    html += `<div class="month-block"><div class="month-head"><span>${key} 月結(支出)</span><span class="amt">${fmt(g.total)}</span></div>${persons.map(([p,amt])=>`<div class="person-row"><span style="color:${personColorText(p)};font-weight:700;">● ${p}</span><span class="amt">${fmt(amt)}</span></div>`).join("")}<ul class="items">${itemsHtml}</ul></div>`;
   });
   body.innerHTML=html;
   body.querySelectorAll(".items li").forEach(li=>li.addEventListener("click",()=>openEdit(li.dataset.id)));
@@ -1250,24 +1303,55 @@ function renderLedger(){
 function renderChart(){
   const type=document.getElementById("chartType").value;
   const personSel=document.getElementById("chartPerson");
-  if (personSel.options.length<=1){
-    personSel.innerHTML = '<option value="__all__">👥 總計(不分人員)</option>' + personNames().map(n=>`<option value="${n}">${n}</option>`).join("");
+  if (!personSel.dataset.filled){
+    personSel.innerHTML = '<option value="__all__">👥 總計(不分人員)</option><option value="__compare__">🆚 兩人比較(同時顯示)</option>' + personNames().map(n=>`<option value="${n}">${n}</option>`).join("");
+    personSel.dataset.filled = "1";
   }
   const personFilter = personSel.value;
   const ctx=document.getElementById("mainChart").getContext("2d");
-  const expenseRecords=allRecords.filter(r=>r.type==="expense" && (personFilter==="__all__" || r.person===personFilter));
-  const groups={}; expenseRecords.forEach(r=>{ const k=monthKeyOf(r.timestamp); groups[k]=(groups[k]||0)+r.amount; });
-  const monthKeys=Object.keys(groups).sort();
-  let data;
+  const allExpense = allRecords.filter(r=>r.type==="expense");
+  const monthKeysAll = [...new Set(allExpense.map(r=>monthKeyOf(r.timestamp)))].sort();
+  const palette = ["#c85a3f","#4d7c8a","#c9a15a","#6b4c7a","#8b2942","#2d3561"];
+  let data, chartType = type;
+
   if (type==="pie"){
-    const totals={}; allRecords.filter(r=>r.type==="expense").forEach(r=>{totals[r.person]=(totals[r.person]||0)+r.amount;});
+    const totals={}; allExpense.forEach(r=>{totals[r.person]=(totals[r.person]||0)+r.amount;});
     const labels=Object.keys(totals);
-    data={ labels, datasets:[{ data:labels.map(l=>totals[l]), backgroundColor:["#c85a3f","#4d7c8a","#c9a15a","#6b4c7a","#8b2942","#2d3561"] }] };
+    data={ labels, datasets:[{ data:labels.map(l=>totals[l]), backgroundColor:palette }] };
+  } else if (type==="bubble"){
+    const names = personNames();
+    data={ datasets: names.map((name,i)=>({
+      label:name,
+      backgroundColor: (personColor(name))+"aa",
+      data: allExpense.filter(r=>r.person===name).map(r=>({ x: monthKeysAll.indexOf(monthKeyOf(r.timestamp)), y: r.amount, r: Math.max(4,Math.min(28, r.amount/4000)) }))
+    })) };
+    chartType="bubble";
+  } else if (type==="radar"){
+    const names = personFilter==="__compare__" ? personNames() : (personFilter==="__all__" ? ["總計"] : [personFilter]);
+    data={ labels: monthKeysAll, datasets: names.map((name,i)=>{
+      const recs = name==="總計" ? allExpense : allExpense.filter(r=>r.person===name);
+      const g={}; recs.forEach(r=>{ const k=monthKeyOf(r.timestamp); g[k]=(g[k]||0)+r.amount; });
+      return { label:name, data: monthKeysAll.map(k=>g[k]||0), borderColor: name==="總計"?"#8a6a3f":personColor(name), backgroundColor:(name==="總計"?"#8a6a3f":personColor(name))+"33" };
+    })};
+    chartType="radar";
   } else {
-    data={ labels:monthKeys, datasets:[{ label:(personFilter==="__all__"?"總計":personFilter)+" 每月支出總額", data:monthKeys.map(k=>groups[k]), borderColor:"#8a6a3f", backgroundColor: type==="bar"?"#4d7c8a":"rgba(77,124,138,0.25)", fill:type==="line", tension:0.3, pointBackgroundColor:"#c85a3f", borderWidth:2 }] };
+    // line / bar
+    if (personFilter==="__compare__"){
+      const names = personNames();
+      data={ labels:monthKeysAll, datasets: names.map(name=>{
+        const g={}; allExpense.filter(r=>r.person===name).forEach(r=>{ const k=monthKeyOf(r.timestamp); g[k]=(g[k]||0)+r.amount; });
+        const col = personColor(name);
+        return { label:name+" 每月支出", data:monthKeysAll.map(k=>g[k]||0), borderColor:col, backgroundColor: type==="bar"?col:col+"33", fill:type==="line", tension:0.3, pointBackgroundColor:col, borderWidth:2 };
+      })};
+    } else {
+      const filtered = personFilter==="__all__" ? allExpense : allExpense.filter(r=>r.person===personFilter);
+      const g={}; filtered.forEach(r=>{ const k=monthKeyOf(r.timestamp); g[k]=(g[k]||0)+r.amount; });
+      data={ labels:monthKeysAll, datasets:[{ label:(personFilter==="__all__"?"總計":personFilter)+" 每月支出總額", data:monthKeysAll.map(k=>g[k]||0), borderColor:"#8a6a3f", backgroundColor: type==="bar"?"#4d7c8a":"rgba(77,124,138,0.25)", fill:type==="line", tension:0.3, pointBackgroundColor:"#c85a3f", borderWidth:2 }] };
+    }
   }
   if (chartInstance) chartInstance.destroy();
-  chartInstance=new Chart(ctx,{ type: type==="pie"?"pie":type, data, options:{ responsive:true, plugins:{legend:{display:true,position:type==="pie"?"bottom":"top"}}, scales: type==="pie"?{}:{y:{beginAtZero:true}} } });
+  const scales = (chartType==="pie"||chartType==="radar") ? {} : (chartType==="bubble" ? { x:{ ticks:{ callback:v=>monthKeysAll[v]||"" } }, y:{ beginAtZero:true } } : { y:{ beginAtZero:true } });
+  chartInstance=new Chart(ctx,{ type: chartType, data, options:{ responsive:true, plugins:{legend:{display:true,position:chartType==="pie"?"bottom":"top"}}, scales } });
 }
 
 function renderAchievePersonRow(){
@@ -1694,7 +1778,29 @@ document.getElementById("settingsSaveBtn").addEventListener("click", saveSetting
 document.getElementById("settingsCancelBtn").addEventListener("click", closeSettings);
 document.getElementById("settingsOverlay").addEventListener("click", e=>{ if(e.target.id==="settingsOverlay") closeSettings(); });
 
+function exportExcel(){
+  if (typeof XLSX === "undefined"){ alert("匯出工具尚未載入，請確認網路連線後再試一次"); return; }
+  const rows = allRecords.slice().sort((a,b)=>a.timestamp-b.timestamp).map(r=>({
+    "日期": toDateInputValue(r.timestamp),
+    "類型": r.type==="expense" ? "支出/墊付" : "現金入帳/還款",
+    "人員": r.person,
+    "項目/備註": r.item,
+    "金額": r.amount
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws["!cols"] = [{wch:12},{wch:14},{wch:10},{wch:24},{wch:10}];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "記帳明細");
+  const summaryRows = [];
+  personNames().forEach(name=>{
+    summaryRows.push({ "人員": name, "累積貢獻": cumulativeContribution(name), "已收還款": repaidTotal(name), "貢獻總額(未歸還)": outstandingBalance(name) });
+  });
+  const ws2 = XLSX.utils.json_to_sheet(summaryRows);
+  XLSX.utils.book_append_sheet(wb, ws2, "人員總覽");
+  XLSX.writeFile(wb, `錢莊記帳_${toDateInputValue(new Date())}.xlsx`);
+}
 function boot(){
+  document.getElementById("exportExcelBtn").addEventListener("click", exportExcel);
   setDefaultDates();
   document.getElementById("submitBtn").addEventListener("click", submitRecord);
   document.getElementById("chartType").addEventListener("change", renderChart);
