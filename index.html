@@ -9,9 +9,9 @@
 <meta name="theme-color" content="#c9a15a">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DotGothic16&display=swap" rel="stylesheet"></noscript>
+<!-- Chart.js 與 xlsx 改成用到才載入，避免一開始就卡住畫面(見下方 loadScript) -->
 <style>
   :root{
     --gold:#d4af6a; --gold-dark:#a97f3e; --cream:#e8dcc0; --cream-dark:#c9b78e; --cream-light:#f2e8d0;
@@ -226,6 +226,18 @@
   .char-pets{ display:flex; gap:3px; justify-content:center; margin-top:4px; }
   .char-pets img{ width:20px; height:20px; }
 
+  .invest-stat-row{ display:flex; gap:8px; margin-bottom:14px; }
+  .invest-stat-card{ flex:1; border-radius:4px; padding:12px 10px; border:3px solid var(--frame-color,var(--gold)); background:var(--frame-bg,rgba(0,0,0,0.25)); }
+  .invest-stat-card .isp-name{ font-size:14px; font-weight:700; margin-bottom:6px; }
+  .invest-stat-card .isp-row{ display:flex; justify-content:space-between; font-size:12px; margin-top:4px; }
+  .invest-stat-card .isp-row b{ font-family:"Press Start 2P",monospace; font-size:11px; font-weight:400; }
+  .invest-rate-badge{ display:inline-block; margin-top:6px; font-size:10.5px; background:rgba(0,0,0,0.25); padding:3px 7px; border-radius:3px; }
+  .invest-item{ display:flex; align-items:center; gap:10px; padding:10px; background:rgba(0,0,0,0.2); border-left:3px solid var(--panel-dark); border-radius:3px; margin-bottom:6px; cursor:pointer; }
+  .invest-item .ii-main{ flex:1; font-size:13px; }
+  .invest-item .ii-amt{ font-size:13px; font-weight:700; text-align:right; }
+  .invest-item .ii-profit{ font-size:11px; color:var(--gold); margin-top:2px; }
+  .calc-result-box{ margin-top:12px; padding:12px; background:rgba(0,0,0,0.2); border-radius:4px; font-size:13.5px; line-height:1.9; }
+
   .glow-check-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:6px; }
   .glow-check{ display:flex; flex-direction:column; align-items:center; gap:4px; padding:8px 2px; border:2px solid var(--panel-dark); border-radius:4px; cursor:pointer; background:rgba(0,0,0,0.2); }
   .glow-check.locked{ opacity:0.35; cursor:default; }
@@ -234,7 +246,7 @@
   .glow-check .lbl{ font-size:9.5px; font-weight:700; }
 
   nav.tabs{ position:fixed; bottom:0; left:0; right:0; z-index:10; display:flex; background:var(--panel); border-top:3px solid var(--panel-dark); }
-  nav.tabs button{ flex:1; padding:10px 1px 9px; background:none; border:none; font-size:10.5px; color:var(--ink-soft); cursor:pointer; font-family:"DotGothic16",sans-serif; font-weight:700; }
+  nav.tabs button{ flex:1; padding:9px 1px 8px; background:none; border:none; font-size:9.5px; color:var(--ink-soft); cursor:pointer; font-family:"DotGothic16",sans-serif; font-weight:700; }
   nav.tabs button svg{ display:block; margin:0 auto 3px; width:20px; height:20px; }
   nav.tabs button.active{ color:var(--gold-dark); }
   nav.tabs button.active svg{ stroke:var(--gold-dark); }
@@ -415,7 +427,45 @@
       <div class="pet-grid" id="petGrid"></div>
     </div>
   </section>
+
+  <section id="view-invest" class="view">
+    <div class="invest-stat-row" id="investStatRow"></div>
+
+    <div class="card bevel-out">
+      <h2><span class="idx">➕</span>新增投資</h2>
+      <label>🙋 投資人</label><select id="investPerson"></select>
+      <label>📅 起始日期</label><input type="date" id="investStartDate" />
+      <label>🪙 投資金額(代幣)</label><input id="investAmount" type="number" inputmode="decimal" placeholder="0" />
+      <button class="primary" id="investSubmitBtn">✔ 建立投資</button>
+      <div class="status" id="investStatus"></div>
+    </div>
+
+    <div class="card bevel-out">
+      <h2><span class="idx">🧮</span>投資試算(不會儲存)</h2>
+      <div class="field-grid">
+        <div><label>📅 起始日期</label><input type="date" id="calcStartDate" /></div>
+        <div><label>📅 計算至</label><input type="date" id="calcEndDate" /></div>
+      </div>
+      <label>🪙 投資金額</label><input id="calcAmount" type="number" inputmode="decimal" placeholder="0" />
+      <button class="secondary" id="calcRunBtn" style="color:var(--teal-dark);">🧮 開始試算</button>
+      <div id="calcResult"></div>
+    </div>
+
+    <div class="card bevel-out">
+      <h2><span class="idx">📜</span>投資紀錄</h2>
+      <div id="investList"></div>
+    </div>
+  </section>
 </main>
+
+<div id="investDeleteOverlay" class="overlay">
+  <div class="sheet">
+    <h3>投資紀錄詳情</h3>
+    <div id="investDeleteInfo" style="font-size:14px; line-height:2; margin-bottom:14px;"></div>
+    <button class="secondary" id="investDeleteBtn">🗑 刪除這筆投資</button>
+    <button class="ghost" id="investDeleteCancelBtn">取消</button>
+  </div>
+</div>
 
 <nav class="tabs">
   <button class="tab-btn active" data-view="view-character"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>人物</button>
@@ -423,6 +473,7 @@
   <button class="tab-btn" data-view="view-ledger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>月結明細</button>
   <button class="tab-btn" data-view="view-chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V9M11 19V5M18 19v-7"/></svg>圖表</button>
   <button class="tab-btn" data-view="view-achieve"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0V4ZM7 6H4a2 2 0 0 0 2 4M17 6h3a2 2 0 0 1-2 4"/></svg>成就</button>
+  <button class="tab-btn" data-view="view-invest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8M21 7h-6v6"/></svg>投資</button>
 </nav>
 </div>
 
@@ -475,6 +526,20 @@
 </div>
 
 <script>
+// 外部程式庫延遲載入(用到才下載，避免一開始畫面卡住空白)
+const _scriptCache = {};
+function loadScript(src){
+  if (_scriptCache[src]) return _scriptCache[src];
+  _scriptCache[src] = new Promise((resolve,reject)=>{
+    const s=document.createElement('script'); s.src=src;
+    s.onload=()=>resolve(); s.onerror=()=>reject(new Error("載入失敗："+src));
+    document.head.appendChild(s);
+  });
+  return _scriptCache[src];
+}
+async function ensureChartJs(){ if (typeof Chart==="undefined") await loadScript("https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"); }
+async function ensureXlsx(){ if (typeof XLSX==="undefined") await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"); }
+
 const CONFIG = {
   WEB_APP_URL: "https://script.google.com/macros/s/AKfycbxcZLeU0F7HNzqCPf46cfdf941Ygn5ki8wyNoDoSYZgg9X-83mDYt7_52K0h__Rj8gv/exec",
   APP_PASSWORD: "20210318",
@@ -1016,6 +1081,10 @@ function buildBillDataURL(){
 // ============================================================
 let allRecords=[], profiles=[], chartInstance=null, sessionKey=null, editingId=null, achievePersonName=null;
 let allMessages=[], chatSpeaker=null;
+let allInvestments=[], investDeleteId=null;
+const INVEST_RATE = 0.10;
+const INVEST_PERIOD_DAYS = 10;
+const INVEST_ANNUAL_RATE = INVEST_RATE * (365/INVEST_PERIOD_DAYS);
 function safeDate(v){ if (v instanceof Date && !isNaN(v.getTime())) return v; const d=v?new Date(v):null; return (d&&!isNaN(d.getTime()))?d:new Date(); }
 function toDateInputValue(v){ return safeDate(v).toISOString().slice(0,10); }
 
@@ -1039,7 +1108,7 @@ function monthKeyOf(d){ return `${d.getFullYear()}-${(d.getMonth()+1).toString()
 function dateLabel(d){ return `${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getDate().toString().padStart(2,"0")}`; }
 function personNames(){ return profiles.map(p=>p.name); }
 function populateSelect(el, empty){ el.innerHTML=(empty?'<option value="">請先選擇要還給誰</option>':"")+personNames().map(p=>`<option value="${p}">${p}</option>`).join(""); }
-function setDefaultDates(){ const t=toDateInputValue(new Date()); document.getElementById("inputDate").value=t; document.getElementById("repayDate").value=t; }
+function setDefaultDates(){ const t=toDateInputValue(new Date()); document.getElementById("inputDate").value=t; document.getElementById("repayDate").value=t; document.getElementById("investStartDate").value=t; document.getElementById("calcStartDate").value=t; document.getElementById("calcEndDate").value=t; }
 
 async function fetchJson(url, opts){
   let lastErr;
@@ -1074,6 +1143,7 @@ async function loadRecords(){
     allRecords=json.data.map(r=>({id:r.id,timestamp:safeDate(r.timestamp),person:r.person,item:r.item,amount:Number(r.amount)||0,type:r.type||"expense"})).sort((a,b)=>a.timestamp-b.timestamp);
     profiles=json.profiles||[];
     allMessages=(json.messages||[]).map(m=>({id:m.id,timestamp:safeDate(m.timestamp),sender:m.sender,text:m.text,readBy:m.readBy||[]})).sort((a,b)=>a.timestamp-b.timestamp);
+    allInvestments=(json.investments||[]).map(i=>({id:i.id,person:i.person,startDate:i.startDate,amount:Number(i.amount)||0})).sort((a,b)=>a.startDate.localeCompare(b.startDate));
     if (!achievePersonName && profiles.length) achievePersonName=profiles[0].name;
     renderAll();
     if (document.getElementById("chatOverlay").classList.contains("show")) renderChatMessages();
@@ -1081,8 +1151,8 @@ async function loadRecords(){
 }
 function renderAll(){
   renderPersonSelects(); renderPlayerStrip(); renderCharacterStage(); renderLedger();
-  renderAchievePersonRow(); renderAchieveContent();
-  try{ renderChart(); }catch(e){ console.warn("圖表渲染延後:", e); }
+  renderAchievePersonRow(); renderAchieveContent(); renderInvestView();
+  renderChart().catch(e=>console.warn("圖表渲染延後:", e));
 }
 function renderPersonSelects(){ populateSelect(document.getElementById("inputPerson"),false); populateSelect(document.getElementById("repayPerson"),true); populateSelect(document.getElementById("editPerson"),false); }
 
@@ -1300,7 +1370,8 @@ function renderLedger(){
   body.querySelectorAll(".items li").forEach(li=>li.addEventListener("click",()=>openEdit(li.dataset.id)));
 }
 
-function renderChart(){
+async function renderChart(){
+  await ensureChartJs();
   const type=document.getElementById("chartType").value;
   const personSel=document.getElementById("chartPerson");
   if (!personSel.dataset.filled){
@@ -1753,6 +1824,111 @@ document.getElementById("chatOverlay").addEventListener("click", e=>{ if(e.targe
 document.getElementById("chatSendBtn").addEventListener("click", sendChatMessage);
 document.getElementById("chatInput").addEventListener("keydown", e=>{ if(e.key==="Enter") sendChatMessage(); });
 
+// ============================================================
+// 投資專區
+// ============================================================
+function daysBetween(dateStr1, dateStr2){
+  const d1=new Date(dateStr1+"T00:00:00"), d2=new Date(dateStr2+"T00:00:00");
+  return Math.floor((d2-d1)/86400000);
+}
+function investProfit(amount, startDate, asOfDate){
+  const days = daysBetween(startDate, asOfDate);
+  if (days<0) return {periods:0, profit:0};
+  const periods = Math.floor(days/INVEST_PERIOD_DAYS);
+  return { periods, profit: periods*amount*INVEST_RATE };
+}
+function renderInvestView(){
+  const today = toDateInputValue(new Date());
+  const statRow = document.getElementById("investStatRow");
+  statRow.innerHTML = profiles.map(p=>{
+    const myInv = allInvestments.filter(i=>i.person===p.name);
+    const principal = myInv.reduce((s,i)=>s+i.amount,0);
+    const profit = myInv.reduce((s,i)=>s+investProfit(i.amount,i.startDate,today).profit,0);
+    return `<div class="invest-stat-card" style="${themeStyle(p)}">
+      <div class="isp-name">${p.name}</div>
+      <div class="isp-row"><span>🪙 投資代幣</span><b>${fmt(principal)}</b></div>
+      <div class="isp-row"><span>💰 收到利潤</span><b>${fmt(profit)}</b></div>
+      <div class="invest-rate-badge">投報率 每${INVEST_PERIOD_DAYS}天 ${(INVEST_RATE*100).toFixed(0)}%(年化 ${(INVEST_ANNUAL_RATE*100).toFixed(0)}%)</div>
+    </div>`;
+  }).join("");
+
+  const personSel = document.getElementById("investPerson");
+  if (!personSel.dataset.filled){ personSel.innerHTML = personNames().map(n=>`<option value="${n}">${n}</option>`).join(""); personSel.dataset.filled="1"; }
+
+  const listEl = document.getElementById("investList");
+  if (!allInvestments.length){ listEl.innerHTML='<div class="empty">還沒有任何投資紀錄</div>'; }
+  else {
+    listEl.innerHTML = allInvestments.slice().reverse().map(inv=>{
+      const {periods,profit} = investProfit(inv.amount, inv.startDate, today);
+      const color = personColor(inv.person), textColor = personColorText(inv.person);
+      return `<div class="invest-item" data-id="${inv.id}" style="border-left-color:${color};">
+        <div class="ii-main"><b style="color:${textColor};">${inv.person}</b> · ${inv.startDate} 投入<br><span style="color:var(--ink-soft);font-size:11px;">已滿 ${periods} 個週期</span></div>
+        <div>
+          <div class="ii-amt">${fmt(inv.amount)}</div>
+          <div class="ii-profit">+${fmt(profit)} 利潤</div>
+        </div>
+      </div>`;
+    }).join("");
+    listEl.querySelectorAll(".invest-item").forEach(el=>{
+      el.addEventListener("click", ()=>{
+        const inv = allInvestments.find(i=>i.id===el.dataset.id);
+        if (!inv) return;
+        investDeleteId = inv.id;
+        const {periods,profit} = investProfit(inv.amount, inv.startDate, today);
+        document.getElementById("investDeleteInfo").innerHTML = `投資人：${inv.person}<br>起始日期：${inv.startDate}<br>投資金額：${fmt(inv.amount)}<br>已滿週期：${periods} 次<br>累積利潤：${fmt(profit)}`;
+        document.getElementById("investDeleteOverlay").classList.add("show");
+      });
+    });
+  }
+}
+document.getElementById("investSubmitBtn").addEventListener("click", async ()=>{
+  const person = document.getElementById("investPerson").value;
+  const startDate = document.getElementById("investStartDate").value;
+  const amount = parseFloat(document.getElementById("investAmount").value);
+  const statusEl = document.getElementById("investStatus");
+  if (!person||!startDate||isNaN(amount)||amount<=0){ statusEl.textContent="請完整填寫投資人、日期、金額"; statusEl.className="status error"; return; }
+  statusEl.textContent="建立中…"; statusEl.className="status";
+  try{
+    const json = await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({key:sessionKey,action:"addInvestment",person,startDate,amount})});
+    if (json.status!=="success") throw new Error(json.message);
+    statusEl.textContent="已建立投資！"; statusEl.className="status ok";
+    document.getElementById("investAmount").value="";
+    await loadRecords();
+  } catch(err){ statusEl.textContent="建立失敗："+err.message; statusEl.className="status error"; }
+});
+document.getElementById("investDeleteBtn").addEventListener("click", async ()=>{
+  if (!investDeleteId) return;
+  if (!confirm("確定要刪除這筆投資紀錄嗎？此動作無法復原。")) return;
+  try{
+    const json = await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({key:sessionKey,action:"deleteInvestment",id:investDeleteId})});
+    if (json.status!=="success") throw new Error(json.message);
+    document.getElementById("investDeleteOverlay").classList.remove("show");
+    await loadRecords();
+  } catch(err){ alert("刪除失敗："+err.message); }
+});
+document.getElementById("investDeleteCancelBtn").addEventListener("click", ()=>{ document.getElementById("investDeleteOverlay").classList.remove("show"); });
+document.getElementById("investDeleteOverlay").addEventListener("click", e=>{ if(e.target.id==="investDeleteOverlay") document.getElementById("investDeleteOverlay").classList.remove("show"); });
+
+document.getElementById("calcRunBtn").addEventListener("click", ()=>{
+  const start = document.getElementById("calcStartDate").value;
+  const end = document.getElementById("calcEndDate").value;
+  const amount = parseFloat(document.getElementById("calcAmount").value);
+  const resultEl = document.getElementById("calcResult");
+  if (!start||!end||isNaN(amount)||amount<=0){ resultEl.innerHTML = '<div class="status error">請完整填寫起始日期、計算至日期、金額</div>'; return; }
+  const days = daysBetween(start,end);
+  if (days<0){ resultEl.innerHTML = '<div class="status error">「計算至」日期不能早於起始日期</div>'; return; }
+  const {periods,profit} = investProfit(amount, start, end);
+  resultEl.innerHTML = `<div class="calc-result-box">
+    投資期間：${days} 天(滿 ${periods} 個 ${INVEST_PERIOD_DAYS} 天週期)<br>
+    投資本金：${fmt(amount)}<br>
+    累積利潤：<b style="color:var(--gold);">${fmt(profit)}</b><br>
+    本利合計：<b>${fmt(amount+profit)}</b><br>
+    <span style="font-size:11.5px;color:var(--ink-soft);">投報率：每${INVEST_PERIOD_DAYS}天 ${(INVEST_RATE*100).toFixed(0)}%(單利年化約 ${(INVEST_ANNUAL_RATE*100).toFixed(0)}%)</span>
+  </div>`;
+});
+
 document.querySelectorAll(".tab-btn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
@@ -1778,7 +1954,13 @@ document.getElementById("settingsSaveBtn").addEventListener("click", saveSetting
 document.getElementById("settingsCancelBtn").addEventListener("click", closeSettings);
 document.getElementById("settingsOverlay").addEventListener("click", e=>{ if(e.target.id==="settingsOverlay") closeSettings(); });
 
-function exportExcel(){
+async function exportExcel(){
+  const btn=document.getElementById("exportExcelBtn");
+  btn.disabled=true; btn.textContent="📥 準備中…";
+  try{
+    await ensureXlsx();
+  } catch(e){ alert("匯出工具載入失敗，請確認網路連線後再試一次"); btn.disabled=false; btn.textContent="📥 匯出 Excel 表"; return; }
+  btn.disabled=false; btn.textContent="📥 匯出 Excel 表";
   if (typeof XLSX === "undefined"){ alert("匯出工具尚未載入，請確認網路連線後再試一次"); return; }
   const rows = allRecords.slice().sort((a,b)=>a.timestamp-b.timestamp).map(r=>({
     "日期": toDateInputValue(r.timestamp),
