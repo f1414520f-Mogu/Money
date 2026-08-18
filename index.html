@@ -107,6 +107,10 @@
   .character-slot{ flex:1; max-width:180px; display:flex; flex-direction:column; align-items:center; }
   .bubble-slot{ min-height:34px; display:flex; align-items:flex-end; margin-bottom:6px; }
   .speech-bubble{ position:relative; background:#2a2118; border:2px solid #6b5738; border-radius:8px; padding:6px 9px; font-size:11.5px; font-weight:700; color:#f0e6d2; max-width:150px; margin:0 auto; text-align:center; word-break:break-word; }
+  .speech-bubble.profit-bubble{ background:#5c4315; border-color:var(--gold); cursor:pointer; animation: profit-pulse 1.4s ease-in-out infinite; }
+  .speech-bubble.profit-bubble::after{ border-top-color:#5c4315 !important; }
+  .speech-bubble.profit-bubble::before{ border-top-color:var(--gold) !important; }
+  @keyframes profit-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.05); } }
   .speech-bubble::after{ content:""; position:absolute; bottom:-7px; left:50%; margin-left:-6px; border:6px solid transparent; border-top-color:#2a2118; }
   .speech-bubble::before{ content:""; position:absolute; bottom:-9px; left:50%; margin-left:-7px; border:7px solid transparent; border-top-color:#6b5738; }
 
@@ -224,7 +228,7 @@
   .pet-slot .preq{ font-size:9.5px; color:var(--ink-soft); text-align:center; }
   .pet-slot .pcheck{ position:absolute; top:3px; right:5px; font-size:13px; color:var(--teal); }
   .char-pets{ display:flex; gap:3px; justify-content:center; margin-top:4px; }
-  .char-pets img{ width:20px; height:20px; }
+  .char-pets img{ width:34px; height:34px; }
 
   .invest-stat-row{ display:flex; gap:8px; margin-bottom:14px; }
   .invest-stat-card{ flex:1; border-radius:4px; padding:12px 10px; border:3px solid var(--frame-color,var(--gold)); background:var(--frame-bg,rgba(0,0,0,0.25)); }
@@ -462,6 +466,7 @@
   <div class="sheet">
     <h3>投資紀錄詳情</h3>
     <div id="investDeleteInfo" style="font-size:14px; line-height:2; margin-bottom:14px;"></div>
+    <button class="primary" id="investCollectBtn" style="display:none;">✅ 確認收取利潤</button>
     <button class="secondary" id="investDeleteBtn">🗑 刪除這筆投資</button>
     <button class="ghost" id="investDeleteCancelBtn">取消</button>
   </div>
@@ -541,7 +546,7 @@ async function ensureChartJs(){ if (typeof Chart==="undefined") await loadScript
 async function ensureXlsx(){ if (typeof XLSX==="undefined") await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"); }
 
 const CONFIG = {
-  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbxcZLeU0F7HNzqCPf46cfdf941Ygn5ki8wyNoDoSYZgg9X-83mDYt7_52K0h__Rj8gv/exec",
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycbyX7wr1YtpsoNTkWMKjbucygR53o2Xo9O0HQThtLRHthXCtlaUs8-saOrelx1bjwUc9Mw/exec",
   APP_PASSWORD: "20210318",
   HEADER_IMAGE_URL: "",
   APP_ICON_URL: "https://github.com/f1414520f-Mogu/Money/blob/main/ICON.jpg?raw=true",
@@ -595,7 +600,7 @@ function petIconDataURL(pet, size){
   const bodyCY = pet.elongated ? size*0.55 : size*0.68;
   const bodyRX = pet.elongated ? size*0.16 : size*0.26;
   const bodyRY = pet.elongated ? size*0.34 : size*0.24;
-  ctx.strokeStyle="#241a10"; ctx.lineWidth=Math.max(1,size*0.055);
+  ctx.strokeStyle="#241a10"; ctx.lineWidth=Math.max(1.4,size*0.07);
 
   // 尾巴(畫在身體後面，較底層)
   ctx.fillStyle = pet.color;
@@ -628,8 +633,8 @@ function petIconDataURL(pet, size){
   // 身體
   ctx.beginPath(); ctx.ellipse(mid,bodyCY,bodyRX,bodyRY,0,0,Math.PI*2); ctx.fillStyle=pet.color; ctx.fill(); ctx.stroke();
   if (pet.stripes){
-    ctx.strokeStyle="#5c3a10"; ctx.lineWidth=size*0.035;
-    for(let i=-1;i<=1;i++){ ctx.beginPath(); ctx.moveTo(mid+i*bodyRX*0.4, bodyCY-bodyRY*0.7); ctx.lineTo(mid+i*bodyRX*0.4, bodyCY+bodyRY*0.7); ctx.stroke(); }
+    ctx.strokeStyle="#3a2410"; ctx.lineWidth=size*0.06;
+    for(let i=-1;i<=1;i++){ ctx.beginPath(); ctx.moveTo(mid+i*bodyRX*0.5, bodyCY-bodyRY*0.75); ctx.lineTo(mid+i*bodyRX*0.5, bodyCY+bodyRY*0.75); ctx.stroke(); }
     ctx.strokeStyle="#241a10";
   }
 
@@ -1143,7 +1148,7 @@ async function loadRecords(){
     allRecords=json.data.map(r=>({id:r.id,timestamp:safeDate(r.timestamp),person:r.person,item:r.item,amount:Number(r.amount)||0,type:r.type||"expense"})).sort((a,b)=>a.timestamp-b.timestamp);
     profiles=json.profiles||[];
     allMessages=(json.messages||[]).map(m=>({id:m.id,timestamp:safeDate(m.timestamp),sender:m.sender,text:m.text,readBy:m.readBy||[]})).sort((a,b)=>a.timestamp-b.timestamp);
-    allInvestments=(json.investments||[]).map(i=>({id:i.id,person:i.person,startDate:i.startDate,amount:Number(i.amount)||0})).sort((a,b)=>a.startDate.localeCompare(b.startDate));
+    allInvestments=(json.investments||[]).map(i=>({id:i.id,person:i.person,startDate:i.startDate,amount:Number(i.amount)||0,collectedPeriods:Number(i.collectedPeriods)||0})).sort((a,b)=>a.startDate.localeCompare(b.startDate));
     if (!achievePersonName && profiles.length) achievePersonName=profiles[0].name;
     renderAll();
     if (document.getElementById("chatOverlay").classList.contains("show")) renderChatMessages();
@@ -1192,14 +1197,21 @@ function renderCharacterStage(){
   stage.innerHTML = profiles.map(p=>{
     const cumulative=cumulativeContribution(p.name);
     const titleObj=TITLE_THRESHOLDS.find(t=>t.name===p.activeTitle && cumulative>=t.amount);
+    const hasProfit = personHasUncollected(p.name);
     const lastMsg = lastMessageFrom(p.name);
-    const bubble = lastMsg ? `<div class="speech-bubble">${escapeHtml(lastMsg.text)}</div>` : "";
+    let bubble = "";
+    if (hasProfit) bubble = `<div class="speech-bubble profit-bubble" data-goto-invest="${p.name}">💰 有投資利潤可以收取囉！</div>`;
+    else if (lastMsg) bubble = `<div class="speech-bubble">${escapeHtml(lastMsg.text)}</div>`;
+    const level = levelFor(cumulative);
+    const maxUnlocked = Math.min(RAINBOW.length, Math.floor(level/3));
+    const petGlowColors = (p.glowColors||[]).filter(i=>i<maxUnlocked).map(i=>RAINBOW[i].c);
+    const petGlowStyle = petGlowColors.length ? `filter: drop-shadow(0 0 4px ${petGlowColors[0]}) drop-shadow(0 0 7px ${petGlowColors[petGlowColors.length-1]});` : "";
     return `<div class="character-slot" style="${themeStyle(p)}">
       <div class="bubble-slot">${bubble}</div>
       <div class="rpg-frame avatar-panel">
         <span class="rpg-corner tl"></span><span class="rpg-corner tr"></span><span class="rpg-corner bl"></span><span class="rpg-corner br"></span>
         <div class="avatar-wrap"><img class="pixel" src="${avatarDataURL(p, cumulative, 'full')}" /></div>
-        <div class="char-pets">${(p.equippedPets||[]).map(name=>{ const pet=PET_ITEMS.find(x=>x.name===name); return pet?`<img class="pixel" src="${petIconDataURL(pet,20)}" />`:""; }).join("")}</div>
+        <div class="char-pets">${(p.equippedPets||[]).map(name=>{ const pet=PET_ITEMS.find(x=>x.name===name); return pet?`<img class="pixel" style="${petGlowStyle}" src="${petIconDataURL(pet,32)}" />`:""; }).join("")}</div>
       </div>
       <div class="rpg-frame info-panel">
         <span class="rpg-corner tl"></span><span class="rpg-corner tr"></span><span class="rpg-corner bl"></span><span class="rpg-corner br"></span>
@@ -1208,6 +1220,14 @@ function renderCharacterStage(){
       </div>
     </div>`;
   }).join("");
+  stage.querySelectorAll("[data-goto-invest]").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+      document.querySelector('.tab-btn[data-view="view-invest"]').classList.add("active");
+      document.getElementById("view-invest").classList.add("active");
+    });
+  });
 }
 function renderPlayerStrip(){
   const strip=document.getElementById("playerStrip");
@@ -1831,11 +1851,23 @@ function daysBetween(dateStr1, dateStr2){
   const d1=new Date(dateStr1+"T00:00:00"), d2=new Date(dateStr2+"T00:00:00");
   return Math.floor((d2-d1)/86400000);
 }
-function investProfit(amount, startDate, asOfDate){
+function investProfit(amount, startDate, asOfDate, collectedPeriods){
+  collectedPeriods = collectedPeriods||0;
   const days = daysBetween(startDate, asOfDate);
-  if (days<0) return {periods:0, profit:0};
+  if (days<0) return {periods:0, profit:0, uncollectedPeriods:0, uncollectedProfit:0, collectedProfit:0};
   const periods = Math.floor(days/INVEST_PERIOD_DAYS);
-  return { periods, profit: periods*amount*INVEST_RATE };
+  const uncollectedPeriods = Math.max(0, periods-collectedPeriods);
+  return {
+    periods,
+    profit: periods*amount*INVEST_RATE,
+    uncollectedPeriods,
+    uncollectedProfit: uncollectedPeriods*amount*INVEST_RATE,
+    collectedProfit: collectedPeriods*amount*INVEST_RATE
+  };
+}
+function personHasUncollected(name){
+  const today = toDateInputValue(new Date());
+  return allInvestments.some(i=>i.person===name && investProfit(i.amount,i.startDate,today,i.collectedPeriods).uncollectedPeriods>0);
 }
 function renderInvestView(){
   const today = toDateInputValue(new Date());
@@ -1843,11 +1875,13 @@ function renderInvestView(){
   statRow.innerHTML = profiles.map(p=>{
     const myInv = allInvestments.filter(i=>i.person===p.name);
     const principal = myInv.reduce((s,i)=>s+i.amount,0);
-    const profit = myInv.reduce((s,i)=>s+investProfit(i.amount,i.startDate,today).profit,0);
+    let collected=0, uncollected=0;
+    myInv.forEach(i=>{ const r=investProfit(i.amount,i.startDate,today,i.collectedPeriods); collected+=r.collectedProfit; uncollected+=r.uncollectedProfit; });
     return `<div class="invest-stat-card" style="${themeStyle(p)}">
       <div class="isp-name">${p.name}</div>
       <div class="isp-row"><span>🪙 投資代幣</span><b>${fmt(principal)}</b></div>
-      <div class="isp-row"><span>💰 收到利潤</span><b>${fmt(profit)}</b></div>
+      <div class="isp-row"><span>✅ 已收取利潤</span><b>${fmt(collected)}</b></div>
+      <div class="isp-row"><span>⏳ 尚未收取</span><b style="color:${uncollected>0?'var(--gold)':'inherit'};">${fmt(uncollected)}</b></div>
       <div class="invest-rate-badge">投報率 每${INVEST_PERIOD_DAYS}天 ${(INVEST_RATE*100).toFixed(0)}%(年化 ${(INVEST_ANNUAL_RATE*100).toFixed(0)}%)</div>
     </div>`;
   }).join("");
@@ -1859,13 +1893,13 @@ function renderInvestView(){
   if (!allInvestments.length){ listEl.innerHTML='<div class="empty">還沒有任何投資紀錄</div>'; }
   else {
     listEl.innerHTML = allInvestments.slice().reverse().map(inv=>{
-      const {periods,profit} = investProfit(inv.amount, inv.startDate, today);
+      const r = investProfit(inv.amount, inv.startDate, today, inv.collectedPeriods);
       const color = personColor(inv.person), textColor = personColorText(inv.person);
       return `<div class="invest-item" data-id="${inv.id}" style="border-left-color:${color};">
-        <div class="ii-main"><b style="color:${textColor};">${inv.person}</b> · ${inv.startDate} 投入<br><span style="color:var(--ink-soft);font-size:11px;">已滿 ${periods} 個週期</span></div>
+        <div class="ii-main"><b style="color:${textColor};">${inv.person}</b> · ${inv.startDate} 投入<br><span style="color:var(--ink-soft);font-size:11px;">已滿 ${r.periods} 週期，${r.uncollectedPeriods>0?`<span style="color:var(--gold);">可收取 ${r.uncollectedPeriods} 期</span>`:"已全數收取"}</span></div>
         <div>
           <div class="ii-amt">${fmt(inv.amount)}</div>
-          <div class="ii-profit">+${fmt(profit)} 利潤</div>
+          <div class="ii-profit">${r.uncollectedProfit>0?`💰 +${fmt(r.uncollectedProfit)} 待收`:"已收取"}</div>
         </div>
       </div>`;
     }).join("");
@@ -1874,8 +1908,10 @@ function renderInvestView(){
         const inv = allInvestments.find(i=>i.id===el.dataset.id);
         if (!inv) return;
         investDeleteId = inv.id;
-        const {periods,profit} = investProfit(inv.amount, inv.startDate, today);
-        document.getElementById("investDeleteInfo").innerHTML = `投資人：${inv.person}<br>起始日期：${inv.startDate}<br>投資金額：${fmt(inv.amount)}<br>已滿週期：${periods} 次<br>累積利潤：${fmt(profit)}`;
+        const r = investProfit(inv.amount, inv.startDate, today, inv.collectedPeriods);
+        document.getElementById("investDeleteInfo").innerHTML = `投資人：${inv.person}<br>起始日期：${inv.startDate}<br>投資金額：${fmt(inv.amount)}<br>已滿週期：${r.periods} 次<br>已收取利潤：${fmt(r.collectedProfit)}<br>尚未收取：<b style="color:var(--gold);">${fmt(r.uncollectedProfit)}</b>`;
+        const collectBtn = document.getElementById("investCollectBtn");
+        collectBtn.style.display = r.uncollectedPeriods>0 ? "flex" : "none";
         document.getElementById("investDeleteOverlay").classList.add("show");
       });
     });
@@ -1896,6 +1932,19 @@ document.getElementById("investSubmitBtn").addEventListener("click", async ()=>{
     document.getElementById("investAmount").value="";
     await loadRecords();
   } catch(err){ statusEl.textContent="建立失敗："+err.message; statusEl.className="status error"; }
+});
+document.getElementById("investCollectBtn").addEventListener("click", async ()=>{
+  if (!investDeleteId) return;
+  const inv = allInvestments.find(i=>i.id===investDeleteId); if(!inv) return;
+  const today = toDateInputValue(new Date());
+  const r = investProfit(inv.amount, inv.startDate, today, inv.collectedPeriods);
+  try{
+    const json = await fetchJson(CONFIG.WEB_APP_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({key:sessionKey,action:"collectProfit",id:inv.id,periods:r.periods})});
+    if (json.status!=="success") throw new Error(json.message);
+    document.getElementById("investDeleteOverlay").classList.remove("show");
+    await loadRecords();
+  } catch(err){ alert("收取失敗："+err.message); }
 });
 document.getElementById("investDeleteBtn").addEventListener("click", async ()=>{
   if (!investDeleteId) return;
